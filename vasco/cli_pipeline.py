@@ -948,14 +948,13 @@ def _circle_filter_csv_inplace(
     if (not before_copy.exists()) and csv_path.exists() and csv_path.stat().st_size > 0:
         before_copy.write_bytes(csv_path.read_bytes())
 
-    # Detect RA/Dec columns from header (reuse your existing helper if you want)
+    # Detect RA/Dec columns from header
     with csv_path.open("r", newline="", encoding="utf-8", errors="ignore") as fi:
-        rdr = csv.reader(fi)
+        rdr = _csv.reader(fi)
         header = next(rdr, [])
     cols = [h.strip().lstrip("﻿") for h in header]
     colset = set(cols)
 
-    # Prefer corrected coords if present, else standard SExtractor RA/Dec
     candidates = [
         ("RA_corr", "Dec_corr"),
         ("ALPHAWIN_J2000", "DELTAWIN_J2000"),
@@ -976,10 +975,10 @@ def _circle_filter_csv_inplace(
 
     with csv_path.open("r", newline="", encoding="utf-8", errors="ignore") as fi, \
          tmp.open("w", newline="", encoding="utf-8") as fo:
-        dr = csv.DictReader(fi)
+        dr = _csv.DictReader(fi)
         if not dr.fieldnames:
             return
-        dw = csv.DictWriter(fo, fieldnames=dr.fieldnames)
+        dw = _csv.DictWriter(fo, fieldnames=dr.fieldnames)
         dw.writeheader()
 
         for row in dr:
@@ -1007,7 +1006,7 @@ def _circle_filter_csv_inplace(
         "rows_out": int(kept),
     }
     status_json.write_text(json.dumps(status, indent=2), encoding="utf-8")
-
+    
 # UPDATED ensure: schema + rows aware
 
 def _ensure_sextractor_csv(tile_dir: Path, pass2_ldac: str | Path) -> Path:
