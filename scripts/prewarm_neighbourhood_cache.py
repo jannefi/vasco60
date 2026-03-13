@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 from __future__ import annotations
 import os, re, json, time, signal, logging, sys
@@ -5,6 +6,7 @@ from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+# ---------------- repo import helper ----------------
 def _add_repo_to_syspath() -> Path:
     here = Path(__file__).resolve()
     add_path = None
@@ -21,16 +23,32 @@ def _add_repo_to_syspath() -> Path:
     if str(add_path) not in sys.path:
         sys.path.insert(0, str(add_path))
     return add_path
+
 _DETECTED_REPO = _add_repo_to_syspath()
 
+# ----------- fetchers (VizieR-backed) -----------
 from vasco.external_fetch_online import (
-    fetch_gaia_neighbourhood,      # I/355 (DR3 via VizieR)  [1](https://insta-my.sharepoint.com/personal/janne_ahlberg_insta_fi1/Documents/Microsoft%20Copilot%20Chat%20Files/prewarm_gaia_neighbourhood_bg.sh)
-    fetch_ps1_neighbourhood,       # II/389 (DR2 via VizieR)  [1](https://insta-my.sharepoint.com/personal/janne_ahlberg_insta_fi1/Documents/Microsoft%20Copilot%20Chat%20Files/prewarm_gaia_neighbourhood_bg.sh)
-    fetch_usnob_neighbourhood,     # I/284 (USNO-B)          (added above)
+    fetch_gaia_neighbourhood,      # I/355 via VizieR
+    fetch_ps1_neighbourhood,       # II/389 via VizieR
 )
+try:
+    from vasco.external_fetch_online import fetch_usnob_neighbourhood  # I/284 via VizieR
+    _HAS_USNOB = True
+except Exception:
+    _HAS_USNOB = False
 
-_TILE_RE = re.compile(r'^tile_RA(?P<ra>\d+(?:\.\d+)?)_DEC(?P<hem>[pm])(?P<dec>\d+(?:\.\d+)?)$')
+_TILE_RE = re.compile(r"^tile_RA(?P<ra>\d+(?:\.\d+)?)_DEC(?P<hem>[pm])(?P<dec>\d+(?:\.\d+)?)$")
 
+CAT = {
+    "gaia":  ("gaia_neighbourhood.csv",  "gaia"),
+    "ps1":   ("ps1_neighbourhood.csv",   "ps1"),
+    "usnob": ("usnob_neighbourhood.csv", "usnob"),
+}
+
+class StopRequested(Exception):
+    pass
+
+# ---------------- tile helpers ----------------
 def iter_tile_dirs(tiles_root: Path):
     for root, dirs, _ in os.walk(tiles_root):
         for d in dirs:
@@ -40,27 +58,26 @@ def iter_tile_dirs(tiles_root: Path):
 def parse_center(name: str) -> tuple[float, float] | None:
     m = _TILE_RE.match(name)
     if not m: return None
-    ra = float(m.group('ra')); dec = float(m.group('dec'))
-    if m.group('hem') == 'm': dec = -dec
+    ra = float(m.group('ra'))
+    dec = float(m.group('dec'))
+    if m.group('hem') == 'm':
+        dec = -dec
     return ra, dec
 
+# ---------------- commons ----------------
 def atomic_write_text(path: Path, text: str):
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(text, encoding="utf-8"); tmp.replace(path)
+    tmp.write_text(text, encoding="utf-8")
+    tmp.replace(path)
 
 def cache_exists(path: Path) -> bool:
-    try: return path.exists() and path.stat().st_size > 0
-    except Exception: return False
+    try:
+        return path.exists() and path.stat().st_size > 0
+    except Exception:
+        return False
 
-CAT = {
-    "gaia":  ("gaia_neighbourhood.csv",      fetch_gaia_neighbourhood),
-    "ps1":   ("ps1_neighbourhood.csv",       fetch_ps1_neighbourhood),
-    "usnob": ("usnob_neighbourhood.csv",     fetch_usnob_neighbourhood),
-}
-
-class StopRequested(Exception): pass
-
+# ---------------- main ----------------
 def main():
     import argparse
     ap = argparse.ArgumentParser(description="Unified prewarmer for Gaia/PS1/USNO-B neighbourhood caches.")
@@ -68,9 +85,13 @@ def main():
     ap.add_argument("--tiles-root", default="./data/tiles")
     ap.add_argument("--logs-dir", default="./logs")
     ap.add_argument("--workers", type=int, default=4)
-    ap.add_argument("--radius-arcmin", type=float, default=43.0)
-    ap.add_argument("--max-rows", type=int, default=200000, help="Gaia/USNO-B upper bound; PS1 uses --max-records")
-    ap.add_argument("--max-records", type=int, default=50000, help="PS1 record cap")
+
+    ap.add_argument("--radius-arcmin", type=float, default=31.0,
+                    help="Neighbourhood radius (arcmin). Default 31′ for 30′ circle + 5″ safety.")
+    ap.add_argument("--max-rows", type=int, default=200000,
+                    help="Gaia/USNO-B row cap; PS1 uses --max-records.")
+    ap.add_argument("--max-records", type=int, default=50000,
+                    help="PS1 record cap.")
     ap.add_argument("--timeout", type=float, default=90.0)
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--retry", type=int, default=3)
@@ -97,7 +118,7 @@ def main():
     signal.signal(signal.SIGINT, _sig_handler)
     signal.signal(signal.SIGTERM, _sig_handler)
 
-    out_name, fn = CAT[args.catalog]
+    out_name, _ = CAT[args.catalog]
     counters = {
         "catalog": args.catalog,
         "tiles_found": 0, "tiles_scheduled": 0,
@@ -111,7 +132,8 @@ def main():
         atomic_write_text(progress_path, json.dumps(counters, indent=2))
 
     def do_one(tile_dir: Path):
-        if stop["flag"] or stop_file.exists(): raise StopRequested()
+        if stop["flag"] or stop_file.exists():
+            raise StopRequested()
         tile_id = tile_dir.name
         counters["last_tile"] = tile_id
         out = tile_dir / "catalogs" / out_name
@@ -125,11 +147,17 @@ def main():
         for attempt in range(1, args.retry + 1):
             try:
                 if args.catalog == "ps1":
-                    fn(tile_dir, ra, dec, float(args.radius_arcmin),
-                       max_records=int(args.max_records), timeout=float(args.timeout))  # [1](https://insta-my.sharepoint.com/personal/janne_ahlberg_insta_fi1/Documents/Microsoft%20Copilot%20Chat%20Files/prewarm_gaia_neighbourhood_bg.sh)
-                else:
-                    fn(tile_dir, ra, dec, float(args.radius_arcmin),
-                       max_rows=int(args.max_rows), timeout=float(args.timeout))       # Gaia/USNOB style
+                    fetch_ps1_neighbourhood(tile_dir, ra, dec, float(args.radius_arcmin),
+                                             max_records=int(args.max_records), timeout=float(args.timeout))
+                elif args.catalog == "gaia":
+                    fetch_gaia_neighbourhood(tile_dir, ra, dec, float(args.radius_arcmin),
+                                              max_rows=int(args.max_rows), timeout=float(args.timeout))
+                else:  # usnob
+                    if not _HAS_USNOB:
+                        raise RuntimeError("fetch_usnob_neighbourhood not available; add it to external_fetch_online.py")
+                    fetch_usnob_neighbourhood(tile_dir, ra, dec, float(args.radius_arcmin),
+                                              max_rows=int(args.max_rows), timeout=float(args.timeout))
+                # Quick row count (skip header)
                 rows = 0
                 try:
                     with out.open('r', encoding='utf-8', errors='ignore') as f:
