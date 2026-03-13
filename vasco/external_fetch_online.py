@@ -12,6 +12,59 @@ __all__ = [
     'fetch_ps1_neighbourhood',
 ]
 
+# --- USNO-B (I/284) via VizieR TSV -------------------------------------------
+def fetch_usnob_neighbourhood(tile_dir: Path | str,
+                              ra_deg: float, dec_deg: float,
+                              radius_arcmin: float,
+                              *, max_rows: int = 200000,
+                              timeout: float = 60.0) -> Path:
+    """
+    Fetch USNO-B1.0 neighborhood (I/284) via VizieR TSV -> CSV.
+    Writes catalogs/usnob_neighbourhood.csv
+    """
+    tile_dir = Path(tile_dir)
+    out = tile_dir / 'catalogs' / 'usnob_neighbourhood.csv'
+    out.parent.mkdir(parents=True, exist_ok=True)
+    base = 'https://vizier.u-strasbg.fr/viz-bin/asu-tsv'
+    cols = ['RAJ2000','DEJ2000','R1mag','R2mag','B1mag','B2mag','Imag','pmRA','pmDE','_r']
+    params = {
+        '-source': 'I/284/out',
+        '-c': f'{ra_deg:.8f} {dec_deg:.8f}',
+        '-c.r': f'{radius_arcmin:.6f}',
+        '-out.max': str(int(max_rows)),
+        '-out.add': '_r',
+        '-out.form': 'dec',
+        '-sort': '_r',
+        '-out': ','.join(cols),
+    }
+    import requests, csv
+    r = requests.get(base, params=params, timeout=timeout)
+    r.raise_for_status()
+    lines = [ln for ln in r.text.splitlines() if ln and not ln.startswith('#')]
+    if not lines:
+        out.write_text('ra,dec\n', encoding='utf-8')
+        return out
+    header = lines[0].split('\t')
+    data_rows = [ln.split('\t') for ln in lines[1:]]
+    colmap = {name: idx for idx, name in enumerate(header)}
+    keep = [c for c in cols if c in colmap]
+    with out.open('w', newline='', encoding='utf-8') as f:
+        w = csv.writer(f)
+        w.writerow(['ra' if c=='RAJ2000' else ('dec' if c=='DEJ2000' else c) for c in keep])
+        for row in data_rows:
+            try:
+                float(row[colmap['RAJ2000']]); float(row[colmap['DEJ2000']])
+            except Exception:
+                continue
+            w.writerow([row[colmap[c]] for c in keep])
+    return out
+
+# --- PS1 cap override (optional) ----------------------------------------------
+def _ps1_effective_radius_deg(radius_arcmin: float) -> float:
+    # Previous cap was 0.5 deg; allow override via env
+    cap = float(os.getenv('VASCO_PS1_MAX_RADIUS_DEG', '0.5'))
+    return min(float(radius_arcmin) / 60.0, cap)
+
 # ---------------------------------------------------------------
 # Gaia DR3 via CDS/VizieR (normalize to ra/dec; skip unit rows)
 # ---------------------------------------------------------------
