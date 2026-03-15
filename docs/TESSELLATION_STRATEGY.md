@@ -70,7 +70,7 @@ For each plate center (RA₀, Dec₀):
 Within each plate, tiles are sorted by (ra_deg, dec_deg) and assigned a
 zero-based `plate_tile_idx`.
 
-**Note** High-Dec plates yield more RA columns because cos(Dec) compresses longitudinal distanc
+**Note** High-Dec plates yield more RA columns because cos(Dec) compresses longitudinal distance on sky
 
 ### Duplicate policy
 
