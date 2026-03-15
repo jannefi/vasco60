@@ -1,23 +1,16 @@
 # -*- coding: utf-8 -*-
 """vasco.utils.tile_id
 
-Tile ID helpers.
+Tile ID helpers for the vasco60 naming convention:
 
-Supported tile directory naming schemes:
+  tile_RA130.013_DECp33.081   (Dec >= 0)
+  tile_RA130.013_DECm33.081   (Dec < 0)
 
-1) New (vasco60):
-   - tile_RA130.013_DECp33.081   (Dec >= 0)
-   - tile_RA130.013_DECm33.081   (Dec < 0)
-
-2) Legacy (older vasco):
-   - tile-RA130.013-DEC+33.081
-   - tile-RA130.013-DEC-33.081
-
-The parser is intentionally tolerant and returns (ra, dec) normalized to:
+Returns (ra, dec) normalized to:
   ra in [0, 360)
   dec in [-90, +90]
 
-This function is used by multiple modules (pipeline, wcsfix, tiles adapters).
+Used by multiple modules (pipeline, wcsfix, tiles adapters).
 """
 
 from __future__ import annotations
@@ -25,11 +18,7 @@ from __future__ import annotations
 import re
 from typing import Optional, Tuple
 
-# New: tile_RA130.013_DECp33.081  /  tile_RA130.013_DECm33.081
 _RE_NEW = re.compile(r"^tile_RA(?P<ra>[0-9]+(?:\.[0-9]+)?)_DEC(?P<sign>[pm])(?P<dec>[0-9]+(?:\.[0-9]+)?)$")
-
-# Legacy: tile-RA130.013-DEC+33.081  /  tile-RA130.013-DEC-33.081
-_RE_OLD = re.compile(r"^tile-RA(?P<ra>[0-9]+(?:\.[0-9]+)?)-DEC(?P<sign>[+\-])(?P<dec>[0-9]+(?:\.[0-9]+)?)$")
 
 
 def _norm_ra_dec(ra: float, dec: float) -> Tuple[float, float]:
@@ -55,14 +44,6 @@ def parse_tile_id_center(tile_id: str) -> Optional[Tuple[float, float]]:
         dec_abs = float(m.group('dec'))
         sign = m.group('sign')
         dec = dec_abs if sign == 'p' else -dec_abs
-        return _norm_ra_dec(ra, dec)
-
-    m = _RE_OLD.match(s)
-    if m:
-        ra = float(m.group('ra'))
-        dec_abs = float(m.group('dec'))
-        sign = m.group('sign')
-        dec = dec_abs if sign == '+' else -dec_abs
         return _norm_ra_dec(ra, dec)
 
     return None
