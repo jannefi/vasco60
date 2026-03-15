@@ -14,4 +14,8 @@ All current operational posture, locked decisions, and next actions live under:
 The previous README content was for an older VASCO workflow and is intentionally not kept in sync.
 Do not use it as operational guidance for VASCO60.
 
+## Post-pipeline stages
+
+- Post-pipeline run-scoped stages: see docs/POSTPROCESS.md (large; use headings/keyword search and read only the relevant section)
+
 End.
