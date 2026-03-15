@@ -30,7 +30,7 @@ Current Focus: Production Hardening + De-legacy Simplification (vasco60-only)
 [x] Default tile size policy: ensure “60×60 arcmin” is the default everywhere (no lingering 30′ defaults)
     - Vasco60 posture is 60×60 squares; ≤30′ circle cut is applied only when needed.  
     - Sweep code/config defaults that still assume 30 arcmin. (CLI may still accept overrides, but defaults must be 60.)
----
+
 
 ## Phase 1: Deterministic Execution (Blocker A)
 
