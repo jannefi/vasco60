@@ -46,35 +46,18 @@ from typing import Dict, Iterable, List, Optional, Set, Tuple
 
 
 # ----------------------------
-# Tile discovery (flat + sharded)
+# Tile discovery (flat: ./data/tiles/<tile-id>/)
 # ----------------------------
-_PATTERNS = [
-    "tile-RA*-DEC*",
-    "tile_RA*_DEC*",
-    "tile-RA*_DEC*",
-    "tile_RA*-DEC*",
-]
+_PATTERN = "tile_RA*_DEC*"
 
 
 def iter_tile_dirs(tiles_root: Path) -> Iterable[Path]:
-    """Yield tile dirs under tiles_root (flat) and tiles_by_sky sibling (sharded)."""
+    """Yield tile dirs under tiles_root (flat layout only)."""
     tiles_root = Path(tiles_root)
     if tiles_root.exists():
-        # direct tile dir
-        if tiles_root.is_dir() and tiles_root.name.startswith("tile-RA"):
-            yield tiles_root
-        # flat
-        for pat in _PATTERNS:
-            for p in sorted(tiles_root.glob(pat)):
-                if p.is_dir():
-                    yield p
-
-    sharded = tiles_root.parent / "tiles_by_sky"
-    if sharded.exists():
-        for pat in _PATTERNS:
-            for p in sorted(sharded.glob(f"ra_bin=*/dec_bin=*/{pat}")):
-                if p.is_dir():
-                    yield p
+        for p in sorted(tiles_root.glob(_PATTERN)):
+            if p.is_dir():
+                yield p
 
 
 # ----------------------------
@@ -381,8 +364,8 @@ def dedup_rows_by_plate_radius_xyz(rows: List[dict], tol_arcsec: float) -> Tuple
 # ----------------------------
 def main():
     ap = argparse.ArgumentParser(description="Build run-scoped stage CSVs for shrinking-set fetchers (CSV contract).")
-    ap.add_argument("--tiles-root", default="./data/tiles_by_sky",
-                    help="Tile root (flat or sharded; tiles_by_sky recommended).")
+    ap.add_argument("--tiles-root", default="./data/tiles",
+                    help="Tiles root directory (flat layout: ./data/tiles/<tile-id>/).")
     ap.add_argument("--edge-report-csv", default="./data/metadata/tile_plate_edge_report.csv",
                     help="Tile-plate edge report CSV (annotation source).")
     ap.add_argument("--plate-map-csv", default="./data/metadata/tile_to_dss1red.csv",
@@ -434,7 +417,7 @@ def main():
     out_rows: List[dict] = []  # base S1 rows (PS1 allowlist applied)
     tiles = list(iter_tile_dirs(Path(args.tiles_root)))
 
-    # de-dup tile dirs by tile_id to avoid double walks if both flat+sharded yield same
+    # de-dup tile dirs by tile_id (guard against glob overlap)
     seen_tile_ids = set()
     uniq_tiles: List[Path] = []
     for td in tiles:

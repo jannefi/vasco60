@@ -8,17 +8,17 @@ Current Focus: Production Hardening + De-legacy Simplification (vasco60-only)
 
 ## Phase 0: De-legacy & Simplify (remove vasco30 carry-over)
 
-[x] Enforce tile folder naming contract in Step1-download
-    - Do not accept user-supplied tile folder names in download phase.
-    - Step1 must compute tile folder name from (ra, dec) using the locked naming convention, so downstream scripts don’t break.
-
-[ ] Drop support for sharded tile folder layouts in vasco60 (flat only for now)
+[x] Drop support for sharded tile folder layouts in vasco60 (flat only for now)
     - Remove dual “flat + sharded” discovery/globbing where it adds complexity.
     - Standardize on: `./data/tiles/<tile-id>/...`
 
 [ ] Purge old tile-id format assumptions
     - Find scripts that still parse/expect the old tile naming format (this was seen during cache prewarmers work).
     - Update parsers/globs to the vasco60 tile naming contract.
+
+[x] Enforce tile folder naming contract in Step1-download
+    - Do not accept user-supplied tile folder names in download phase.
+    - Step1 must compute tile folder name from (ra, dec) using the locked naming convention, so downstream scripts don’t break.
 
 [x] Remove “CDS backend” legacy branching from vasco60
     - Vasco60 is “local-backend” oriented; older CDS backend code paths are already behind and increase maintenance burden.
