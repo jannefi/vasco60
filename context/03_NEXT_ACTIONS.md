@@ -8,18 +8,7 @@ Current Focus: Production Hardening + De-legacy Simplification (vasco60-only)
 
 ## Phase 0: De-legacy & Simplify (remove vasco30 carry-over)
 
-[ ] Default tile size policy: ensure “60×60 arcmin” is the default everywhere (no lingering 30′ defaults)
-    - Vasco60 posture is 60×60 squares; ≤30′ circle cut is applied only when needed.  
-    - Sweep code/config defaults that still assume 30 arcmin. (CLI may still accept overrides, but defaults must be 60.)
-
-[ ] Pixel scale parameter cleanup
-    - If --pixel-scale-arcsec (or similar) is not used meaningfully, either remove it or hard-pin to a project constant (1.7″/px) and keep the CLI flag only as a no-op / compatibility shim.
-
-[ ] Remove “CDS backend” legacy branching from vasco60
-    - Vasco60 is “local-backend” oriented; older CDS backend code paths are already behind and increase maintenance burden.
-    - Simplify code paths by removing or isolating vasco30-style `xmatch_backend == local/cds` branches that are no longer used in vasco60.
-
-[ ] Enforce tile folder naming contract in Step1-download
+[x] Enforce tile folder naming contract in Step1-download
     - Do not accept user-supplied tile folder names in download phase.
     - Step1 must compute tile folder name from (ra, dec) using the locked naming convention, so downstream scripts don’t break.
 
@@ -31,6 +20,16 @@ Current Focus: Production Hardening + De-legacy Simplification (vasco60-only)
     - Find scripts that still parse/expect the old tile naming format (this was seen during cache prewarmers work).
     - Update parsers/globs to the vasco60 tile naming contract.
 
+[x] Remove “CDS backend” legacy branching from vasco60
+    - Vasco60 is “local-backend” oriented; older CDS backend code paths are already behind and increase maintenance burden.
+    - Simplify code paths by removing or isolating vasco30-style `xmatch_backend == local/cds` branches that are no longer used in vasco60.
+
+[x] Pixel scale parameter cleanup
+    - If --pixel-scale-arcsec (or similar) is not used meaningfully, either remove it or hard-pin to a project constant (1.7″/px) and keep the CLI flag only as a no-op / compatibility shim.
+
+[x] Default tile size policy: ensure “60×60 arcmin” is the default everywhere (no lingering 30′ defaults)
+    - Vasco60 posture is 60×60 squares; ≤30′ circle cut is applied only when needed.  
+    - Sweep code/config defaults that still assume 30 arcmin. (CLI may still accept overrides, but defaults must be 60.)
 ---
 
 ## Phase 1: Deterministic Execution (Blocker A)

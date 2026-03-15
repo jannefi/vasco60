@@ -4,7 +4,7 @@ import argparse, json, time, subprocess, os, shutil, math
 from pathlib import Path
 from typing import List, Tuple
 import warnings
-from vasco.utils.tile_id import parse_tile_id_center
+from vasco.utils.tile_id import parse_tile_id_center, format_tile_id
 from vasco.utils.tile_metadata import update_all_after_download
 
 # Silence pyerfa/ERFA warnings that clutter runs (must run before importing astropy/erfa)
@@ -694,10 +694,11 @@ def cmd_one(args: argparse.Namespace) -> int:
     Avoids materializing data/tiles/<tileid> on download errors (non-FITS/non-WCS/non-POSS).
     """
     # DO NOT pre-create tile directory; keep logger central (optional)
-    run_dir = Path(args.workdir)  # do not call _build_run_dir here
     lg = dl.configure_logger(Path('./data/logs'))
     ra = _to_float_ra(args.ra)
     dec = _to_float_dec(args.dec)
+    tile_id = format_tile_id(ra, dec)
+    run_dir = Path(args.workdir) / tile_id  # tile folder name is always computed, never caller-supplied
 
     def _cache_ok(path: Path) -> bool:
         """Return True if cache CSV exists, is non-empty, and has RA/Dec columns."""
@@ -1602,7 +1603,7 @@ def main(argv: List[str] | None = None) -> int:
     one.add_argument('--survey', default='dss1-red')
     one.add_argument('--export', choices=['none','csv','parquet','both'], default='csv')
     one.add_argument('--hist-col', default='FWHM_IMAGE')
-    one.add_argument('--workdir', required=True)
+    one.add_argument('--workdir', required=True, help='Tiles root directory; tile folder computed from --ra/--dec')
     one.add_argument('--xmatch-radius-arcsec', type=float, default=5.0)
     one.set_defaults(func=cmd_one)
 
@@ -1611,7 +1612,7 @@ def main(argv: List[str] | None = None) -> int:
     s1.add_argument('--dec', type=str, required=True)
     s1.add_argument('--size-arcmin', type=float, default=60.0)
     s1.add_argument('--survey', default='dss1-red')
-    s1.add_argument('--workdir', required=True)
+    s1.add_argument('--workdir', required=True, help='Tiles root directory; tile folder computed from --ra/--dec')
     s1.set_defaults(func=cmd_step1_download)
 
     s2 = sub.add_parser('step2-pass1', help='Run SExtractor pass 1')
@@ -1647,10 +1648,11 @@ def main(argv: List[str] | None = None) -> int:
 # step1-download implementation (unchanged structure)
 
 def cmd_step1_download(args: argparse.Namespace) -> int:
-    run_dir = Path(args.workdir)
     lg = dl.configure_logger(Path('./data/logs'))
     ra = _to_float_ra(args.ra)
     dec = _to_float_dec(args.dec)
+    tile_id = format_tile_id(ra, dec)
+    run_dir = Path(args.workdir) / tile_id
 
     try:
         # Downloader will mkdir raw/ only on success (late promotion)
