@@ -193,10 +193,10 @@ def generate_plan(
     # Summary
     total_tiles = len(out_rows)
     total_plates = len(per_plate_counts)
-    print(f"Plates processed : {total_plates}")
-    print(f"Plates skipped   : {plates_skipped}  (plate center Dec < -30°)")
-    print(f"Unique tiles     : {total_tiles}")
-    print(f"Duplicates dropped: {duplicates_dropped}")
+    print(f"Plates found in headers     : {total_plates}")
+    print(f"Plates skipped by Dec < -30 : {plates_skipped}  (plate center Dec < -30°)")
+    print(f"Unique tiles                : {total_tiles}")
+    print(f"Duplicates dropped          : {duplicates_dropped}")
     print()
     print("Tiles per plate:")
     for pid in sorted(per_plate_counts):
