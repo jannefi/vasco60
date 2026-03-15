@@ -12,7 +12,7 @@ Current Focus: Production Hardening + De-legacy Simplification (vasco60-only)
     - Remove dual “flat + sharded” discovery/globbing where it adds complexity.
     - Standardize on: `./data/tiles/<tile-id>/...`
 
-[ ] Purge old tile-id format assumptions
+[x] Purge old tile-id format assumptions
     - Find scripts that still parse/expect the old tile naming format (this was seen during cache prewarmers work).
     - Update parsers/globs to the vasco60 tile naming contract.
 

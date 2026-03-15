@@ -20,7 +20,7 @@ Optional debug/audit (kept alongside finals):
 
 Contract (canonical schema):
  src_id   = tile_id + ":" + object_id
- tile_id  = tile folder name (tile-RA...-DEC...)
+ tile_id  = tile folder name (tile_RA..._DEC[pm]...)
  object_id = internal NUMBER renamed (never emit NUMBER/number in upload CSVs)
  ra/dec   = prefer WCS-fixed coords when present; else fallbacks
 
@@ -421,7 +421,7 @@ def main():
     seen_tile_ids = set()
     uniq_tiles: List[Path] = []
     for td in tiles:
-        if td.name.startswith("tile-RA") and td.name not in seen_tile_ids:
+        if td.name.startswith("tile_RA") and td.name not in seen_tile_ids:
             seen_tile_ids.add(td.name)
             uniq_tiles.append(td)
 
