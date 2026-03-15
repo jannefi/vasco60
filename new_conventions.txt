@@ -1,0 +1,9 @@
+New conventions:
+- ./data folder is a symlink pointing to the data disk: /srv/vasco/vasco60
+- tiles folder: ./data/tiles/<tile-id> (flat) 
+- new tile_id naming convention example: tile_RA130.013_DECp33.081
+- metadata is now under ./data
+- tile plan CSV -> source of truth for downloader
+- 60x60 is the default tile size
+- both ./data and ./work are .gitignored
+
