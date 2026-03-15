@@ -20,6 +20,8 @@ warnings.filterwarnings(
 )
 
 from . import downloader as dl
+
+_PIXEL_SCALE_ARCSEC = 1.7  # DSS POSS-I E native scale; not user-configurable
 from .exporter3 import export_and_summarize
 from .utils.coords import parse_ra as _parse_ra, parse_dec as _parse_dec
 from .pipeline_split import run_pass1, run_psfex, run_pass2
@@ -712,7 +714,7 @@ def cmd_one(args: argparse.Namespace) -> int:
             ra, dec,
             size_arcmin=args.size_arcmin,
             survey=args.survey,
-            pixel_scale_arcsec=args.pixel_scale_arcsec,
+            pixel_scale_arcsec=_PIXEL_SCALE_ARCSEC,
             out_dir=run_dir / 'raw',  # downloader creates this only on success
             logger=lg
         )
@@ -1771,7 +1773,6 @@ def main(argv: List[str] | None = None) -> int:
     one.add_argument('--dec', type=str, required=True)
     one.add_argument('--size-arcmin', type=float, default=60.0)
     one.add_argument('--survey', default='dss1-red')
-    one.add_argument('--pixel-scale-arcsec', type=float, default=1.7)
     one.add_argument('--export', choices=['none','csv','parquet','both'], default='csv')
     one.add_argument('--hist-col', default='FWHM_IMAGE')
     one.add_argument('--workdir', required=True)
@@ -1786,7 +1787,6 @@ def main(argv: List[str] | None = None) -> int:
     s1.add_argument('--dec', type=str, required=True)
     s1.add_argument('--size-arcmin', type=float, default=60.0)
     s1.add_argument('--survey', default='dss1-red')
-    s1.add_argument('--pixel-scale-arcsec', type=float, default=1.7)
     s1.add_argument('--workdir', required=True)
     s1.set_defaults(func=cmd_step1_download)
 
@@ -1839,7 +1839,7 @@ def cmd_step1_download(args: argparse.Namespace) -> int:
             ra, dec,
             size_arcmin=args.size_arcmin,
             survey=args.survey,
-            pixel_scale_arcsec=args.pixel_scale_arcsec,
+            pixel_scale_arcsec=_PIXEL_SCALE_ARCSEC,
             out_dir=run_dir / 'raw',   # created only on success
             logger=lg,
         )
@@ -1856,7 +1856,7 @@ def cmd_step1_download(args: argparse.Namespace) -> int:
                 dec_deg=float(dec),
                 survey=str(args.survey),
                 size_arcmin=float(args.size_arcmin),
-                pixel_scale_arcsec=float(args.pixel_scale_arcsec),
+                pixel_scale_arcsec=_PIXEL_SCALE_ARCSEC,
                 data_root=data_root,
                 prefer_local_header=True,
             )
