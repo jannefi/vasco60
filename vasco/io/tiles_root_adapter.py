@@ -30,7 +30,7 @@ DEC_KEYS = ["DEC_DEG", "CRVAL2", "DEC", "OBJ_DEC"]
 PAT_TILE_RADEC_A = re.compile(r"\bRA\s*([0-9]+(?:\.[0-9]+)?)\b.*?\bDEC\s*([+\-][0-9]+(?:\.[0-9]+)?)", re.I)
 # tileid like "RA150.000_dec+20.000" (order may vary)
 PAT_TILE_RADEC_B = re.compile(r"\bRA\s*([0-9]+(?:\.[0-9]+)?)\b.*?\bDEC\s*([+\-]?[0-9]+(?:\.[0-9]+)?)", re.I)
-# FITS like "dss1-red_110.135_-24.656_30arcmin.fits"
+# FITS like "dss1-red_110.135_-24.656_60arcmin.fits"
 PAT_FITS_NAME    = re.compile(r"^.+?_([0-9]+(?:\.[0-9]+)?)_([+\-]?[0-9]+(?:\.[0-9]+)?)_[0-9]+(?:arcmin)?\.fits$", re.I)
 
 @dataclass
