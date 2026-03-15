@@ -9,6 +9,7 @@ __pycache__/
 /work
 # my stuff
 scripts/automation/
+plans/*.csv
 /logs
 /astrotests
 /data
