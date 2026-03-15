@@ -33,18 +33,8 @@ MANIFEST
 
 # misc
 *.zip
-data/
-data/runs/
 github_issues/
-data/*.json
-data/run_*
-plate_tiles*
-plate_tiles.done.d/
-README_*
-SESSION_RESUME.md
 .DS_Store
-plate_tiles.done
-plate_tiles.work.tsv
 
 # Python cache & build
 __pycache__/
