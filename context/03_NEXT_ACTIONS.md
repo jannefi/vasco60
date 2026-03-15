@@ -34,7 +34,7 @@ Current Focus: Production Hardening + De-legacy Simplification (vasco60-only)
 
 ## Phase 1: Deterministic Execution (Blocker A)
 
-[ ] Wiring Step 1: Ensure the tile_plan.csv fully drives Step1-download (no implicit/random coverage).
+[x] Wiring Step 1: Ensure the tile_plan.csv fully drives Step1-download (no implicit/random coverage).
 
 [ ] State Implementation: Integrate tile_status.json updates into all 6 pipeline steps (step1–step6 + post stages as applicable).
 
