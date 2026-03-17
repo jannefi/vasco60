@@ -24,6 +24,7 @@ from __future__ import annotations
 import argparse
 import csv
 import datetime
+import json
 import logging
 import subprocess
 import sys
@@ -57,14 +58,23 @@ def _setup_logger() -> logging.Logger:
 # ---------------------------------------------------------------------------
 
 def _is_done(tile_id: str, tiles_dir: Path) -> bool:
-    """Return True if step1 already completed for this tile.
+    """Return True if step1 already completed successfully for this tile.
 
-    Signal: <tiles_dir>/<tile_id>/RUN_COUNTS.json exists.
-    step1-download writes this on every successful exit (download, non-POSS
-    skip, etc.).  A missing file means the tile was never processed or the
-    previous run was interrupted before step1 finished.
+    Primary signal: tile_status.json has step1.status in {"ok", "skip"}.
+    Fallback signal: RUN_COUNTS.json exists (tiles downloaded before
+    tile_status.json was introduced).
     """
-    return (tiles_dir / tile_id / "RUN_COUNTS.json").exists()
+    tile_dir = tiles_dir / tile_id
+    status_path = tile_dir / "tile_status.json"
+    if status_path.exists():
+        try:
+            data = json.loads(status_path.read_text(encoding="utf-8"))
+            s = data.get("steps", {}).get("step1", {}).get("status", "")
+            if s in {"ok", "skip"}:
+                return True
+        except Exception:
+            pass
+    return (tile_dir / "RUN_COUNTS.json").exists()
 
 
 # ---------------------------------------------------------------------------

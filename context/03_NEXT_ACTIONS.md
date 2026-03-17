@@ -34,11 +34,15 @@ Current Focus: Production Hardening + De-legacy Simplification (vasco60-only)
 
 ## Phase 1: Deterministic Execution (Blocker A)
 
-[x] Wiring Step 1: Ensure the tile_plan.csv fully drives Step1-download (no implicit/random coverage).
+[x] State Implementation: Integrate tile_status.json updates into all 6 pipeline steps (step1–step6 + post stages as applicable).
 
-[ ] State Implementation: Integrate tile_status.json updates into all 6 pipeline steps (step1–step6 + post stages as applicable).
+[ ] Plate download option: allow user to download a full tile of their choice if that tile is included in the tile_plan.csv. Implement as a new command-line option in ./scripts/run_plan.py 
+
+[ ] Pre-warm check: ensure cache prewarmers (PS1/Gaia) collect enough data for xmatch purposes. See docs/PREWARM.md. Default radius must be sufficient for 60x60 square tiles, after ≤30′ circle cut.
 
 [x] Registry Automation: Step1 updates tile/plate registries automatically (no separate post-step scripts).
+
+[x] Wiring Step 1: Ensure the tile_plan.csv fully drives Step1-download (no implicit/random coverage).
 
 ---
 
