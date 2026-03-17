@@ -29,6 +29,12 @@ python scripts/run_plan.py plans/tiles_poss1e_ps1.csv --limit 50
 
 # Full run (all rows in the plan)
 python scripts/run_plan.py plans/tiles_poss1e_ps1.csv
+
+# Download all tiles for a specific plate
+python scripts/run_plan.py plans/tiles_poss1e_ps1.csv --plate XE309
+
+# Dry-run for a specific plate
+python scripts/run_plan.py plans/tiles_poss1e_ps1.csv --plate XE309 --dry-run
 ```
 
 Progress is printed to stdout and appended to `./logs/run_plan.log`.
@@ -43,6 +49,7 @@ Progress is printed to stdout and appended to `./logs/run_plan.log`.
 | `--tiles-dir DIR` | `./data/tiles` | Tiles root; tile folder is computed by step1 from ra/dec |
 | `--limit N` | unlimited | Stop after N successful downloads (skips do not count) |
 | `--dry-run` | off | Print actions without calling step1-download |
+| `--plate PLATE_ID` | off | Restrict run to tiles attributed to this plate in the plan; error if not found |
 
 ---
 
@@ -52,10 +59,10 @@ The script is safe to interrupt with **Ctrl+C** at any time.  On interrupt
 it logs a summary line and exits with code 130.
 
 To resume, simply run the same command again.  Before attempting each tile,
-the script checks whether `<tiles-dir>/<tile_id>/RUN_COUNTS.json` exists.
-That file is written by `step1-download` on every successful exit — including
-tiles that were skipped as non-POSS.  Any tile that already has this file is
-logged as `SKIP` and is not downloaded again.
+the script checks `tile_status.json` for a completed step1 (status `ok` or
+`skip`).  For tiles downloaded before `tile_status.json` was introduced, the
+fallback check is whether `<tiles-dir>/<tile_id>/RUN_COUNTS.json` exists.
+Any tile that passes this check is logged as `SKIP` and is not downloaded again.
 
 ```bash
 # Run interrupted after 10 tiles.  Re-run the same command:

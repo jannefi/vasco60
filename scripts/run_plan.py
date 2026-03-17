@@ -7,16 +7,18 @@ step1-download sequentially for each tile.
 
 Resume behaviour
 ----------------
-A tile is considered done if ./data/tiles/<tile_id>/RUN_COUNTS.json already
-exists.  That file is written by step1-download on every successful exit
-(downloaded, non-POSS skip, etc.).  Tiles that are done are logged as SKIP
-and do NOT count toward --limit.
+A tile is considered done if its tile_status.json records step1.status of
+"ok" or "skip" (fallback: RUN_COUNTS.json exists for tiles downloaded before
+tile_status.json was introduced).  Done tiles are logged as SKIP and do NOT
+count toward --limit.
 
 Usage
 -----
     python scripts/run_plan.py plans/tiles_poss1e_ps1.csv
     python scripts/run_plan.py plans/tiles_smoke.csv --limit 1
     python scripts/run_plan.py plans/tiles_smoke.csv --limit 1 --dry-run
+    python scripts/run_plan.py plans/tiles_poss1e_ps1.csv --plate XE309
+    python scripts/run_plan.py plans/tiles_poss1e_ps1.csv --plate XE309 --dry-run
 """
 
 from __future__ import annotations
@@ -101,7 +103,7 @@ def _run_step1(ra: str, dec: str, size_arcmin: str, survey: str,
 # ---------------------------------------------------------------------------
 
 def run(plan_path: Path, tiles_dir: Path, limit: int | None, dry_run: bool,
-        logger: logging.Logger) -> None:
+        logger: logging.Logger, plate_filter: str | None = None) -> None:
     if not plan_path.exists():
         logger.error(f"Plan file not found: {plan_path}")
         sys.exit(1)
@@ -109,12 +111,21 @@ def run(plan_path: Path, tiles_dir: Path, limit: int | None, dry_run: bool,
     with plan_path.open(newline="", encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
 
+    if plate_filter is not None:
+        rows = [r for r in rows if r.get("plate_id") == plate_filter]
+        if not rows:
+            logger.error(f"Plate '{plate_filter}' not found in {plan_path}")
+            sys.exit(1)
+
     total = len(rows)
     downloaded = 0
     skipped    = 0
     failed     = 0
 
-    logger.info(f"START plan={plan_path} total_rows={total} limit={limit} dry_run={dry_run}")
+    start_msg = f"START plan={plan_path} total_rows={total} limit={limit} dry_run={dry_run}"
+    if plate_filter is not None:
+        start_msg += f" plate={plate_filter}"
+    logger.info(start_msg)
 
     try:
         for i, row in enumerate(rows, start=1):
@@ -178,6 +189,9 @@ def main(argv=None):
                    help="Stop after N successful downloads (skips don't count)")
     p.add_argument("--dry-run", action="store_true",
                    help="Print actions without running step1-download")
+    p.add_argument("--plate", metavar="PLATE_ID", default=None,
+                   help="Download only tiles attributed to this plate_id in the plan "
+                        "(e.g. --plate XE309); error if not found")
     args = p.parse_args(argv)
 
     logger = _setup_logger()
@@ -187,6 +201,7 @@ def main(argv=None):
         limit=args.limit,
         dry_run=args.dry_run,
         logger=logger,
+        plate_filter=args.plate,
     )
 
 
