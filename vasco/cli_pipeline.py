@@ -823,6 +823,30 @@ def _write_text(path: Path, text: str) -> None:
 def _write_json(path: Path, obj) -> None:
     path.write_text(json.dumps(obj, indent=2), encoding='utf-8')
 
+import datetime as _datetime
+
+def _update_tile_status(run_dir: Path, step: str, status: str) -> None:
+    """Merge-update tile_status.json with the result of one pipeline step.
+
+    Status values: "ok", "skip", "fail".
+    Reads existing file (if any), updates only the given step key, then
+    re-writes.  Failures are caught and printed as warnings so they never
+    abort a pipeline step.
+    """
+    path = run_dir / 'tile_status.json'
+    try:
+        if path.exists():
+            data = json.loads(path.read_text(encoding='utf-8'))
+        else:
+            data = {'tile_id': run_dir.name, 'steps': {}}
+        data['steps'][step] = {
+            'status': status,
+            'ts': _datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
+        }
+        _write_json(path, data)
+    except Exception as e:
+        print(f'[WARN] tile_status update failed for {step}:', e)
+
 # --- step2, step3, post-xmatch, cds-xmatch, step4, step5, step6 ---
 
 def cmd_step2_pass1(args: argparse.Namespace) -> int:
@@ -831,10 +855,12 @@ def cmd_step2_pass1(args: argparse.Namespace) -> int:
     fits = next((p for p in sorted(raw.glob('*.fits'))), None)
     if not fits:
         print('[STEP2][ERROR] No FITS in raw/. Run step1-download first.')
+        _update_tile_status(run_dir, 'step2', 'fail')
         return 2
     p1, _ = run_pass1(fits, run_dir, config_root='configs')
     _write_json(run_dir / 'RUN_INDEX.json', [{'tile': Path(fits).stem, 'pass1': str(p1)}])
     print('[STEP2] pass1 ->', p1)
+    _update_tile_status(run_dir, 'step2', 'ok')
     return 0
 
 def cmd_step3_psf_and_pass2(args: argparse.Namespace) -> int:
@@ -844,10 +870,12 @@ def cmd_step3_psf_and_pass2(args: argparse.Namespace) -> int:
     fits = next((p for p in sorted(raw.glob('*.fits'))), None)
     if not p1.exists() or not fits:
         print('[STEP3][ERROR] pass1.ldac or FITS missing. Run step2-pass1 first.')
+        _update_tile_status(run_dir, 'step3', 'fail')
         return 2
     psf = run_psfex(p1, run_dir, config_root='configs')
     p2 = run_pass2(fits, run_dir, psf, config_root='configs')
     print('[STEP3] psf ->', psf, '; pass2 ->', p2)
+    _update_tile_status(run_dir, 'step3', 'ok')
     return 0
 
 def _csv_has_radec(csv_path: Path) -> bool:
@@ -1546,6 +1574,7 @@ def cmd_step4_xmatch(args: argparse.Namespace) -> int:
 
     # Proceed to xmatch using whatever caches exist
     _post_xmatch_tile(run_dir, p2, radius_arcsec=float(args.xmatch_radius_arcsec))
+    _update_tile_status(run_dir, 'step4', 'ok')
     return 0
 
 def cmd_step5_filter_within5(args: argparse.Namespace) -> int:
@@ -1553,6 +1582,7 @@ def cmd_step5_filter_within5(args: argparse.Namespace) -> int:
     xdir = run_dir / 'xmatch'
     if not xdir.exists():
         print('[STEP5][ERROR] xmatch/ missing. Run step4-xmatch first.')
+        _update_tile_status(run_dir, 'step5', 'fail')
         return 2
     # Only process canonical xmatch inputs; skip files already filtered
     patterns = [
@@ -1575,6 +1605,7 @@ def cmd_step5_filter_within5(args: argparse.Namespace) -> int:
         except Exception as e:
             print('[STEP5][WARN] within5 failed for', src.name, ':', e)
     print(f'[STEP5] Wrote within5 CSVs for {wrote} xmatch files.')
+    _update_tile_status(run_dir, 'step5', 'ok')
     return 0
 
 def cmd_step6_summarize(args: argparse.Namespace) -> int:
@@ -1582,10 +1613,12 @@ def cmd_step6_summarize(args: argparse.Namespace) -> int:
     p2 = run_dir / 'pass2.ldac'
     if not p2.exists():
         print('[STEP6][ERROR] pass2.ldac missing. Run step3-psf-and-pass2 first.')
+        _update_tile_status(run_dir, 'step6', 'fail')
         return 2
     export_and_summarize(p2, run_dir, export=args.export, histogram_col=args.hist_col)
     _write_text(run_dir / 'RUN_SUMMARY.md', '# Summary written')
     print('[STEP6] Summary + exports written.')
+    _update_tile_status(run_dir, 'step6', 'ok')
     return 0
 
 # argparse + main
@@ -1693,6 +1726,7 @@ def cmd_step1_download(args: argparse.Namespace) -> int:
         _write_json(run_dir / 'RUN_INDEX.json', [{'tile': Path(fits).stem}])
         _write_json(run_dir / 'RUN_MISSING.json', [])
         _write_overview(run_dir, counts, [{'tile': Path(fits).stem}], [])
+        _update_tile_status(run_dir, 'step1', 'ok')
         return 0
 
     except RuntimeError as e:
@@ -1711,6 +1745,7 @@ def cmd_step1_download(args: argparse.Namespace) -> int:
                 _write_json(run_dir / 'RUN_MISSING.json', missing)
                 _write_json(run_dir / 'RUN_INDEX.json', [])
                 _write_overview(run_dir, counts, [], missing)
+                _update_tile_status(run_dir, 'step1', 'skip')
             return 0
 
 # overview writer unchanged
