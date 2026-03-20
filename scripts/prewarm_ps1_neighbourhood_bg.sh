@@ -14,8 +14,10 @@ cmd_start () {
   fi
   rm -f "$LOGS_DIR/PREWARM_PS1_NEIGH_STOP"
   echo "[start] launching background PS1 neighbourhood prewarm"
-  # Optional: raise PS1 radius cap above default 0.5° (e.g., ~65′)
-  : "${VASCO_PS1_RADIUS_DEG:=0.58}"   # override if you want
+  # PS1 fetcher caps the VizieR cone at 0.5° (30′) by default.
+  # Export VASCO_PS1_RADIUS_DEG so the Python child process sees it and
+  # bypasses the cap, allowing the full 35′ request to reach VizieR.
+  export VASCO_PS1_RADIUS_DEG="${VASCO_PS1_RADIUS_DEG:-0.58}"   # 34.8′ ≈ 35′
   nohup python -u scripts/prewarm_neighbourhood_cache.py         --catalog ps1         --tiles-root ./data/tiles         --logs-dir "$LOGS_DIR"         --workers 4         --radius-arcmin 35         --retry 3         --timeout 120         --progress-every 100         > "$OUTFILE" 2>&1 &
   echo $! > "$PIDFILE"
   echo "[start] pid=$(cat "$PIDFILE")"

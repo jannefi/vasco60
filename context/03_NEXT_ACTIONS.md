@@ -38,7 +38,7 @@ Current Focus: Production Hardening + De-legacy Simplification (vasco60-only)
 
 [x] Plate download option: allow user to download a full plate of their choice if that tile is included in the tile_plan.csv. Implement as a new command-line option in ./scripts/run_plan.py 
 
-[ ] Pre-warm check: ensure cache prewarmers (PS1/Gaia) collect enough data for xmatch purposes. See docs/PREWARM.md. Default radius must be sufficient for 60x60 square tiles, after ≤30′ circle cut.
+[x] Pre-warm check: ensure cache prewarmers (PS1/Gaia) collect enough data for xmatch purposes. See docs/PREWARM.md. Default radius must be sufficient for xmatch with 60x60 square tiles, after ≤30′ circle cut.
 
 [x] Registry Automation: Step1 updates tile/plate registries automatically (no separate post-step scripts).
 

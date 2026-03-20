@@ -18,17 +18,42 @@ Matches directory names of the form `tile_RA<ra>_DECp<dec>` or `tile_RA<ra>_DECm
 _TILE_RE = re.compile(r"^tile_RA(?P<ra>\d+(?:\.\d+)?)_DEC(?P<hem>[pm])(?P<dec>\d+(?:\.\d+)?)$")
 ```
 
-## Radius policy (≤30′ tile circle)
-- **Gaia / USNO‑B:** use **31′** (30′ + 5″ safety) for local ≤5″ matches inside the circle.
-- **PS1 (spike rule):** use **35′** best‑effort. For strict spike coverage at the 30′ edge, request ~**65′** or use multi‑cone tiling; the PS1 fetcher may cap to 0.5° by default — raise via `VASCO_PS1_RADIUS_DEG` if supported by your fetcher.
+## Tile geometry vs analysis circle
+
+Vasco60 downloads **60×60 arcmin** tiles (step1). From step2 onward, sources are
+restricted to a **≤30′ circle** around the tile center (`VASCO_CIRCLE_ARCMIN=30`).
+Prewarm radii are sized for this **analysis circle**, not the download tile:
+
+- A source at 30′ from center needs a catalogue match within 5″ → catalogue must
+  cover 30′ + 5″ ≈ **31′**.
+- Sources in the 30′–42.4′ annulus (corners of the 60×60 square) are cut before
+  any xmatch result is used, so they do not drive the prewarm radius requirement.
+
+## Radius policy
+
+| Catalog | Shell default | Effective radius | Rationale |
+|---|---|---|---|
+| Gaia | 31′ | 31′ | 30′ circle + 5″ xmatch safety |
+| USNO-B | 31′ | 31′ | same |
+| PS1 | 35′ | 34.8′ | spike halo buffer beyond the 30′ edge; `VASCO_PS1_RADIUS_DEG=0.58` exported to bypass the 0.5° fetcher cap |
+
+**PS1 cap note:** `fetch_ps1_neighbourhood` caps the VizieR cone at 0.5° (30′) by
+default. The background wrapper exports `VASCO_PS1_RADIUS_DEG=0.58` so the Python
+child process sees it and the full 35′ request reaches VizieR. If you call the
+runner directly, either pass a small enough radius (≤30′) or export the variable
+yourself:
+```bash
+export VASCO_PS1_RADIUS_DEG=0.58
+python scripts/prewarm_neighbourhood_cache.py --catalog ps1 --radius-arcmin 35 ...
+```
 
 ## Examples
 ```bash
 # Gaia (31′)
 python scripts/prewarm_neighbourhood_cache.py --catalog gaia  --tiles-root ./data/tiles --radius-arcmin 31 --workers 6
 
-# PS1 (35′ best‑effort; allow larger if your fetcher supports it)
-export VASCO_PS1_RADIUS_DEG=1.08   # optional; ~65′
+# PS1 (35′ — export env var to bypass 0.5° fetcher cap)
+export VASCO_PS1_RADIUS_DEG=0.58
 python scripts/prewarm_neighbourhood_cache.py --catalog ps1   --tiles-root ./data/tiles --radius-arcmin 35 --workers 4
 
 # USNO‑B (31′)
