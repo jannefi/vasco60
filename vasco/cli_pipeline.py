@@ -1397,13 +1397,6 @@ def _post_xmatch_tile(tile_dir, pass2_ldac, *, radius_arcsec: float = 5.0) -> No
 
     # Apply the actual filters/spikes pipeline
     _apply_mnras_filters_and_spikes(tile_dir, remainder, buckets)
-    
-    try:
-        filtered_path = catdir / 'sextractor_pass2.filtered.csv'
-        total_after = _csv_data_rows(filtered_path)
-        _augment_summary_json(tile_dir, {'total_after_filters': int(total_after)})
-    except Exception:
-        pass
 
     # Keep HPM late and conservative (flagging only)
     try:
