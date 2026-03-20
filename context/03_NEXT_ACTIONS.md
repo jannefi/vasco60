@@ -56,6 +56,8 @@ Current Focus: Production Hardening + De-legacy Simplification (vasco60-only)
 
 ## Phase 3: Operational Hardening (Blocker C)
 
+[x] Improve first post-process step ./scripts/build_run_stage_csvs.py: remove plate edge veto if it's no longer needed due to the tessellation plan. Check and fix dedupe and PS1 inclusion/exlusion features. Implement support for delta-runs.
+
 [ ] SkyBoT Resumability: Improve the SkyBoT stage to allow resuming from cached results without re-querying.
 
 [ ] Root Documentation (CSV-first): Define and document the single consumer read root for run-scoped artifacts (not derived Parquet masters).
