@@ -176,7 +176,7 @@ def fetch_ps1_neighbourhood(tile_dir: Path | str,
 
     def _try_once():
         t0 = time.time()
-        print(f'[POST][PS1] GET {url} (timeout={_timeout}s, radius={radius_deg})')
+        print(f'[POST][PS1] GET {url} (timeout={_timeout}s, radius={radius_deg}deg)')
         r = requests.get(url, params=params, timeout=_timeout)
         r.raise_for_status()
         dt = time.time() - t0
@@ -187,7 +187,24 @@ def fetch_ps1_neighbourhood(tile_dir: Path | str,
     for k in range(1, _attempts + 1):
         try:
             r = _try_once()
-            out.write_bytes(r.content)
+            # Parse VizieR TSV response into clean CSV (strip comment/unit/separator rows)
+            lines = [ln for ln in r.text.splitlines() if ln and not ln.startswith('#')]
+            if not lines:
+                out.write_text('ra,dec\n', encoding='utf-8')
+                return out
+            header = lines[0].split('\t')
+            colmap = {name.strip(): idx for idx, name in enumerate(header)}
+            keep = [c for c in cols if c in colmap]
+            with out.open('w', newline='', encoding='utf-8') as f:
+                w = csv.writer(f)
+                w.writerow(['ra' if c == 'RAJ2000' else ('dec' if c == 'DEJ2000' else c) for c in keep])
+                for ln in lines[1:]:
+                    row = ln.split('\t')
+                    try:
+                        float(row[colmap['RAJ2000']]); float(row[colmap['DEJ2000']])
+                    except Exception:
+                        continue  # skip unit row ('deg'), separator row ('---'), malformed
+                    w.writerow([row[colmap[c]] if colmap[c] < len(row) else '' for c in keep])
             return out
         except Exception as e:
             last_exc = e
