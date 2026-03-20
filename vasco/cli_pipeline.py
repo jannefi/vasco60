@@ -1602,6 +1602,11 @@ def cmd_step5_filter_within5(args: argparse.Namespace) -> int:
     return 0
 
 def cmd_step6_summarize(args: argparse.Namespace) -> int:
+    # LEGACY / OPTIONAL — not part of the standard vasco60 pipeline run.
+    # Exports raw pass2.ldac (pre-veto, pre-circle-cut) to final_catalog.csv/.ecsv
+    # and writes QA plots + RUN_SUMMARY.md.  The production path reads
+    # catalogs/sextractor_pass2.filtered.csv (step5 output) via build_run_stage_csvs.py;
+    # that script does not consume any output produced here.
     run_dir = _build_run_dir(Path(args.workdir) if args.workdir else None)
     p2 = run_dir / 'pass2.ldac'
     if not p2.exists():
