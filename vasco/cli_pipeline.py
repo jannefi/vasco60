@@ -1406,8 +1406,10 @@ def _post_xmatch_tile(tile_dir, pass2_ldac, *, radius_arcsec: float = 5.0) -> No
 
     write_summary(tile_dir, finalize(buckets), md_path='MNRAS_SUMMARY.md', json_path='MNRAS_SUMMARY.json')
 
-    # Augment summary with veto stage counts + hard-gate rejection counts
+    # Augment summary with veto stage counts + hard-gate rejection counts + env flags
     extra = {
+        'ps1_veto_enabled': not bool(os.getenv('VASCO_DISABLE_PS1')),
+        'usnob_veto_enabled': not bool(os.getenv('VASCO_DISABLE_USNOB')),
         'veto_start_rows': veto_start_rows,
         'veto_after_gaia_rows': veto_after_gaia_rows,
         'veto_after_ps1_rows': veto_after_ps1_rows,

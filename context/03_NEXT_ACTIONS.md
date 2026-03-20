@@ -50,7 +50,7 @@ Current Focus: Production Hardening + De-legacy Simplification (vasco60-only)
 
 [x] Bug Fix: Resolve the issue where total_after_filters in MNRAS_SUMMARY.json is always 0.
 
-[ ] Env Tracking: Add ps1_veto_enabled and usnob_veto_enabled flags to the per-tile summary artifacts.
+[x] Env Tracking: Add ps1_veto_enabled and usnob_veto_enabled flags to the per-tile summary artifacts.
 
 ---
 
