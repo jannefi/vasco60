@@ -166,7 +166,7 @@ def fetch_ps1_neighbourhood(tile_dir: Path | str,
     params = {
         '-source': 'II/389/ps1_dr2',
         '-c': f'{ra_deg:.8f} {dec_deg:.8f}',
-        '-c.r': f'{radius_deg:.8f}',
+        '-c.rd': f'{radius_deg:.8f}',  # degrees; use -c.rd not -c.r (arcmin)
         '-out.max': str(int(max_records)),
         '-out.add': '_r',
         '-out.form': 'dec',
