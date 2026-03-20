@@ -300,13 +300,9 @@ def main() -> int:
                 print(f"[SCOS] ADQL: {adql}")
 
                 try:
-                    subprocess.run(cmd, check=True, text=True, capture_output=True)
+                    subprocess.run(cmd, check=True, text=True)
                 except subprocess.CalledProcessError as e:
-                    print(f"[SCOS] stilts tapquery failed (part={part_name}):")
-                    if e.stdout:
-                        print(e.stdout)
-                    if e.stderr:
-                        print(e.stderr)
+                    print(f"[SCOS] stilts tapquery failed (part={part_name}, exit={e.returncode})")
                     raise
 
                 if not tap_out.exists() or tap_out.stat().st_size == 0:
