@@ -256,42 +256,64 @@ def main() -> int:
                     ),
                 )
 
-                subprocess.run(
-                    [stilts, "tcopy", f"in={str(upload_csv)}", "ifmt=csv", f"out={str(upload_vot)}", "ofmt=votable"],
-                    check=True,
-                    text=True,
-                    capture_output=True,
-                )
+                try:
+                    subprocess.run(
+                        [stilts, "tcopy", f"in={str(upload_csv)}", "ifmt=csv", f"out={str(upload_vot)}", "ofmt=votable"],
+                        check=True,
+                        text=True,
+                        capture_output=True,
+                    )
+                except subprocess.CalledProcessError as e:
+                    print(f"[SCOS] stilts tcopy failed (part={part_name}):")
+                    if e.stdout:
+                        print(e.stdout)
+                    if e.stderr:
+                        print(e.stderr)
+                    raise
 
                 rarc = float(args.radius_arcsec)
+                radius_deg = rarc / 3600.0
                 adql = (
                     "SELECT u.row_id AS row_id, COUNT(*) AS nmatch "
                     "FROM TAP_UPLOAD.t1 AS u "
                     f"JOIN {args.table} AS s "
                     "ON 1 = CONTAINS( "
                     "POINT('ICRS', s.raj2000, s.dej2000), "
-                    f"CIRCLE('ICRS', u.ra, u.dec, {rarc}/3600.0) "
+                    f"CIRCLE('ICRS', u.ra, u.dec, {radius_deg:.10f}) "
                     ") "
                     "GROUP BY u.row_id"
                 )
 
-                subprocess.run(
-                    [
-                        stilts,
-                        "tapquery",
-                        f"tapurl={args.tapurl}",
-                        "nupload=1",
-                        f"upload1={str(upload_vot)}",
-                        "upname1=t1",
-                        "ufmt1=votable",
-                        f"adql={adql}",
-                        f"out={str(tap_out)}",
-                        "ofmt=csv",
-                    ],
-                    check=True,
-                    text=True,
-                    capture_output=True,
-                )
+                cmd = [
+                    stilts,
+                    "tapquery",
+                    f"tapurl={args.tapurl}",
+                    "nupload=1",
+                    f"upload1={str(upload_vot)}",
+                    "upname1=t1",
+                    "ufmt1=votable",
+                    f"adql={adql}",
+                    f"out={str(tap_out)}",
+                    "ofmt=csv",
+                ]
+                print(f"[SCOS] {part_name}: submitting TAP query ({len(part_rows)} rows, radius={rarc}\")")
+                print(f"[SCOS] ADQL: {adql}")
+
+                try:
+                    subprocess.run(cmd, check=True, text=True, capture_output=True)
+                except subprocess.CalledProcessError as e:
+                    print(f"[SCOS] stilts tapquery failed (part={part_name}):")
+                    if e.stdout:
+                        print(e.stdout)
+                    if e.stderr:
+                        print(e.stderr)
+                    raise
+
+                if not tap_out.exists() or tap_out.stat().st_size == 0:
+                    raise RuntimeError(
+                        f"[SCOS] TAP query returned no output file for {part_name}. "
+                        "STILTS may have silently failed."
+                    )
 
                 if tmp_root is not None:
                     shutil.copyfile(tap_out, tmp_root / tap_out.name)
