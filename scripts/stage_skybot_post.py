@@ -53,7 +53,9 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import re
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional
 
@@ -65,6 +67,63 @@ import requests
 import xml.etree.ElementTree as ET
 
 SKYBOT_URL = "https://ssp.imcce.fr/webservices/skybot/api/conesearch.php"
+
+# ----------------------------
+# Date/epoch helpers
+# ----------------------------
+_MJD_EPOCH = datetime(1858, 11, 17, tzinfo=timezone.utc)
+_JD_MJD_OFFSET = 2_400_000.5
+
+
+def _to_mjd(dt: datetime) -> float:
+    return (dt - _MJD_EPOCH).total_seconds() / 86400.0
+
+
+def _normalize_overflow(hh: int, mm: int, ss: int) -> tuple[int, int, int]:
+    """Carry overflow seconds→minutes→hours; wrap hour to 0..23."""
+    mm_add, ss = divmod(ss, 60)
+    mm += mm_add
+    hh_add, mm = divmod(mm, 60)
+    hh = (hh + hh_add) % 24
+    return hh, mm, ss
+
+
+def parse_dateobs(dateobs: Optional[str]) -> Optional[Tuple[str, float]]:
+    """
+    Parse a FITS DATE-OBS string (possibly with overflow in mm/ss) into
+    (iso_utc, jd).  Returns None if unparseable.
+    """
+    if not dateobs:
+        return None
+    t = dateobs.strip().replace("Z", "+00:00")
+    if " " in t and "T" not in t:
+        t = t.replace(" ", "T")
+    if re.match(r"^\d{4}-\d{2}-\d{2}T", t) and not re.search(r"[+-]\d{2}:\d{2}$", t):
+        t = f"{t}+00:00"
+
+    # Fast path: standard ISO
+    try:
+        dt = datetime.fromisoformat(t).astimezone(timezone.utc)
+        return dt.isoformat(), _to_mjd(dt) + _JD_MJD_OFFSET
+    except Exception:
+        pass
+
+    # Slow path: manual parse with overflow tolerance
+    m = re.match(
+        r"^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?([+-]\d{2}:\d{2})$", t
+    )
+    if not m:
+        return None
+    ymd = m.group(1)
+    hh, mm, ss = int(m.group(2)), int(m.group(3)), int(m.group(4))
+    frac, off = m.group(5), m.group(6)
+    hh, mm, ss = _normalize_overflow(hh, mm, ss)
+    rebuilt = f"{ymd}T{hh:02d}:{mm:02d}:{ss:02d}" + (f".{frac}" if frac else "") + off
+    try:
+        dt = datetime.fromisoformat(rebuilt).astimezone(timezone.utc)
+        return dt.isoformat(), _to_mjd(dt) + _JD_MJD_OFFSET
+    except Exception:
+        return None
 
 
 def parse_args():
@@ -83,8 +142,8 @@ def parse_args():
     )
 
     # Lookups
-    p.add_argument("--tile-to-plate", default="metadata/tiles/tile_to_plate_lookup.parquet")
-    p.add_argument("--plate-epoch", default="metadata/plates/plate_epoch_lookup.parquet")
+    p.add_argument("--tile-to-plate-csv", default="./data/metadata/tile_to_plate.csv",
+                   help="CSV with tile_id, plate_id, tile_date_obs columns.")
 
     # Match policy
     p.add_argument("--match-arcsec", type=float, default=5.0)
@@ -144,20 +203,32 @@ def load_input_csv(path: Path) -> pd.DataFrame:
     return df[["src_id", "tile_id", "object_id", "ra", "dec"]]
 
 
-def enrich_epoch(df: pd.DataFrame, t2p_path: Path, pep_path: Path, verbose=False) -> pd.DataFrame:
-    vprint(verbose, "[INFO] loading lookups")
-    t2p = pd.read_parquet(t2p_path)  # tile_id, plate_id
-    pep = pd.read_parquet(pep_path)  # plate_id, date_obs_iso, jd
-    df = df.merge(t2p, on="tile_id", how="left", validate="many_to_one")
-    if df["plate_id"].isna().any():
-        bad = df.loc[df["plate_id"].isna(), "tile_id"].unique()[:10]
+def enrich_epoch_csv(df: pd.DataFrame, t2p_csv: Path, verbose=False) -> pd.DataFrame:
+    """Enrich df with plate_id, epoch_iso, epoch_jd from tile_to_plate.csv."""
+    vprint(verbose, f"[INFO] loading tile-to-plate CSV: {t2p_csv}")
+    t2p = pd.read_csv(t2p_csv, usecols=["tile_id", "plate_id", "tile_date_obs"],
+                      dtype=str, keep_default_na=False)
+    df = df.merge(t2p, on="tile_id", how="left")
+    if df["plate_id"].isna().any() or (df["plate_id"] == "").any():
+        bad = df.loc[df["plate_id"].isna() | (df["plate_id"] == ""), "tile_id"].unique()[:10]
         raise SystemExit(f"[ERROR] plate_id missing for tiles: {bad}")
-    df = df.merge(pep, on="plate_id", how="left", validate="many_to_one")
-    if (df["date_obs_iso"].isna() & df["jd"].isna()).any():
-        bad = df.loc[(df["date_obs_iso"].isna() & df["jd"].isna()), "plate_id"].unique()[:10]
-        raise SystemExit(f"[ERROR] epoch missing for plate_ids: {bad}")
-    df["epoch_iso"] = df["date_obs_iso"]
-    df["epoch_jd"] = df["jd"]
+
+    def _parse_row(dateobs: str) -> Tuple[Optional[str], Optional[float]]:
+        result = parse_dateobs(dateobs)
+        if result is None:
+            return None, None
+        return result  # (iso_utc, jd)
+
+    parsed = df["tile_date_obs"].apply(_parse_row)
+    df["epoch_iso"] = parsed.apply(lambda x: x[0])
+    df["epoch_jd"]  = parsed.apply(lambda x: x[1])
+
+    bad_epoch = df["epoch_jd"].isna()
+    if bad_epoch.any():
+        bad_tiles = df.loc[bad_epoch, "tile_id"].unique()[:10]
+        bad_dates = df.loc[bad_epoch, "tile_date_obs"].unique()[:10]
+        raise SystemExit(f"[ERROR] unparseable tile_date_obs for tiles {bad_tiles}: {bad_dates}")
+
     return df
 
 
@@ -364,7 +435,7 @@ def main() -> int:
     df = df.drop_duplicates(subset=["src_id"], keep="first").reset_index(drop=True)
 
     # Enrich epoch and group fields
-    df = enrich_epoch(df, Path(args.tile_to_plate), Path(args.plate_epoch), verbose=args.verbose)
+    df = enrich_epoch_csv(df, Path(args.tile_to_plate_csv), verbose=args.verbose)
     df, centers = grid_fields(df, args.grid_step_arcmin)
 
     stage = args.stage
