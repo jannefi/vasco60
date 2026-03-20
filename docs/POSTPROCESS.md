@@ -35,24 +35,8 @@ stage_S1.csv (minimal stage view)
 upload_positional.csv and upload_positional_chunk_*.csv (S1 upload view for next fetcher)
 tile_manifest.csv, RUN_SUMMARY.txt, allow/exclude list copies
 
-### 2) PS1 within5 + Southern Hemisphere (SH) removal (Stage S0)
-Script: `scripts/stage_ps1_and_sh_post.py`
-Command:
-```sh
-python scripts/stage_ps1_and_sh_post.py \
-  --run-dir "$RUN" \
-  --input-glob 'upload_positional_chunk_*.csv' \
-  --stage S0 \
-  --radius-arcsec 5
-```
 
-**Expected outputs (under $RUN/stages/):**
-
-- stage_S0_PS1SH.csv
-- stage_S0_PS1SH_flags.csv
-- stage_S0_PS1SH_ledger.json
-
-### 3) SkyBoT stage (run once, keep artifacts, shrink forward)
+### 2) SkyBoT stage (run once, keep artifacts, shrink forward)
 
 SkyBoT is slow and typically a small cutter. Run it once, keep artifacts, then shrink forward without requerying.
 
@@ -60,7 +44,7 @@ Background run (preferred):
 ```sh
 RUN=./work/runs/run-S1... \
 STAGE=S1 \
-INPUT='stages/stage_S0_PS1SH.csv' \
+INPUT='stage_S0.csv' \
 bash scripts/run_skybot_stage_bg.sh start
 ```
 
@@ -68,7 +52,7 @@ Foreground run
 ```sh
 RUN=./work/runs/run-S1... \
 STAGE=S1 \
-INPUT='stages/stage_S0_PS1SH.csv' \
+INPUT='stage_S0.csv' \
 bash scripts/run_skybot_stage_bg.sh start
 ```
 
@@ -79,7 +63,7 @@ bash scripts/run_skybot_stage_bg.sh start
 - stage_S1_SKYBOT_ledger.json
 
 
-### 4) SuperCOSMOS stage (shrink to S2)
+### 3) SuperCOSMOS stage (shrink to S2)
 
 Script: `scripts/stage_supercosmos_post.py`
 
@@ -100,7 +84,7 @@ python scripts/stage_supercosmos_post.py \
 - stage_S2_SCOS_flags.csv
 - stage_S2_SCOS_ledger.json
 
-### 5) PTF stage (shrink to S3)
+### 4) PTF stage (shrink to S3)
 
 Script: `scripts/stage_ptf_post.py`
 Run:
@@ -119,7 +103,7 @@ python scripts/stage_ptf_post.py \
 - stage_S3_PTF_flags.csv
 - stage_S3_PTF_ledger.json
 
-### 6) VSX stage (local mirror; shrink forward)
+### 5) VSX stage (local mirror; shrink forward)
 
 Script: `scripts/stage_vsx_post.py`
 Run:
