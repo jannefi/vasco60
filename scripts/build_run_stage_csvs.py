@@ -6,14 +6,14 @@ build_run_stage_csvs.py
 Create run-scoped CSV artifacts for Post-pipeline "shrinking set" fetchers.
 
 Outputs (under ./work/runs/run-<date>/ by default):
- - source_extractor_final_filtered.csv       (master S1, canonical schema + annotations)
+ - source_extractor_final_filtered.csv       (master S0, canonical schema + annotations)
  - source_extractor_final_filtered__dedup.csv (derived; astronomical dedup across tiles)
- - stage_S1.csv                              (FINAL stage CSV; driven from dedup set)
+ - stage_S0.csv                              (FINAL stage CSV; driven from dedup set)
  - upload_positional.csv                     (FINAL: src_id,ra,dec) + chunked variants
  - tile_manifest.csv                         (per-tile accounting; includes delta skips)
 
 Optional debug/audit:
- - stage_S1__raw.csv
+ - stage_S0__raw.csv
  - upload_positional__raw.csv (+ chunks)
 
 Contract (canonical schema):
@@ -386,7 +386,7 @@ def main():
                 "tile_path": str(td),
                 "plate_id": plate_id,
                 "rows_in_tile_filtered_csv": "",
-                "rows_emitted_to_S1": "",
+                "rows_emitted_to_S0": "",
                 "skipped_delta": 1,
                 "notes": "delta skip: post1 already done",
             })
@@ -439,7 +439,7 @@ def main():
             "tile_path": str(td),
             "plate_id": plate_id,
             "rows_in_tile_filtered_csv": n_in,
-            "rows_emitted_to_S1": n_out,
+            "rows_emitted_to_S0": n_out,
             "skipped_delta": 0,
             "notes": note,
         })
@@ -447,7 +447,7 @@ def main():
     # manifest
     manifest_path = run_dir / "tile_manifest.csv"
     mf_fields = ["tile_id", "tile_path", "plate_id",
-                 "rows_in_tile_filtered_csv", "rows_emitted_to_S1", "skipped_delta", "notes"]
+                 "rows_in_tile_filtered_csv", "rows_emitted_to_S0", "skipped_delta", "notes"]
     with manifest_path.open("w", encoding="utf-8", newline="") as f:
         w = csv.DictWriter(f, fieldnames=mf_fields)
         w.writeheader()
@@ -475,7 +475,7 @@ def main():
 
     master_fields = ["src_id", "tile_id", "object_id", "ra", "dec", "plate_id"]
 
-    # write master S1 (base)
+    # write master S0 (base)
     master_base_path = run_dir / "source_extractor_final_filtered.csv"
     with master_base_path.open("w", encoding="utf-8", newline="") as f:
         w = csv.DictWriter(f, fieldnames=master_fields)
@@ -491,7 +491,7 @@ def main():
 
     # FINAL stage/uploads from dedup set
     stage_fields = ["src_id", "tile_id", "object_id", "ra", "dec"]
-    stage_path = run_dir / "stage_S1.csv"
+    stage_path = run_dir / "stage_S0.csv"
     with stage_path.open("w", encoding="utf-8", newline="") as f:
         w = csv.DictWriter(f, fieldnames=stage_fields)
         w.writeheader()
@@ -504,7 +504,7 @@ def main():
     write_chunks(upload_pos_rows, upload_pos_path, upload_pos_fields, args.chunk_size, "upload_positional_chunk")
 
     if args.write_raw_stage_and_uploads:
-        stage_raw_path = run_dir / "stage_S1__raw.csv"
+        stage_raw_path = run_dir / "stage_S0__raw.csv"
         with stage_raw_path.open("w", encoding="utf-8", newline="") as f:
             w = csv.DictWriter(f, fieldnames=stage_fields)
             w.writeheader()
@@ -526,9 +526,9 @@ def main():
             f"tiles_scanned: {len(uniq_tiles)}",
             f"tiles_delta_skipped: {delta_skipped}",
             f"tiles_processed: {len(uniq_tiles) - delta_skipped}",
-            f"S1_rows_raw: {len(out_rows)}",
-            f"S1_rows_unique_src_id: {len(base_rows)}",
-            f"S1_src_id_duplicates_dropped: {dup_srcid_dropped}",
+            f"S0_rows_raw: {len(out_rows)}",
+            f"S0_rows_unique_src_id: {len(base_rows)}",
+            f"S0_src_id_duplicates_dropped: {dup_srcid_dropped}",
             f"dedup_enabled: {bool(args.dedup_enable)}",
             f"dedup_method: plate_id + angular_sep <= {args.dedup_tol_arcsec:.3f}\" (XYZ spatial hash; deterministic rep: src_id)",
             f"dedup_rows: {len(dedup_rows)} (dropped={dedup_dropped})",
