@@ -104,6 +104,14 @@ python scripts/stage_ptf_post.py \
 
 ### 5) VSX stage (local mirror; shrink forward)
 
+**Prerequisite:** This stage requires a local mirror of the VSX (Variable Star Index) catalogue. Use the bootstrap script from the vasco tooling to fetch it:
+
+```bash
+bash tools/fetchers/bootstrap_vsx_catalog.sh
+```
+
+Source: [bootstrap_vsx_catalog.sh](https://github.com/jannefi/vasco/blob/main/tools/fetchers/bootstrap_vsx_catalog.sh)
+
 Script: `scripts/stage_vsx_post.py`
 Run:
 ```sh
