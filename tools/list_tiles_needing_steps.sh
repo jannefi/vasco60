@@ -5,12 +5,12 @@
 #
 # Usage examples:
 #   bash tools/list_tiles_needing_steps.sh \
-#       --root /home/janne/code/vasco60/data \
+#       --root /path/to/vasco60/data \
 #       --mode step2 \
 #       --out /tmp/tiles_step2.txt
 #
 #   bash tools/list_tiles_needing_steps.sh \
-#       --root /home/janne/code/vasco60/data \
+#       --root /path/to/vasco60/data \
 #       --mode both \
 #       --out2 /tmp/tiles_step2.txt \
 #       --out3 /tmp/tiles_step3.txt
@@ -34,7 +34,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "${ROOT}" ]]; then
-  echo "ERROR: --root is required (e.g., /home/janne/code/vasco60/data)" >&2
+  echo "ERROR: --root is required (e.g., /path/to/vasco60/data)" >&2
   exit 2
 fi
 
