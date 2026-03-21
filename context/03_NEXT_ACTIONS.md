@@ -8,9 +8,7 @@ Tasks are derived from the Blocker Checklist in (runbook) [./context/10_VASCO60_
 
 [ ] Optional - SkyBoT Resumability: Improve the SkyBoT stage to allow resuming from cached results without re-querying. This requires larger dataset.
 
-[ ] Move parallel running examples to repo ./tools. They currently assume micromamba is in use. Number of parallel workers is hardcoded. Improve and test before publishing. 
-
-[ ] Root Documentation (CSV-first): Define and document the single consumer read root for run-scoped artifacts.
+[ ] Move parallel running examples to repo ./tools. They currently assume micromamba is in use. Number of parallel workers is hardcoded. At minimun, document the scripts as examples.
 
 ---
 
@@ -81,3 +79,5 @@ We do NOT target parity with the published MNRAS “R remainder” list.
 [x] Env Tracking: Add ps1_veto_enabled and usnob_veto_enabled flags to the per-tile summary artifacts.
 
 [x] PTF query check ./scripts/stage_ptf_post.py
+
+[x] Root Documentation (CSV-first): Define and document the single consumer read root for run-scoped artifacts. README rewritten with full workflow, directory layout, all pipeline steps, post-pipeline stage table, and key outputs table.

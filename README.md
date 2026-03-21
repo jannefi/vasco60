@@ -1,21 +1,185 @@
 # VASCO60
 
-This repository is under active development.
+Second-generation pipeline for searching digitised POSS-I photographic plates for objects that have vanished from the sky. Based on [vasco](https://github.com/jannefi/vasco/).
 
-## Source of truth for current work
-All current operational posture, locked decisions, and next actions live under:
+This repository does not aim to reproduce the exact dataset of MNRAS 515(1):1380 (2022). The goal is to reproduce the *intent* of that workflow — a reproducible, plate-aware POSS-I processing pipeline — with improved provenance, robustness, and controls. `main` is a moving research branch and may include breaking changes.
 
-- ./context/02_DECISIONS.md (locked invariants)
-- ./context/03_NEXT_ACTIONS.md (work queue)
-- ./context/00_RESUME.md (current snapshot)
-- ./context/10_VASCO60_RUNBOOK.md (large reference; read by heading only)
+**Public context:**
+- MNRAS 515(1):1380 (2022)
+- Watters et al. (2026) arXiv:2601.21946
+- Villarroel et al. (2026) response arXiv:2602.15171
 
-## Note on legacy documentation
-The previous README content was for an older VASCO workflow and is intentionally not kept in sync.
-Do not use it as operational guidance for VASCO60.
+---
+
+## How it works
+
+VASCO60 searches for point sources detected in 1960s POSS-I red plates that have no counterpart in modern catalogues (Gaia DR3, Pan-STARRS1, USNO-B). Each pipeline run:
+
+1. Selects a set of 1°×1° sky tiles from a deterministic tessellation plan
+2. Downloads each tile as a FITS image from IRSA (DSS1-red / POSS-I E)
+3. Runs SExtractor twice (pass 1 for PSF modelling, pass 2 PSF-aware) per tile
+4. Cross-matches detections against Gaia, PS1, and USNO-B
+5. Applies morphology and quality filters (MNRAS 2022 criteria)
+6. Post-processes the run-scoped survivor set through additional veto stages (SkyBoT, SuperCOSMOS, PTF, VSX)
+
+What remains after all veto stages is the candidate list for human review.
+
+---
+
+## Prerequisites
+
+- **OS:** Linux (tested on Debian 13 Trixie)
+- **Python:** 3.11 with pip (`pip install -r requirements.txt`)
+- **SExtractor:** binary must be available as `sex`
+- **PSFEx:** binary must be available as `psfex`
+- **STILTS:** required for post-pipeline TAP queries
+
+Verify your setup:
+```bash
+python -V
+sex -v
+psfex -v
+stilts -version
+```
+
+---
+
+## Directory layout
+
+```
+data/
+  tiles/              # Per-tile working directories (tile_RA…_DEC…/)
+  metadata/           # tiles_registry.csv, tile_to_plate.csv
+  metadata/plates/headers/   # POSS-I plate header JSON sidecars
+plans/                # Tessellation plan CSVs
+work/runs/            # Post-pipeline run output folders
+scripts/              # Orchestration and post-pipeline scripts
+vasco/                # Pipeline Python package
+logs/                 # run_plan.log and other logs
+```
+
+---
+
+## Step 0 — Tessellation plan
+
+The tile plan is generated deterministically from POSS-I plate metadata. It covers the sky north of Dec −29.5° (PS1 coverage limit) and restricts tiles to the reliable astrometric core of each plate.
+
+```bash
+# Generate the full plan (11 733 tiles, ~904 plates)
+python -m vasco.plan.tessellate_plates --tag poss1e_ps1
+
+# Validate
+python -m vasco.plan.tessellate_plates --validate plans/tiles_poss1e_ps1.csv
+```
+
+A pre-generated plan is included in `plans/`. See [docs/TESSELLATION_STRATEGY.md](docs/TESSELLATION_STRATEGY.md) for full details.
+
+---
+
+## Step 1 — Download tiles
+
+Use `scripts/run_plan.py` to drive downloads from the plan CSV. It skips already-completed tiles and supports `--plate` to restrict to one plate.
+
+```bash
+# Download all tiles for plate XE309
+python scripts/run_plan.py plans/tiles_poss1e_ps1.csv --plate XE309
+
+# Dry-run to preview
+python scripts/run_plan.py plans/tiles_poss1e_ps1.csv --plate XE309 --dry-run
+
+# Limit to N downloads (useful for testing)
+python scripts/run_plan.py plans/tiles_poss1e_ps1.csv --limit 10
+```
+
+Tiles are stored under `./data/tiles/<tile_id>/`. The metadata files `tiles_registry.csv` and `tile_to_plate.csv` are updated automatically after each download.
+
+**Tip:** Download 50–100 tiles at a time, prewarm caches, then process. Downloading thousands of tiles before processing makes the run harder to recover if something goes wrong.
+
+---
+
+## Steps 2–6 — Per-tile pipeline
+
+Run these steps for each tile, in order. Parallel execution across tiles is recommended.
+
+**Step 2 — SExtractor pass 1** (source detection for PSF modelling)
+```bash
+python -m vasco.cli_pipeline step2-pass1 --workdir data/tiles/<tile_id>
+```
+
+**Step 3 — PSFEx + SExtractor pass 2** (PSF-aware source extraction)
+```bash
+python -m vasco.cli_pipeline step3-psf-and-pass2 --workdir data/tiles/<tile_id>
+```
+
+**Step 4 — Cross-match** (Gaia, PS1, USNO-B; default 5 arcsec radius)
+```bash
+python -m vasco.cli_pipeline step4-xmatch \
+  --workdir data/tiles/<tile_id> \
+  --xmatch-radius-arcsec 5 \
+  --size-arcmin 60
+```
+
+**Step 5 — Filter** (apply ≤5 arcsec match filter and MNRAS morphology criteria)
+```bash
+python -m vasco.cli_pipeline step5-filter-within5 --workdir data/tiles/<tile_id>
+```
+
+**Step 6 — Summarise** (export final CSVs and QA artefacts)
+```bash
+python -m vasco.cli_pipeline step6-summarize --workdir data/tiles/<tile_id>
+```
+
+Each tile directory ends up with `tile_status.json` and `MNRAS_SUMMARY.json` tracking step outcomes and candidate counts.
+
+### Local cache pre-warming
+
+Steps 4–5 query PS1, Gaia, and USNO-B. Pre-warm the local caches before processing a batch:
+
+```bash
+./scripts/prewarm_ps1_neighbourhood_bg.sh start
+./scripts/prewarm_gaia_neighbourhood_bg_unified.sh start
+./scripts/prewarm_usnob_neighbourhood_bg.sh start
+```
+
+Cache files can consume significant disk space as your dataset grows.
+
+---
 
 ## Post-pipeline stages
 
-- Post-pipeline run-scoped stages: see docs/POSTPROCESS.md (large; use headings/keyword search and read only the relevant section)
+Post-pipeline veto stages operate on the run-scoped survivor set and progressively shrink it. See [docs/POSTPROCESS.md](docs/POSTPROCESS.md) for full details and commands.
 
-End.
+| Stage | Script | Veto source |
+|---|---|---|
+| S1 | `scripts/build_run_stage_csvs.py` | Build initial run folder |
+| S2 | `scripts/run_skybot_stage_bg.sh` | SkyBoT (solar system objects) |
+| S3 | `scripts/stage_supercosmos_post.py` | SuperCOSMOS (keep matches) |
+| S4 | `scripts/stage_ptf_post.py` | PTF catalogue |
+| S5 | `scripts/stage_vsx_post.py` | VSX variable stars |
+
+Each stage outputs a carry-forward CSV, a flags CSV, and a ledger JSON.
+
+---
+
+## Key outputs
+
+| Artefact | Location | Description |
+|---|---|---|
+| `tile_status.json` | `data/tiles/<tile_id>/` | Step completion and status per tile |
+| `MNRAS_SUMMARY.json` | `data/tiles/<tile_id>/` | Filter counts and veto statistics |
+| `tiles_registry.csv` | `data/metadata/` | All downloaded tiles with plate provenance |
+| `tile_to_plate.csv` | `data/metadata/` | Tile → FITS REGION mapping |
+| `stage_SN_*.csv` | `work/runs/<run>/stages/` | Per-stage survivor sets |
+
+---
+
+## Changes from vasco (v1)
+
+- Tile size fixed at 60×60 arcmin
+- Deterministic tessellation plan replaces random tile selection
+- Tiles are treated as circular regions of 30 arcmin radius after download
+- Flat tile storage under `./data/tiles/`
+- Automatic metadata maintenance (`tiles_registry.csv`, `tile_to_plate.csv`)
+- Per-tile `MNRAS_SUMMARY.json` and `tile_status.json`
+- No infrared-based veto
+- Post-pipeline stages unified and simplified
