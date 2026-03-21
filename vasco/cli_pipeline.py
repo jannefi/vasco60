@@ -582,11 +582,13 @@ def _apply_mnras_filters_and_spikes(tile_dir: Path, sex_csv: Path, buckets: dict
     # Write intermediate
     tab.write(str(out_csv), format='ascii.csv', overwrite=True)
 
-    # 3) Bright-star spike removal via PS1 (within ~35′, r<=16)
+    # 3) Bright-star spike removal via PS1 (within ~3′, r<=16)
+    # 90-arcsec radius is the paper's intent (confirmed typo in MNRAS 2022: "90-arcmin" should read "90-arcsec");
+    # 3 arcmin gives a small margin while staying physically motivated for Schmidt-plate spikes.
     center = _tile_center_from_index_or_name(tile_dir)
     bright = []
     if center:
-        cache_path = (tile_dir / 'catalogs' / 'ps1_bright_stars_r16_rad35.csv')
+        cache_path = (tile_dir / 'catalogs' / 'ps1_bright_stars_r16_rad3.csv')
         try:
             # Use cache if present
             if cache_path.exists() and cache_path.stat().st_size > 0:
@@ -594,7 +596,7 @@ def _apply_mnras_filters_and_spikes(tile_dir: Path, sex_csv: Path, buckets: dict
             else:
                 bright = fetch_bright_ps1(
                     center[0], center[1],
-                    radius_arcmin=35.0, rmag_max=16.0, mindetections=2
+                    radius_arcmin=3.0, rmag_max=16.0, mindetections=2
                 )
                 # Save cache for fast reruns
                 _write_bright_cache(cache_path, bright)
