@@ -78,6 +78,25 @@ Adjacent plates overlap. A tile_id that appears in multiple plates is kept
 only once, attributed to the plate with the lowest `plate_id` (alphabetical).
 The final plan contains no duplicate `tile_id` values.
 
+### Plan `plate_id` vs. FITS REGION (expected discrepancy at plate edges)
+
+The `plate_id` column in the plan CSV is the planning attribution — it records
+which plate "owns" the tile in the tessellation (lowest alphabetical REGION
+among overlapping plates). It is **not** a promise about which physical plate
+the downloaded FITS will come from.
+
+When IRSA serves a tile, it embeds a `REGION` key in the FITS header that
+reflects which plate's imaging actually covers that sky position. For tiles
+near a plate boundary, IRSA's `REGION` may name an adjacent plate.
+
+Downstream metadata (`tiles_registry.csv`, `tile_to_plate.csv`,
+`dss1red_title.txt`) all record the FITS-derived `REGION`, so a tile
+attributed to e.g. `XE010` in the plan may appear as `XE009` or `XE011`
+in the registry. This is correct and expected — it accurately reflects the
+physical plate provenance. Running `--plate XE010` still downloads only the
+tiles the plan assigns to XE010; the FITS REGION mismatch at the edges does
+not indicate that tiles from neighboring plates were downloaded.
+
 ### Output scale (full plan, tag `poss1e_ps1`)
 
 | Item | Count |
