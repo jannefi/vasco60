@@ -10,6 +10,7 @@ __pycache__/
 # my stuff
 scripts/automation/
 plans/*.csv
+!plans/tiles_poss1e_ps1.csv
 /logs
 /astrotests
 /data
