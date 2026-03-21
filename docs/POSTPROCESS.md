@@ -18,7 +18,7 @@
 
 ### 1) Build run-scoped stage CSVs (S1)
 **Script:** `scripts/build_run_stage_csvs.py`  
-**Purpose:** Create the initial run folder with master CSVs, the current survivor set (edge-core), and upload chunks.
+**Purpose:** Create the initial run folder with master CSVs, the current survivor set and upload chunks.
 
 **Run (typical):**
 ```sh
@@ -28,17 +28,16 @@ python scripts/build_run_stage_csvs.py --run-tag "$(basename "$RUN")"
 
 **Key outputs (under $RUN/):**
 
-source_extractor_final_filtered.csv (master, audit)
-source_extractor_final_filtered__dedup.csv (science-grade dedup)
-source_extractor_final_filtered__edge_core.csv (S1 current survivors)
-stage_S1.csv (minimal stage view)
-upload_positional.csv and upload_positional_chunk_*.csv (S1 upload view for next fetcher)
-tile_manifest.csv, RUN_SUMMARY.txt, allow/exclude list copies
+- source_extractor_final_filtered.csv (master, audit)
+- source_extractor_final_filtered__dedup.csv (science-grade dedup)
+- stage_S1.csv (minimal stage view)
+- upload_positional.csv and upload_positional_chunk_*.csv (S1 upload view for next fetcher)
+- tile_manifest.csv, RUN_SUMMARY.txt, allow/exclude list copies
 
 
 ### 2) SkyBoT stage (run once, keep artifacts, shrink forward)
 
-SkyBoT is slow and typically a small cutter. Run it once, keep artifacts, then shrink forward without requerying.
+SkyBoT is typically a small cutter. Run it once, keep artifacts, then shrink forward without requerying.
 
 Background run (preferred):
 ```sh
