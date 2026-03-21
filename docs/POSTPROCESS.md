@@ -93,7 +93,7 @@ python scripts/stage_ptf_post.py \
   --input-glob 'stages/stage_S2_SCOS.csv' \
   --stage S3 \
   --radius-arcsec 5 \
-  --ptf-table ptf_object
+  --ptf-table ptf_objects
 ```
 
 **Expected outputs (under $RUN/stages/):**
