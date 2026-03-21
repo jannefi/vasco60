@@ -145,6 +145,29 @@ Cache files can consume significant disk space as your dataset grows.
 
 ---
 
+## Parallel running (example scripts)
+
+The `tools/` directory contains example scripts for running steps 2–5 in parallel across many tiles. They are not required — use them as a starting point or adapt to your own workflow.
+
+**Typical flow:**
+
+```bash
+# 1. List tiles that still need step2
+bash tools/list_tiles_needing_steps.sh \
+    --root ./data --mode step2 --out /tmp/tiles_step2.txt
+
+# 2. Run steps 2+3 in parallel (N workers)
+python tools/run_steps_2_3_parallel.py \
+    --tiles-file /tmp/tiles_step2.txt --workers 4
+
+# 3. Run steps 4+5 in parallel (auto-discovers tiles, skips completed)
+python tools/run_steps_4_5_parallel.py --workers 4 --clean --only-missing
+```
+
+`start-2-3.sh` and `start-4-5.sh` wrap these as background `nohup` jobs with `nice`/`ionice` for low-priority execution. They assume **micromamba** with a `vasco-py311` environment and the repo at `~/code/vasco60` — edit them to match your Python environment and paths before use.
+
+---
+
 ## Post-pipeline stages
 
 Post-pipeline veto stages operate on the run-scoped survivor set and progressively shrink it. See [docs/POSTPROCESS.md](docs/POSTPROCESS.md) for full details and commands.
