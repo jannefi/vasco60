@@ -175,10 +175,10 @@ def main() -> int:
     ap.add_argument("--run-dir", required=True, help="Run folder, e.g. ./work/runs/run-S1-...")
     ap.add_argument(
         "--input-glob",
-        default="stages/stage_S4_PTF.csv",
-        help="Glob (relative to run-dir) for input stage CSV(s). Default: stages/stage_S4_PTF.csv",
+        default="stages/stage_S3_PTF.csv",
+        help="Glob (relative to run-dir) for input stage CSV(s). Default: stages/stage_S3_PTF.csv",
     )
-    ap.add_argument("--stage", default="S5", help="Stage label used in output filenames. Default: S5")
+    ap.add_argument("--stage", default="S4", help="Stage label used in output filenames. Default: S4")
     ap.add_argument("--out-dir", default=None, help="Output directory. Default: <run-dir>/stages")
 
     ap.add_argument("--radius-arcsec", type=float, default=5.0, help="Match radius in arcsec. Default: 5")
