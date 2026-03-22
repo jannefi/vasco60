@@ -6,6 +6,18 @@ Tasks are derived from the Blocker Checklist in (runbook) [./context/10_VASCO60_
 
 ## Phase 3: Operational Hardening (Blocker C)
 
+[x] Bug: Gaia veto uses tskymatch2 find=best (two-way one-to-one) instead of find=best1
+    - With find=best, if two SExtractor sources are within 5" of the same Gaia star, only
+      the closer one gets vetoed. The farther one (confirmed: source 3747, sep=4.843",
+      tile_RA74.712_DECp84.144) slips through the Gaia veto unmatched even though the
+      Gaia star is in the local cache. Fix: pass find=best1 to stilts_xmatch in _veto()
+      so each SExtractor source independently finds its best Gaia match.
+    - Also add a small margin (~3 arcmin) to the Gaia neighbourhood fetch radius
+      (currently exact circumscribed circle) to prevent edge leakage (source 2319,
+      X=2031 near tile edge, confirmed missed due to zero margin).
+    - Both bugs allow real stars to leak through Gaia veto; at scale (~11K tiles)
+      this could be significant. Usually caught by PS1/USNO but not guaranteed.
+
 [ ] Optional - SkyBoT Resumability: Improve the SkyBoT stage to allow resuming from cached results without re-querying. This requires larger dataset.
 
 [x] Bug: within5arcsec unit-detection heuristic incorrectly discards very-close Gaia matches

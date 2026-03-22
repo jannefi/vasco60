@@ -752,7 +752,8 @@ def cmd_one(args: argparse.Namespace) -> int:
     export_and_summarize(p2, run_dir, export=args.export, histogram_col=args.hist_col)
 
     # STEP 4: xmatch (local)
-    radius_arcmin = args.size_arcmin * (2 ** 0.5) * 0.5
+    # +3' margin beyond circumscribed circle to prevent edge leakage (e.g. source 2319 X=2031)
+    radius_arcmin = args.size_arcmin * (2 ** 0.5) * 0.5 + 3.0
 
     # Cache-aware fetch-on-miss: avoid network calls if cache already exists
     gaia_cache = run_dir / 'catalogs' / 'gaia_neighbourhood.csv'
@@ -1506,7 +1507,8 @@ def cmd_step4_xmatch(args: argparse.Namespace) -> int:
     except Exception:
         ra_t, dec_t = 0.0, 0.0
 
-    radius_arcmin = args.size_arcmin * (2 ** 0.5) * 0.5
+    # +3' margin beyond circumscribed circle to prevent edge leakage (e.g. source 2319 X=2031)
+    radius_arcmin = args.size_arcmin * (2 ** 0.5) * 0.5 + 3.0
 
     gaia_cache = run_dir / 'catalogs' / 'gaia_neighbourhood.csv'
     ps1_cache  = run_dir / 'catalogs' / 'ps1_neighbourhood.csv'
