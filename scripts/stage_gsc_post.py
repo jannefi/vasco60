@@ -18,6 +18,17 @@ In testing against vasco60 datasets, this stage has produced 10-20% reductions.
 The GSC 2.4.2 covers the full sky and includes multi-epoch optical photometry,
 making it a good complement to the existing veto chain.
 
+Why GSC is a clean veto for POSS-I red detections
+--------------------------------------------------
+VASCO60 sources are detected only in POSS-I red plates. GSC (like MAPS and other
+photographic-plate catalogs) was built from pairs of red and blue plates, with the
+blue plate taken ~30 minutes after the red. Genuine astrophysical objects appear in
+both plates and are therefore included in GSC. The anomalous "vanishing" candidates
+targeted by VASCO60 appear only in red and not in blue — so by construction they
+were never ingested into GSC. A GSC match therefore means "confirmed as a real
+persistent object by the red+blue coincidence check at catalog build time", making
+it a strong and non-circular veto signal.
+
 Usage
 -----
 python scripts/stage_gsc_post.py \\
