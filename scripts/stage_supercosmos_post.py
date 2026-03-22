@@ -153,10 +153,10 @@ def main() -> int:
     ap.add_argument("--run-dir", required=True, help="Run folder, e.g. ./work/runs/run-S1-20260302_185423")
     ap.add_argument(
         "--input-glob",
-        default="stages/stage_S0_PS1SH.csv",
-        help="Glob (relative to run-dir) for input CSV(s). Default: stages/stage_S0_PS1SH.csv",
+        default="stages/stage_S1_SKYBOT.csv",
+        help="Glob (relative to run-dir) for input CSV(s). Default: stages/stage_S1_SKYBOT.csv",
     )
-    ap.add_argument("--stage", default="S1", help="Stage label used in output filenames. Default: S1")
+    ap.add_argument("--stage", default="S2", help="Stage label used in output filenames. Default: S2")
     ap.add_argument("--out-dir", default=None, help="Output directory. Default: <run-dir>/stages")
 
     ap.add_argument("--tapurl", default=DEFAULT_TAPURL, help=f"TAP URL. Default: {DEFAULT_TAPURL}")
