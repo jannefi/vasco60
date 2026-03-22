@@ -673,20 +673,19 @@ def _filter_hpm_gaia(xdir: Path, buckets: dict, poss_sep_arcsec: float = 5.0) ->
         except Exception:
             kept.append(row)
     buckets['hpm_objects'] += len(flagged)
-    out_clean = xdir / 'sex_gaia_xmatch_hpmclean.csv'
+    # Write only the small flagged-HPM audit file; hpmclean is not used downstream.
     out_flag = xdir / 'sex_gaia_hpm_flagged.csv'
-    if kept:
-        with out_clean.open('w', newline='') as fo:
-            w = _csv.DictWriter(fo, fieldnames=kept[0].keys())
-            w.writeheader(); w.writerows(kept)
-    else:
-        out_clean.write_text('', encoding='utf-8')
     if flagged:
         with out_flag.open('w', newline='') as fo:
             w = _csv.DictWriter(fo, fieldnames=flagged[0].keys())
             w.writeheader(); w.writerows(flagged)
     else:
         out_flag.write_text('', encoding='utf-8')
+    # Delete the large source xmatch file now that HPM is done (not used downstream).
+    try:
+        gx.unlink()
+    except Exception:
+        pass
 
 # --- commands ---
 
@@ -1575,33 +1574,27 @@ def cmd_step4_xmatch(args: argparse.Namespace) -> int:
     return 0
 
 def cmd_step5_filter_within5(args: argparse.Namespace) -> int:
+    # within5arcsec CSVs are legacy artifacts from the old vasco pipeline (used for
+    # coordinate fixing and reporting). In vasco60 the veto chain uses tskymatch2
+    # join=1not2 directly; nothing downstream reads within5arcsec files.
+    # Step5 is kept as a no-op so the CLI and parallel runner don't break.
     run_dir = _build_run_dir(Path(args.workdir) if args.workdir else None)
     xdir = run_dir / 'xmatch'
     if not xdir.exists():
         print('[STEP5][ERROR] xmatch/ missing. Run step4-xmatch first.')
         _update_tile_status(run_dir, 'step5', 'fail')
         return 2
-    # Only process canonical xmatch inputs; skip files already filtered
-    patterns = [
-        'sex_*_xmatch.csv',  # local GAIA/PS1/USNOB xmatches
-    ]
-    targets: List[Path] = []
-    for pat in patterns:
-        targets.extend(sorted(xdir.glob(pat)))
-    wrote = 0
-    for src in targets:
-        # Skip if the within5 output already exists
-        out = src.with_name(src.stem + '_within5arcsec.csv')
-        if out.exists():
-            print(f'[STEP5][SKIP] {src.name} -> {out.name} (already exists)')
-            continue
+    # Clean up any stale within5arcsec files left from previous runs.
+    removed = 0
+    for stale in sorted(xdir.glob('*_within5arcsec.csv')):
         try:
-            _validate_within5_arcsec_unit_tolerant(src)
-            wrote += 1
-            print(f'[STEP5][OK] {src.name} -> {out.name}')
-        except Exception as e:
-            print('[STEP5][WARN] within5 failed for', src.name, ':', e)
-    print(f'[STEP5] Wrote within5 CSVs for {wrote} xmatch files.')
+            stale.unlink()
+            removed += 1
+        except Exception:
+            pass
+    if removed:
+        print(f'[STEP5] Removed {removed} stale within5arcsec file(s).')
+    print('[STEP5] Done (within5arcsec generation removed; veto chain unaffected).')
     _update_tile_status(run_dir, 'step5', 'ok')
     return 0
 

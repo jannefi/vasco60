@@ -8,6 +8,15 @@ Tasks are derived from the Blocker Checklist in (runbook) [./context/10_VASCO60_
 
 [ ] Optional - SkyBoT Resumability: Improve the SkyBoT stage to allow resuming from cached results without re-querying. This requires larger dataset.
 
+[x] Bug: within5arcsec unit-detection heuristic incorrectly discards very-close Gaia matches
+    - `_validate_within5_arcsec_unit_tolerant` uses `d > 0.1 → arcsec, else → degrees × 3600`.
+      `tskymatch2` outputs `Separation` in arcseconds; 268 rows with Separation < 0.1" are
+      multiplied by 3600 and fail the ≤ 5" filter. The veto itself is unaffected (uses tskymatch2
+      join=1not2 directly), so no candidates are lost. But the within5arcsec files are wrong.
+    - Secondary: `sex_gaia_xmatch.csv` (73M), `sex_gaia_xmatch_hpmclean.csv` (73M), and
+      `sex_gaia_xmatch_within5arcsec.csv` (67M) are not consumed by any downstream step.
+      Consider deleting them after step4 completes to save ~213M per tile.
+
 
 ---
 

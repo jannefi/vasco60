@@ -86,7 +86,6 @@ def process_one(tile: Path, args, env: dict[str,str]) -> tuple[str, Path, int, s
         if args.force or not _steps_done(tile):
             rm_globs(tile, [
                 "xmatch/sex_*_xmatch*.csv",
-                "xmatch/*_within5arcsec.csv",
                 "catalogs/sextractor_pass2.after_*_veto.csv",
                 "catalogs/sextractor_pass2.filtered.csv",
                 "catalogs/sextractor_pass2.wcsfix.csv",
@@ -110,7 +109,7 @@ def process_one(tile: Path, args, env: dict[str,str]) -> tuple[str, Path, int, s
     step5_done = not args.force and _step_done(tile, "step5")
     if not step5_done:
         if args.force:
-            rm_globs(tile, ["xmatch/*_within5arcsec.csv"], dry_run=args.dry_run)
+            pass  # within5arcsec files no longer generated; nothing to clean
         rc = run_cmd([
             sys.executable, "-m", "vasco.cli_pipeline", "step5-filter-within5",
             "--workdir", str(tile),
