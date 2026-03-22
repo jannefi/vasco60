@@ -1297,21 +1297,23 @@ def _post_xmatch_tile(tile_dir, pass2_ldac, *, radius_arcsec: float = 5.0) -> No
         cat_cols = _detect_radec_columns(catalog) or default_cat_cols
         ra2, dec2 = cat_cols
 
-        # Matched pairs
+        # Matched pairs (find=best1: each SExtractor source independently finds its best match)
         stilts_xmatch(
             str(in_candidates), str(catalog), str(out_match),
             ra1=ra1, dec1=dec1, ra2=ra2, dec2=dec2,
             radius_arcsec=radius_arcsec,
             join_type='1and2',
+            find='best1',
             ofmt='csv',
         )
 
-        # Carry-forward unmatched
+        # Carry-forward unmatched (find=best1: prevents two sources competing for same catalog star)
         stilts_xmatch(
             str(in_candidates), str(catalog), str(out_unmatched),
             ra1=ra1, dec1=dec1, ra2=ra2, dec2=dec2,
             radius_arcsec=radius_arcsec,
             join_type='1not2',
+            find='best1',
             ofmt='csv',
         )
 
