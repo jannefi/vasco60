@@ -131,8 +131,8 @@ def parse_args():
     p.add_argument("--run-dir", required=True, help="Run folder, e.g. ./work/runs/run-S1-...")
     p.add_argument(
         "--input-glob",
-        default="stages/stage_S0_PS1SH.csv",
-        help="Glob (relative to run-dir) for input stage CSV(s). Default: stages/stage_S0_PS1SH.csv",
+        default="stage_S0.csv",
+        help="Glob (relative to run-dir) for input stage CSV(s). Default: stage_S0.csv",
     )
     p.add_argument("--stage", default="S1", help="Stage label used in output filenames. Default: S1")
     p.add_argument(

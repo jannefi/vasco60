@@ -10,7 +10,7 @@ set -euo pipefail
 
 RUN=${RUN:-}
 STAGE=${STAGE:-S1}
-INPUT=${INPUT:-stages/stage_S0_PS1SH.csv}
+INPUT=${INPUT:-stage_S0.csv}
 LOGDIR=${LOGDIR:-./logs}
 PY=${PY:-python}
 
