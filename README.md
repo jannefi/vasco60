@@ -13,10 +13,10 @@ This repository does not aim to reproduce the exact dataset of MNRAS 515(1):1380
 
 ## How it works
 
-VASCO60 searches for point sources detected in 1960s POSS-I red plates that have no counterpart in modern catalogues (Gaia DR3, Pan-STARRS1, USNO-B). Each pipeline run:
+VASCO60 searches for point sources detected in 1950s POSS-I red plates that have no counterpart in modern catalogues (Gaia DR3, Pan-STARRS1, USNO-B). Each pipeline run:
 
 1. Selects a set of 1°×1° sky tiles from a deterministic tessellation plan
-2. Downloads each tile as a FITS image from IRSA (DSS1-red / POSS-I E)
+2. Downloads each tile as a FITS image from STScI/MAST (DSS1-red / POSS-I E)
 3. Runs SExtractor twice (pass 1 for PSF modelling, pass 2 PSF-aware) per tile
 4. Cross-matches detections against Gaia, PS1, and USNO-B
 5. Applies morphology and quality filters (MNRAS 2022 criteria)
@@ -174,11 +174,11 @@ Post-pipeline veto stages operate on the run-scoped survivor set and progressive
 
 | Stage | Script | Veto source |
 |---|---|---|
-| S1 | `scripts/build_run_stage_csvs.py` | Build initial run folder |
-| S2 | `scripts/run_skybot_stage_bg.sh` | SkyBoT (solar system objects) |
-| S3 | `scripts/stage_supercosmos_post.py` | SuperCOSMOS (keep matches) |
-| S4 | `scripts/stage_ptf_post.py` | PTF catalogue |
-| S5 | `scripts/stage_vsx_post.py` | VSX variable stars |
+| S0 | `scripts/build_run_stage_csvs.py` | Build initial run folder |
+| S1 | `scripts/run_skybot_stage_bg.sh` | SkyBoT (solar system objects) |
+| S2 | `scripts/stage_supercosmos_post.py` | SuperCOSMOS (keep matches) |
+| S3 | `scripts/stage_ptf_post.py` | PTF catalogue |
+| S4 | `scripts/stage_vsx_post.py` | VSX variable stars |
 
 Each stage outputs a carry-forward CSV, a flags CSV, and a ledger JSON.
 
