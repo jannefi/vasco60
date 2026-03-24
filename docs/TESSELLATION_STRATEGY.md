@@ -111,7 +111,7 @@ not indicate that tiles from neighboring plates were downloaded.
 
 | Column | Description |
 |---|---|
-| `plate_id` | REGION from FITS header (e.g. `XE005`) |
+| `plate_id` | planning attribution plate_id (e.g. `XE005`) |
 | `plate_tile_idx` | Per-plate tile index (0-based, sorted by ra/dec) |
 | `tile_id` | `tile_RA<ra>_DEC[p/m]<dec>` — locked naming convention |
 | `ra_deg` | Tile center RA, decimal degrees (6 d.p.) |

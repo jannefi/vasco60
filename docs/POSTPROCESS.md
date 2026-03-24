@@ -39,15 +39,7 @@ python scripts/build_run_stage_csvs.py --run-tag "$(basename "$RUN")"
 
 SkyBoT is typically a small cutter. Run it once, keep artifacts, then shrink forward without requerying.
 
-Background run (preferred):
-```sh
-RUN=./work/runs/run-S1... \
-STAGE=S1 \
-INPUT='stage_S0.csv' \
-bash scripts/run_skybot_stage_bg.sh start
-```
-
-Foreground run
+Foreground run:
 ```sh
 RUN=./work/runs/run-S1... \
 STAGE=S1 \
@@ -125,8 +117,8 @@ python scripts/stage_vsx_post.py \
 **Expected outputs (under $RUN/stages/):**
 
 - stage_S4_VSX.csv
-- stage_S3_VSX_flags.csv
-- stage_S3_VSX_ledger.json
+- stage_S4_VSX_flags.csv
+- stage_S4_VSX_ledger.json
 
 ### Consolidated reporting (all runs)
 
