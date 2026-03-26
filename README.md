@@ -118,6 +118,7 @@ python -m vasco.cli_pipeline step4-xmatch \
   --xmatch-radius-arcsec 5 \
   --size-arcmin 60
 ```
+veto uses best-per-candidate semantics
 
 **Step 5 — Filter** (apply ≤5 arcsec match filter and MNRAS morphology criteria)
 ```bash
