@@ -8,6 +8,7 @@ This repository does not aim to reproduce the exact dataset of MNRAS 515(1):1380
 - MNRAS 515(1):1380 (2022)
 - Watters et al. (2026) arXiv:2601.21946
 - Villarroel et al. (2026) response arXiv:2602.15171
+- Busko (2026) arXiv:2603.20407 Searching for Fast Astronomical Transients in Archival Photographic Plates
 
 ---
 
