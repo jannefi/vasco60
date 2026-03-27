@@ -176,12 +176,13 @@ Post-pipeline veto stages operate on the run-scoped survivor set and progressive
 | Stage | Script | Veto source |
 |---|---|---|
 | S0 | `scripts/build_run_stage_csvs.py` | Build initial run folder |
+| S0M ⚗️ | `scripts/stage_morph_post.py` | Morphology filter — PSF consistency ([docs](docs/STAGE_MORPH.md)) |
 | S1 | `scripts/run_skybot_stage_bg.sh` | SkyBoT (solar system objects) |
 | S2 | `scripts/stage_supercosmos_post.py` | SuperCOSMOS (keep matches) |
 | S3 | `scripts/stage_ptf_post.py` | PTF catalogue |
 | S4 | `scripts/stage_vsx_post.py` | VSX variable stars |
 
-Each stage outputs a carry-forward CSV, a flags CSV, and a ledger JSON.
+⚗️ = experimental stage; opt-in only. Each stage outputs a carry-forward CSV, a flags CSV, and a ledger JSON.
 
 ---
 

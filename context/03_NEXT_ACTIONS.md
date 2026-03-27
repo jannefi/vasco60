@@ -4,30 +4,43 @@ Tasks are derived from the Blocker Checklist in (runbook) [./context/10_VASCO60_
 
 ---
 
+## Experimental feature: morphology-based filtering
+
+[x] scripts/stage_morph_post.py — implemented and tested (2026-03-27)
+    docs/STAGE_MORPH.md — feature documentation
+
+Approach: per-tile PSF model from Gaia-matched SExtractor sources (sextractor_pass2.csv).
+Two rejection criteria (OR): fwhm_ratio > 1.5 OR spread_snr > 5.0.
+CLASS_STAR dropped — unreliable on photographic plates (PSF stars score ~0.015).
+Stage label: S0M (runs before SKYBOT to shrink R early).
+
+Calibration on 181-tile run (713 candidates):
+- fwhm_ratio only:        17.8%
+- spread_snr only:        49.1% (dominant; SPREAD_MODEL is PSFEx-derived)
+- Combined default:       50.5%  → 713 → 353 kept
+- All 181 tiles had sufficient PSF sample (0 psf_insufficient)
+
+Usage:
+    python scripts/stage_morph_post.py \
+        --run-dir ./work/runs/run-S1-... \
+        --input-glob 'stage_S0.csv' \
+        --stage S0M \
+        --tiles-root ./data/tiles
+
+[x] Validate: ~20 rejected candidates sampled manually across low/mid/high RA tiles.
+    All appeared to be plate artifacts. Result: looks promising.
+    Note: 50.5% measured post-MNRAS-gates; true reduction (pre-gates) likely 60-80%.
+
+[ ] Scale up: download more tiles and re-run to confirm rejection rate at larger N.
+[ ] Future: pixel-level radial profile analysis (Busko 2026) as enhancement once
+    the current approach is validated at full scale.
+
+---
+
+
 ## Phase 3: Operational Hardening (Blocker C)
 
-[x] Bug: Gaia veto uses tskymatch2 find=best (two-way one-to-one) instead of find=best1
-    - With find=best, if two SExtractor sources are within 5" of the same Gaia star, only
-      the closer one gets vetoed. The farther one (confirmed: source 3747, sep=4.843",
-      tile_RA74.712_DECp84.144) slips through the Gaia veto unmatched even though the
-      Gaia star is in the local cache. Fix: pass find=best1 to stilts_xmatch in _veto()
-      so each SExtractor source independently finds its best Gaia match.
-    - Also add a small margin (~3 arcmin) to the Gaia neighbourhood fetch radius
-      (currently exact circumscribed circle) to prevent edge leakage (source 2319,
-      X=2031 near tile edge, confirmed missed due to zero margin).
-    - Both bugs allow real stars to leak through Gaia veto; at scale (~11K tiles)
-      this could be significant. Usually caught by PS1/USNO but not guaranteed.
-
 [ ] Optional - SkyBoT Resumability: Improve the SkyBoT stage to allow resuming from cached results without re-querying. This requires larger dataset.
-
-[x] Bug: within5arcsec unit-detection heuristic incorrectly discards very-close Gaia matches
-    - `_validate_within5_arcsec_unit_tolerant` uses `d > 0.1 → arcsec, else → degrees × 3600`.
-      `tskymatch2` outputs `Separation` in arcseconds; 268 rows with Separation < 0.1" are
-      multiplied by 3600 and fail the ≤ 5" filter. The veto itself is unaffected (uses tskymatch2
-      join=1not2 directly), so no candidates are lost. But the within5arcsec files are wrong.
-    - Secondary: `sex_gaia_xmatch.csv` (73M), `sex_gaia_xmatch_hpmclean.csv` (73M), and
-      `sex_gaia_xmatch_within5arcsec.csv` (67M) are not consumed by any downstream step.
-      Consider deleting them after step4 completes to save ~213M per tile.
 
 
 ---
@@ -37,21 +50,19 @@ Tasks are derived from the Blocker Checklist in (runbook) [./context/10_VASCO60_
 Goal: ensure the pipeline is reproducible, auditable, and internally explainable.
 We do NOT target parity with the published MNRAS “R remainder” list.
 
-[ ] Deterministic subset run (tens-to-hundreds tiles)
-    - Use 60×60 square download → ≤30′ circle cut policy when required.
-    - Purpose: validate geometry + gating + veto ordering + ledgers (not external remainder parity).
-
 [ ] Funnel explainability report (run-scoped)
     - Produce a small “what removed what” summary per stage (counts + reasons).
 
-[ ] Gate sanity check on subset
-    - Summarize SPREAD_MODEL distribution vs the hard baseline (> -0.002) and record any shifts.
+
 
 ---
 
 ## Log of Recent Completions
 
 [x] Post-pipeline steps docs: move from online-only documentation into repo docs index
+
+[x] Gate sanity check on subset
+    - Summarize SPREAD_MODEL distribution vs the hard baseline (> -0.002) and record any shifts.
 
 [x] Established vasco60 repo reset and HDD symlink structure.
 
@@ -103,3 +114,20 @@ We do NOT target parity with the published MNRAS “R remainder” list.
 [x] Move parallel running examples to repo ./tools. Documented in README; start-*.sh note micromamba/path assumptions.
 
 [x] Root Documentation (CSV-first): Define and document the single consumer read root for run-scoped artifacts. README rewritten with full workflow, directory layout, all pipeline steps, post-pipeline stage table, and key outputs table.
+
+[x] Deterministic subset run (tens-to-hundreds tiles)
+    - Use 60×60 square download → ≤30′ circle cut policy when required.
+    - Purpose: validate geometry + gating + veto ordering + ledgers (not external remainder parity).
+
+[x] Bug: Gaia veto uses tskymatch2 find=best (two-way one-to-one) instead of find=best1
+    - With find=best, if two SExtractor sources are within 5" of the same Gaia star, only
+      the closer one gets vetoed. The farther one (confirmed: source 3747, sep=4.843",
+      tile_RA74.712_DECp84.144) slips through the Gaia veto unmatched even though the
+      Gaia star is in the local cache. Fix: pass find=best1 to stilts_xmatch in _veto()
+      so each SExtractor source independently finds its best Gaia match.
+    - Also add a small margin (~3 arcmin) to the Gaia neighbourhood fetch radius
+      (currently exact circumscribed circle) to prevent edge leakage (source 2319,
+      X=2031 near tile edge, confirmed missed due to zero margin).
+    - Both bugs allow real stars to leak through Gaia veto; at scale (~11K tiles)
+      this could be significant. Usually caught by PS1/USNO but not guaranteed.
+
