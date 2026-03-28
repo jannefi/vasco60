@@ -63,21 +63,27 @@ def main():
         """Parse int, treating blank/missing as 0."""
         return int(val) if val and val.strip() else 0
 
-    # tile_id → plate_id lookup
+    # tile_id → plate_id lookup (all tiles, including skipped)
     tile_to_plate = {r["tile_id"]: r.get("plate_id", "").strip() for r in rows}
 
-    n_tiles = len(rows)
-    pass2_filtered_total = sum(_int(r["rows_in_tile_filtered_csv"]) for r in rows)
-    emitted_to_s0_total = sum(_int(r["rows_emitted_to_S0"]) for r in rows)
+    active_rows = [r for r in rows if _int(r.get("skipped_delta", "0")) == 0]
+    skipped_rows = [r for r in rows if _int(r.get("skipped_delta", "0")) != 0]
 
-    plates = sorted({p for p in tile_to_plate.values() if p})
-    n_plates = len(plates)
+    n_tiles = len(rows)
+    n_active = len(active_rows)
+    n_skipped = len(skipped_rows)
+
+    pass2_filtered_total = sum(_int(r["rows_in_tile_filtered_csv"]) for r in active_rows)
+    emitted_to_s0_total = sum(_int(r["rows_emitted_to_S0"]) for r in active_rows)
+
+    active_plates = sorted({tile_to_plate.get(r["tile_id"], "") for r in active_rows if tile_to_plate.get(r["tile_id"], "")})
+    n_plates = len(active_plates)
 
     pass2_unfiltered_total = 0
     missing_summary = []
     tiles_with_summary = 0
 
-    for row in rows:
+    for row in active_rows:
         tile_id = row["tile_id"]
         summary_path = tiles_root / tile_id / "MNRAS_SUMMARY.json"
 
@@ -93,8 +99,8 @@ def main():
 
     # --- Print header ---
     print(f"\nRun: {run_dir.name}")
-    print(f"Tiles in manifest : {n_tiles}")
-    print(f"Plates covered    : {n_plates}  ({', '.join(plates)})")
+    print(f"Tiles in manifest : {n_tiles}  ({n_active} active, {n_skipped} delta-skipped)")
+    print(f"Plates covered    : {n_plates}  ({', '.join(active_plates)})")
     print(f"Tiles with summary: {tiles_with_summary}")
     if missing_summary:
         print(f"  Missing MNRAS_SUMMARY.json: {len(missing_summary)} tile(s)")
