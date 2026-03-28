@@ -40,9 +40,13 @@ def main():
     with open(manifest_path, newline="") as f:
         rows = list(csv.DictReader(f))
 
+    def _int(val):
+        """Parse int, treating blank/missing as 0."""
+        return int(val) if val and val.strip() else 0
+
     n_tiles = len(rows)
-    pass2_filtered_total = sum(int(r["rows_in_tile_filtered_csv"]) for r in rows)
-    emitted_to_s0_total = sum(int(r["rows_emitted_to_S0"]) for r in rows)
+    pass2_filtered_total = sum(_int(r["rows_in_tile_filtered_csv"]) for r in rows)
+    emitted_to_s0_total = sum(_int(r["rows_emitted_to_S0"]) for r in rows)
 
     pass2_unfiltered_total = 0
     missing_summary = []
@@ -82,8 +86,8 @@ def main():
         gate_pct = 100.0 * (1 - pass2_filtered_total / pass2_unfiltered_total)
         s0_pct = 100.0 * (1 - emitted_to_s0_total / pass2_unfiltered_total)
         print()
-        print(f"  MNRAS gates removed               : {gate_pct:.1f}% of pass2 unfiltered")
-        print(f"  Surviving to S0                   : {100 - s0_pct:.2f}% of pass2 unfiltered")
+        print(f"  MNRAS gates removed               : {gate_pct:.3f}% of pass2 unfiltered")
+        print(f"  Surviving to S0                   : {100 - s0_pct:.4f}% of pass2 unfiltered")
 
     print()
     print("Note: pass1 detection count is not available (stored as binary .ldac, no CSV).")
