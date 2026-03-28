@@ -48,6 +48,9 @@ def main():
     pass2_filtered_total = sum(_int(r["rows_in_tile_filtered_csv"]) for r in rows)
     emitted_to_s0_total = sum(_int(r["rows_emitted_to_S0"]) for r in rows)
 
+    plates = sorted({r["plate_id"] for r in rows if r.get("plate_id", "").strip()})
+    n_plates = len(plates)
+
     pass2_unfiltered_total = 0
     missing_summary = []
     tiles_with_summary = 0
@@ -68,6 +71,7 @@ def main():
 
     print(f"\nRun: {run_dir.name}")
     print(f"Tiles in manifest : {n_tiles}")
+    print(f"Plates covered    : {n_plates}  ({', '.join(plates)})")
     print(f"Tiles with summary: {tiles_with_summary}")
     if missing_summary:
         print(f"  Missing MNRAS_SUMMARY.json: {len(missing_summary)} tile(s)")
