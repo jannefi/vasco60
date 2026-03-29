@@ -35,7 +35,7 @@ def _detect_final_stage(stages_dir):
 
 def main():
     ap = argparse.ArgumentParser(description="Summarise raw detection totals for a run")
-    ap.add_argument("--run-dir", required=True, help="Run folder (contains tile_manifest.csv)")
+    ap.add_argument("--run-dir", default=None, help="Run folder (contains tile_manifest.csv). Not required for --scan-all-tiles.")
     ap.add_argument(
         "--tiles-root",
         default="data/tiles",
@@ -64,10 +64,37 @@ def main():
             "pick them up as active rather than skipping them."
         ),
     )
+    ap.add_argument(
+        "--scan-all-tiles",
+        action="store_true",
+        help=(
+            "Scan tiles-root directly (no manifest) for PS1-truncated tiles. "
+            "Prints tile dirs to stdout. Does not require --run-dir. "
+            "Use this to find truncated tiles that were delta-skipped in all run manifests."
+        ),
+    )
     args = ap.parse_args()
 
-    run_dir = Path(args.run_dir)
+    run_dir = Path(args.run_dir) if args.run_dir else None
     tiles_root = Path(args.tiles_root)
+
+    # --scan-all-tiles: scan tiles_root directly, no manifest needed
+    if args.scan_all_tiles:
+        OLD_CAP = 50000
+        truncated = []
+        all_tile_dirs = sorted(p for p in tiles_root.glob("tile_RA*") if p.is_dir())
+        for td in all_tile_dirs:
+            ps1_csv = td / "catalogs" / "ps1_neighbourhood.csv"
+            if not ps1_csv.exists():
+                continue
+            with open(ps1_csv) as f:
+                n_lines = sum(1 for _ in f)
+            if n_lines - 1 == OLD_CAP:
+                truncated.append(td)
+        print(f"# PS1-truncated tiles (data rows == {OLD_CAP}): {len(truncated)} of {len(all_tile_dirs)} total", file=sys.stderr)
+        for td in truncated:
+            print(td)
+        sys.exit(0)
 
     # Shared helper: find tiles where PS1 cache was truncated at the old 50K cap
     def _find_ps1_truncated(manifest_path, tiles_root):
@@ -121,6 +148,10 @@ def main():
                 print(f"  ERROR {td.name}: {e}", file=sys.stderr)
         print(f"Done. {cleared}/{len(truncated)} tiles cleared. Re-run build_run_stage_csvs.py in delta mode.")
         sys.exit(0)
+
+    if run_dir is None:
+        print("ERROR: --run-dir is required for this mode", file=sys.stderr)
+        sys.exit(1)
 
     manifest_path = run_dir / "tile_manifest.csv"
     if not manifest_path.exists():
