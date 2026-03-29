@@ -38,6 +38,26 @@ Usage:
 ---
 
 
+## Catalog cache truncation detection
+
+Observed in R3 run (2026-03-29): tiles in dense stellar fields (galactic plane,
+high-dec crowded regions) hit hard row limits in neighbourhood cache fetches:
+- Gaia: 200K cap (external_fetch_online.py:79) — 4 tiles affected, all 0 survivors (USNOB backstop adequate)
+- PS1:  50K cap (external_fetch_online.py:129) — 73 tiles affected, 70 had PS1 actively eliminating candidates
+
+PS1 truncation is the live concern: queries are distance-sorted so the 50K returned
+are the nearest sources, but candidates near tile edges could have their PS1 counterpart
+in the truncated tail. Risk is low but non-zero.
+
+[ ] Add truncation flag to MNRAS_SUMMARY: detect when len(gaia_neighbourhood.csv) == max_rows
+    or len(ps1_neighbourhood.csv) == max_records and write `gaia_cache_truncated: true` /
+    `ps1_cache_truncated: true`. Allows cross-run report to flag affected tiles.
+
+[ ] Evaluate raising PS1 cap or using a smaller query radius in dense fields (trade-off:
+    larger files, slower fetches vs. completeness at tile edges).
+
+---
+
 ## Phase 3: Operational Hardening (Blocker C)
 
 [ ] Optional - SkyBoT Resumability: Improve the SkyBoT stage to allow resuming from cached results without re-querying. This requires larger dataset.
