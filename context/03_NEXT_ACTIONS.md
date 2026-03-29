@@ -56,9 +56,11 @@ All 73 truncated tiles re-fetched and re-run through step4-5.
 - S0M rejection: 58.4% (northern tiles, 3K–5K PSF stars — healthy)
 - All survivors are in the PS1-covered sky (dec > -30°), consistent with re-fetch region
 
-Prior S6 live-CDS test (matched=0 across 793 survivors) confirmed truncation had not
-caused missed vetos in the earlier runs. D1 confirms the fix is applied and pipeline
-runs cleanly with the higher cap going forward.
+Cross-check D1 vs R1/R2/R3 (src_id comparison against final stage CSVs):
+- D1 ∩ R1: 2, D1 ∩ R2: 16, D1 ∩ R3: 8 → all 26 were already present in a prior run
+- Zero truly new candidates from the re-fetch
+- Confirms PS1 truncation introduced no false positives and no missed discoveries
+- R3 (+ predecessors) is the complete, correct survivor set; D1 is a validation artifact
 
 [ ] Add truncation flag to MNRAS_SUMMARY: detect when len(gaia_neighbourhood.csv) == max_rows
     or len(ps1_neighbourhood.csv) == max_records and write `gaia_cache_truncated: true` /
