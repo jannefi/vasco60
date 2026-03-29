@@ -38,29 +38,32 @@ Usage:
 ---
 
 
-## Catalog cache truncation detection
+## Catalog cache truncation — RESOLVED (2026-03-29)
 
 Observed in R3 run (2026-03-29): tiles in dense stellar fields (galactic plane,
 high-dec crowded regions) hit hard row limits in neighbourhood cache fetches:
-- Gaia: 200K cap (external_fetch_online.py:79) — 4 tiles affected, all 0 survivors (USNOB backstop adequate)
-- PS1:  50K cap (external_fetch_online.py:129) — 73 tiles affected, 70 had PS1 actively eliminating candidates
+- Gaia: 200K cap — 4 tiles affected, all 0 survivors (USNOB backstop adequate)
+- PS1:  50K cap — 73 tiles affected, 70 had PS1 actively eliminating candidates
 
-PS1 truncation is the live concern: queries are distance-sorted so the 50K returned
-are the nearest sources, but candidates near tile edges could have their PS1 counterpart
-in the truncated tail. Risk is low but non-zero.
+**Fix applied**: PS1 cap raised 50K → 200K in external_fetch_online.py (VizieR honours
+-out.max above the server default of 50K, confirmed by Gaia returning 200K rows).
+All 73 truncated tiles re-fetched and re-run through step4-5.
 
-Validation (2026-03-29): ran stage_ps1_and_sh_post.py as S6 against live CDS PS1 DR2
-(no row cap) on all three runs (R1=347, R2=325, R3=121 survivors). matched=0 in all
-three. The 50K cache truncation did not cause any missed PS1 vetos in these runs.
-Risk remains non-zero (tile-edge candidates could theoretically have a PS1 counterpart
-beyond the distance-sorted cap) but empirically very low.
+**Delta validation run D1-20260329_115645** (2026-03-29):
+- 73 tiles processed, 674 delta-skipped
+- S0 input: 125 rows from the 73 re-fetched tiles
+- Final survivors: 26 across 6 plates (XE028, XE029, XE030, XE111, XE603, XE695)
+- S0M rejection: 58.4% (northern tiles, 3K–5K PSF stars — healthy)
+- All survivors are in the PS1-covered sky (dec > -30°), consistent with re-fetch region
+
+Prior S6 live-CDS test (matched=0 across 793 survivors) confirmed truncation had not
+caused missed vetos in the earlier runs. D1 confirms the fix is applied and pipeline
+runs cleanly with the higher cap going forward.
 
 [ ] Add truncation flag to MNRAS_SUMMARY: detect when len(gaia_neighbourhood.csv) == max_rows
     or len(ps1_neighbourhood.csv) == max_records and write `gaia_cache_truncated: true` /
-    `ps1_cache_truncated: true`. Allows cross-run report to flag affected tiles.
-
-[ ] Evaluate raising PS1 cap or using a smaller query radius in dense fields (trade-off:
-    larger files, slower fetches vs. completeness at tile edges).
+    `ps1_cache_truncated: true`. Allows future cross-run reports to flag affected tiles
+    (lower priority now that cap is raised).
 
 ---
 
