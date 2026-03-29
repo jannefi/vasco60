@@ -49,6 +49,12 @@ PS1 truncation is the live concern: queries are distance-sorted so the 50K retur
 are the nearest sources, but candidates near tile edges could have their PS1 counterpart
 in the truncated tail. Risk is low but non-zero.
 
+Validation (2026-03-29): ran stage_ps1_and_sh_post.py as S6 against live CDS PS1 DR2
+(no row cap) on all three runs (R1=347, R2=325, R3=121 survivors). matched=0 in all
+three. The 50K cache truncation did not cause any missed PS1 vetos in these runs.
+Risk remains non-zero (tile-edge candidates could theoretically have a PS1 counterpart
+beyond the distance-sorted cap) but empirically very low.
+
 [ ] Add truncation flag to MNRAS_SUMMARY: detect when len(gaia_neighbourhood.csv) == max_rows
     or len(ps1_neighbourhood.csv) == max_records and write `gaia_cache_truncated: true` /
     `ps1_cache_truncated: true`. Allows cross-run report to flag affected tiles.
