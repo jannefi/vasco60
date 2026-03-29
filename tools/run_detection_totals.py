@@ -73,6 +73,17 @@ def main():
             "Use this to find truncated tiles that were delta-skipped in all run manifests."
         ),
     )
+    ap.add_argument(
+        "--clear-post1-from-stdin",
+        action="store_true",
+        help=(
+            "Read tile dirs from stdin (one per line) and clear post1.status from each "
+            "tile_status.json. Use after re-fetching, when ps1_neighbourhood.csv is no "
+            "longer at the old 50K cap and --clear-post1-for-truncated would find nothing. "
+            "Example: cat /tmp/truncated_tiles.txt /tmp/remaining_truncated.txt | sort -u | "
+            "python tools/run_detection_totals.py --clear-post1-from-stdin"
+        ),
+    )
     args = ap.parse_args()
 
     run_dir = Path(args.run_dir) if args.run_dir else None
@@ -94,6 +105,26 @@ def main():
         print(f"# PS1-truncated tiles (data rows == {OLD_CAP}): {len(truncated)} of {len(all_tile_dirs)} total", file=sys.stderr)
         for td in truncated:
             print(td)
+        sys.exit(0)
+
+    # --clear-post1-from-stdin: read tile dirs from stdin, clear post1 status
+    if args.clear_post1_from_stdin:
+        tile_dirs = [line.strip() for line in sys.stdin if line.strip()]
+        cleared = 0
+        for td in tile_dirs:
+            status_path = Path(td) / "tile_status.json"
+            if not status_path.exists():
+                print(f"  SKIP (no tile_status.json): {td}", file=sys.stderr)
+                continue
+            try:
+                data = json.loads(status_path.read_text(encoding="utf-8"))
+                data.get("steps", {}).pop("post1", None)
+                status_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+                print(f"  cleared: {Path(td).name}")
+                cleared += 1
+            except Exception as e:
+                print(f"  ERROR {td}: {e}", file=sys.stderr)
+        print(f"Done. {cleared}/{len(tile_dirs)} tiles cleared. Re-run build_run_stage_csvs.py in delta mode.")
         sys.exit(0)
 
     # Shared helper: find tiles where PS1 cache was truncated at the old 50K cap
