@@ -55,14 +55,22 @@ def main():
             "Pipe to a re-fetch script to update affected tiles."
         ),
     )
+    ap.add_argument(
+        "--clear-post1-for-truncated",
+        action="store_true",
+        help=(
+            "Clear post1.status from tile_status.json for all PS1-truncated tiles "
+            "(data rows == 50000). This lets the next delta run of build_run_stage_csvs.py "
+            "pick them up as active rather than skipping them."
+        ),
+    )
     args = ap.parse_args()
 
     run_dir = Path(args.run_dir)
     tiles_root = Path(args.tiles_root)
 
-    # --list-ps1-truncated: emit tile dirs where PS1 cache hit the old 50K cap
-    if args.list_ps1_truncated:
-        manifest_path = run_dir / "tile_manifest.csv"
+    # Shared helper: find tiles where PS1 cache was truncated at the old 50K cap
+    def _find_ps1_truncated(manifest_path, tiles_root):
         if not manifest_path.exists():
             print(f"ERROR: manifest not found: {manifest_path}", file=sys.stderr)
             sys.exit(1)
@@ -79,15 +87,39 @@ def main():
             ps1_csv = tiles_root / row["tile_id"] / "catalogs" / "ps1_neighbourhood.csv"
             if not ps1_csv.exists():
                 continue
-            # Count data rows (total lines minus header)
             with open(ps1_csv) as f:
                 n_lines = sum(1 for _ in f)
-            # n_lines includes header row; data rows = n_lines - 1
             if n_lines - 1 == OLD_CAP:
-                truncated.append(str(tiles_root / row["tile_id"]))
-        print(f"# PS1-truncated tiles (data rows == {OLD_CAP}): {len(truncated)} of {len(active)} active", file=sys.stderr)
+                truncated.append(tiles_root / row["tile_id"])
+        return truncated, len(active)
+
+    # --list-ps1-truncated: emit tile dirs to stdout (pipeable)
+    if args.list_ps1_truncated:
+        truncated, n_active = _find_ps1_truncated(run_dir / "tile_manifest.csv", tiles_root)
+        print(f"# PS1-truncated tiles (data rows == 50000): {len(truncated)} of {n_active} active", file=sys.stderr)
         for td in truncated:
             print(td)
+        sys.exit(0)
+
+    # --clear-post1-for-truncated: remove post1.status so next delta run reprocesses them
+    if args.clear_post1_for_truncated:
+        truncated, n_active = _find_ps1_truncated(run_dir / "tile_manifest.csv", tiles_root)
+        print(f"Clearing post1 status for {len(truncated)} of {n_active} active PS1-truncated tiles...")
+        cleared = 0
+        for td in truncated:
+            status_path = td / "tile_status.json"
+            if not status_path.exists():
+                print(f"  SKIP (no tile_status.json): {td.name}")
+                continue
+            try:
+                data = json.loads(status_path.read_text(encoding="utf-8"))
+                data.get("steps", {}).pop("post1", None)
+                status_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+                print(f"  cleared: {td.name}")
+                cleared += 1
+            except Exception as e:
+                print(f"  ERROR {td.name}: {e}", file=sys.stderr)
+        print(f"Done. {cleared}/{len(truncated)} tiles cleared. Re-run build_run_stage_csvs.py in delta mode.")
         sys.exit(0)
 
     manifest_path = run_dir / "tile_manifest.csv"
