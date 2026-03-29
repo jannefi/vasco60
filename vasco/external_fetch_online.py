@@ -126,7 +126,7 @@ def fetch_gaia_neighbourhood(tile_dir: Path | str,
 def fetch_ps1_neighbourhood(tile_dir: Path | str,
                              ra_deg: float, dec_deg: float,
                              radius_arcmin: float,
-                             *, max_records: int = 50000,
+                             *, max_records: int = 200000,
                              timeout: float = 60.0) -> Path:
     """Fetch PS1 DR2 neighborhood via CDS/VizieR API with explicit columns and progress logs.
 

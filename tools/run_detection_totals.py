@@ -46,10 +46,49 @@ def main():
         default=None,
         help="Final stage CSV filename in stages/ (default: auto-detect last stage_S*.csv)",
     )
+    ap.add_argument(
+        "--list-ps1-truncated",
+        action="store_true",
+        help=(
+            "Print tile dirs (one per line, to stdout) where catalogs/ps1_neighbourhood.csv "
+            "has exactly 50000 rows — the old cap before it was raised to 200K. "
+            "Pipe to a re-fetch script to update affected tiles."
+        ),
+    )
     args = ap.parse_args()
 
     run_dir = Path(args.run_dir)
     tiles_root = Path(args.tiles_root)
+
+    # --list-ps1-truncated: emit tile dirs where PS1 cache hit the old 50K cap
+    if args.list_ps1_truncated:
+        manifest_path = run_dir / "tile_manifest.csv"
+        if not manifest_path.exists():
+            print(f"ERROR: manifest not found: {manifest_path}", file=sys.stderr)
+            sys.exit(1)
+        with open(manifest_path, newline="") as f:
+            all_rows = list(csv.DictReader(f))
+
+        def _int_local(val):
+            return int(val) if val and val.strip() else 0
+
+        active = [r for r in all_rows if _int_local(r.get("skipped_delta", "0")) == 0]
+        OLD_CAP = 50000
+        truncated = []
+        for row in active:
+            ps1_csv = tiles_root / row["tile_id"] / "catalogs" / "ps1_neighbourhood.csv"
+            if not ps1_csv.exists():
+                continue
+            # Count data rows (total lines minus header)
+            with open(ps1_csv) as f:
+                n_lines = sum(1 for _ in f)
+            # n_lines includes header row; data rows = n_lines - 1
+            if n_lines - 1 == OLD_CAP:
+                truncated.append(str(tiles_root / row["tile_id"]))
+        print(f"# PS1-truncated tiles (data rows == {OLD_CAP}): {len(truncated)} of {len(active)} active", file=sys.stderr)
+        for td in truncated:
+            print(td)
+        sys.exit(0)
 
     manifest_path = run_dir / "tile_manifest.csv"
     if not manifest_path.exists():
