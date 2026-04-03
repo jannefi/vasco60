@@ -178,6 +178,7 @@ Post-pipeline veto stages operate on the run-scoped survivor set and progressive
 |---|---|---|
 | S0 | `scripts/build_run_stage_csvs.py` | Build initial run folder |
 | S0M ⚗️ | `scripts/stage_morph_post.py` | Morphology filter — PSF consistency ([docs](docs/STAGE_MORPH.md)) |
+| S0S ⚗️ | `scripts/stage_shape_post.py` | Shape filter — ellipticity & elongation ([docs](docs/STAGE_SHAPE.md)) |
 | S1 | `scripts/run_skybot_stage_bg.sh` | SkyBoT (solar system objects) |
 | S2 | `scripts/stage_supercosmos_post.py` | SuperCOSMOS (keep matches) |
 | S3 | `scripts/stage_ptf_post.py` | PTF catalogue |
@@ -196,6 +197,18 @@ Post-pipeline veto stages operate on the run-scoped survivor set and progressive
 | `tiles_registry.csv` | `data/metadata/` | All downloaded tiles with plate provenance |
 | `tile_to_plate.csv` | `data/metadata/` | Tile → FITS REGION mapping |
 | `stage_SN_*.csv` | `work/runs/<run>/stages/` | Per-stage survivor sets |
+
+---
+
+## Acknowledgements
+
+Special thanks to [Beatriz Villarroel](https://orcid.org/0000-0002-4101-237X) and
+[Alina Streblyanska](https://orcid.org/0000-0001-8876-9102), whose generous guidance
+and ongoing support have been invaluable throughout this work.
+
+Thanks also to Ivo Busko for his [plateanalysis](https://github.com/cuernodegazpacho/plateanalysis)
+software and the related [arXiv:2603.20407](https://arxiv.org/abs/2603.20407) publication,
+and for his help with that approach.
 
 ---
 
