@@ -31,9 +31,10 @@ Usage:
     All appeared to be plate artifacts. Result: looks promising.
     Note: 50.5% measured post-MNRAS-gates; true reduction (pre-gates) likely 60-80%.
 
-[ ] Scale up: download more tiles and re-run to confirm rejection rate at larger N.
-[ ] Future: pixel-level radial profile analysis (Busko 2026) as enhancement once
+[x] Scale up: download more tiles and re-run to confirm rejection rate at larger N.
+[X] pixel-level radial profile analysis (Busko 2026) as enhancement once
     the current approach is validated at full scale.
+[X] Implement reporting tool across delta runs
 
 ---
 
@@ -81,7 +82,7 @@ Cross-check D1 vs R1/R2/R3 (src_id comparison against final stage CSVs):
 Goal: ensure the pipeline is reproducible, auditable, and internally explainable.
 We do NOT target parity with the published MNRAS “R remainder” list.
 
-[ ] Funnel explainability report (run-scoped)
+[X] Funnel explainability report (run-scoped)
     - Produce a small “what removed what” summary per stage (counts + reasons).
 
 
