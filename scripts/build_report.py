@@ -27,20 +27,20 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 # Stage pipeline order definition
 # ---------------------------------------------------------------------------
-# Each entry: (ledger_glob, display_label, section)
+# Each entry: (ledger_glob, display_label, section, short_label)
 # section: "pipeline" | "postprocess"
 STAGES = [
     # These are synthesised from RUN_SUMMARY.txt, not ledgers
-    ("__pass2_raw__",  "pass2 raw detections",    "pipeline"),
-    ("__S0__",         "S0  post-MNRAS+dedup",    "pipeline"),
+    ("__pass2_raw__",  "pass2 raw detections",    "pipeline",    "RAW"),
+    ("__S0__",         "S0  post-MNRAS+dedup",    "pipeline",    "S0"),
     # Post-process stages in order
-    ("stage_S0M_MORPH_ledger.json",  "S0M MORPH",   "postprocess"),
-    ("stage_S4S_SHAPE_ledger.json",  "S4S SHAPE",   "postprocess"),
-    ("stage_S1_GSC_ledger.json",     "S1  GSC",     "postprocess"),
-    ("stage_S2_SKYBOT_ledger.json",  "S2  SKYBOT",  "postprocess"),
-    ("stage_S3_SCOS_ledger.json",    "S3  SCOS",    "postprocess"),
-    ("stage_S4_PTF_ledger.json",     "S4  PTF",     "postprocess"),
-    ("stage_S5_VSX_ledger.json",     "S5  VSX",     "postprocess"),
+    ("stage_S0M_MORPH_ledger.json",  "S0M MORPH",   "postprocess", "S0M"),
+    ("stage_S4S_SHAPE_ledger.json",  "S4S SHAPE",   "postprocess", "S4S"),
+    ("stage_S1_GSC_ledger.json",     "S1  GSC",     "postprocess", "S1"),
+    ("stage_S2_SKYBOT_ledger.json",  "S2  SKYBOT",  "postprocess", "S2"),
+    ("stage_S3_SCOS_ledger.json",    "S3  SCOS",    "postprocess", "S3"),
+    ("stage_S4_PTF_ledger.json",     "S4  PTF",     "postprocess", "S4"),
+    ("stage_S5_VSX_ledger.json",     "S5  VSX",     "postprocess", "S5"),
 ]
 
 FINAL_STAGE_CSV = "stage_S5_VSX.csv"
@@ -173,7 +173,7 @@ def collect_run(run_dir: Path, tile_date_obs_map: dict | None = None) -> dict:
     # Load all ledgers
     ledgers = {}
     stages_dir = run_dir / "stages"
-    for ledger_glob, _, _ in STAGES:
+    for ledger_glob, _, _, *_ in STAGES:
         if ledger_glob.startswith("__"):
             continue
         p = stages_dir / ledger_glob
@@ -181,7 +181,7 @@ def collect_run(run_dir: Path, tile_date_obs_map: dict | None = None) -> dict:
 
     # Build counts list in STAGES order
     counts = []
-    for ledger_glob, label, section in STAGES:
+    for ledger_glob, label, section, *_ in STAGES:
         if ledger_glob == "__pass2_raw__":
             counts.append(summary["pass2_raw"])
         elif ledger_glob == "__S0__":
@@ -248,78 +248,108 @@ def _fmt_count(v: int | None) -> str:
 
 
 def build_funnel_text(runs: list[dict]) -> str:
-    run_ids = [r["run_id"] for r in runs]
-    col_w = max(12, max(len(rid) + 10 for rid in run_ids))
+    """Transposed funnel: one row per run, one column per stage."""
+    n_stages = len(STAGES)
+    short_labels = [s[3] for s in STAGES]
 
-    lines = []
-    lines.append("VASCO60 — Detection Funnel")
-    lines.append(f"Generated: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}")
-    lines.append(f"Runs: {', '.join(run_ids)}")
-    lines.append("")
+    # Pre-compute cells[run_idx][stage_idx] = display string
+    # Also compute a TOTAL row (sum across runs per stage)
+    all_cells: list[list[str]] = []
+    total_counts: list[int | None] = [None] * n_stages
+    total_denoms: list[int | None] = [None] * n_stages
 
-    # Header
-    label_w = 26
-    header = f"{'Stage':<{label_w}}"
     for r in runs:
-        header += f"  {r['run_id']:>{col_w}}"
-    header += f"  {'TOTAL':>{col_w}}"
-    lines.append(header)
-    lines.append("-" * len(header))
+        run_cells: list[str] = []
+        prev_count: int | None = None
+        for s_idx, (ledger_glob, _label, _section, _short) in enumerate(STAGES):
+            count = r["counts"][s_idx]
 
-    prev_counts = [None] * len(runs)  # track previous row for % calc
-
-    last_section = None
-    for i, (ledger_glob, label, section) in enumerate(STAGES):
-        if section != last_section:
-            lines.append(f"  [{section.upper()}]")
-            last_section = section
-
-        row_counts = [r["counts"][i] for r in runs]
-        # Total (sum of non-None)
-        total = sum(c for c in row_counts if c is not None) if any(
-            c is not None for c in row_counts) else None
-
-        # For % calculation use the ledger's own input_rows when available,
-        # so stages that were run on a different input set (e.g. SKYBOT before SHAPE)
-        # don't produce misleading negative rejection percentages.
-        stages_dir_per_run = [Path(r["run_dir"]) / "stages" for r in runs]
-        input_denominators = []
-        for j, r in enumerate(runs):
             if ledger_glob.startswith("__"):
-                input_denominators.append(prev_counts[j])
+                denom = prev_count
             else:
                 ledger_path = Path(r["run_dir"]) / "stages" / ledger_glob
                 led = _load_ledger(ledger_path)
                 ledger_input = _input_rows(led)
-                input_denominators.append(ledger_input if ledger_input is not None else prev_counts[j])
+                denom = ledger_input if ledger_input is not None else prev_count
 
-        row = f"  {label:<{label_w - 2}}"
-        for j, cnt in enumerate(row_counts):
-            pct = _pct(cnt, input_denominators[j])
-            cell = _fmt_count(cnt)
+            pct = _pct(count, denom)
+            cell = _fmt_count(count)
             if pct:
                 cell = f"{cell} ({pct})"
-            row += f"  {cell:>{col_w}}"
+            run_cells.append(cell)
 
-        # Total column — use sum of input_denominators for total %
-        t_denom = sum(d for d in input_denominators if d is not None) if any(
-            d is not None for d in input_denominators) else None
-        t_pct = _pct(total, t_denom) if i > 0 else ""
-        tcell = _fmt_count(total)
-        if t_pct:
-            tcell = f"{tcell} ({t_pct})"
-        row += f"  {tcell:>{col_w}}"
+            # Accumulate totals
+            if count is not None:
+                total_counts[s_idx] = (total_counts[s_idx] or 0) + count
+            if denom is not None:
+                total_denoms[s_idx] = (total_denoms[s_idx] or 0) + denom
 
-        lines.append(row)
-        prev_counts = row_counts
+            prev_count = count
+        all_cells.append(run_cells)
 
+    # Build TOTAL row
+    total_cells: list[str] = []
+    for s_idx in range(n_stages):
+        tc = total_counts[s_idx]
+        pct = _pct(tc, total_denoms[s_idx]) if s_idx > 0 else ""
+        cell = _fmt_count(tc)
+        if pct:
+            cell = f"{cell} ({pct})"
+        total_cells.append(cell)
+
+    # Column widths: max of short label, all run cells, total cell
+    run_id_w = max(len(r["run_id"]) for r in runs)
+    run_id_w = max(run_id_w, 3)  # at least "Run"
+    col_widths = [
+        max(len(short_labels[s]),
+            max(len(all_cells[r][s]) for r in range(len(runs))),
+            len(total_cells[s]))
+        for s in range(n_stages)
+    ]
+
+    # Section separator positions: insert "|" between pipeline and postprocess
+    def _row(label: str, cells: list[str]) -> str:
+        row = f"{label:<{run_id_w}}"
+        last_section = None
+        for s_idx, (_, _lbl, section, _short) in enumerate(STAGES):
+            if last_section == "pipeline" and section == "postprocess":
+                row += "  |"
+            row += f"  {cells[s_idx]:>{col_widths[s_idx]}}"
+            last_section = section
+        return row
+
+    # Header row
+    header_cells = short_labels[:]
+    header = f"{'Run':<{run_id_w}}"
+    last_section = None
+    for s_idx, (_, _lbl, section, short) in enumerate(STAGES):
+        if last_section == "pipeline" and section == "postprocess":
+            header += "  |"
+        header += f"  {short:>{col_widths[s_idx]}}"
+        last_section = section
+
+    sep = "-" * len(_row("", ["—" * col_widths[s] for s in range(n_stages)]))
+
+    lines = [
+        "VASCO60 — Detection Funnel",
+        f"Generated: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}",
+        f"Runs: {', '.join(r['run_id'] for r in runs)}",
+        f"Columns: RAW S0 = pipeline  |  S0M..S5 = post-pipeline stages",
+        "",
+        header,
+        sep,
+    ]
+    for r_idx, r in enumerate(runs):
+        lines.append(_row(r["run_id"], all_cells[r_idx]))
+    lines.append(sep)
+    lines.append(_row("TOTAL", total_cells))
     lines.append("")
     return "\n".join(lines)
 
 
 def build_funnel_json(runs: list[dict]) -> dict:
     rows = []
-    for i, (ledger_glob, label, section) in enumerate(STAGES):
+    for i, (ledger_glob, label, section, *_) in enumerate(STAGES):
         entry = {"stage": label, "section": section, "runs": {}}
         for r in runs:
             entry["runs"][r["run_id"]] = r["counts"][i]

@@ -8,9 +8,9 @@ Tasks are derived from the Blocker Checklist in (runbook) [./context/10_VASCO60_
 
 [x] New feature to scripts/stage_shape_inspect.py: optionally exclude later stage CSV reductions e.g. if row is not present in stage_S5_VSX.csv, exclude it from inspection output
 
-[ ] build_report.py: add correct observation date/time from plate headers to survivor.csv 
+[x] build_report.py: add correct observation date/time from plate headers to survivor.csv 
 
-[ ] build_report.py: fix possible rounding bug in percentages. Example:
+[x] build_report.py: fix possible rounding bug in percentages. Example:
 S0  post-MNRAS+dedup      974 (-99.9%)  930 (-99.9%)  524 (-99.9%)  524 (-100.0%) 
 Run R4 shows -100% at S0 which is incorrect. 
 
