@@ -8,7 +8,7 @@ and stage ledger JSON files, and produces:
   <out-dir>/report-<timestamp>/
     funnel.txt          — ASCII funnel table with rejection %
     funnel.json         — same data, machine-readable
-    survivors.csv       — deduplicated survivors: src_id,tile_id,ra,dec,plate_id,run_id
+    survivors.csv       — deduplicated survivors: src_id,tile_id,ra,dec,plate_id,obs_date,run_id
     tile_coverage.csv   — tiles seen: tile_id,plate_id,run_id,rows_to_S0
     report_index.txt    — one-page human summary
 
@@ -141,6 +141,9 @@ def _pct(new_val: int | None, old_val: int | None) -> str:
         return ""
     rej = old_val - new_val
     pct = 100.0 * rej / old_val
+    # Avoid rounding artefact: only show -100.0% when truly all rows removed
+    if new_val > 0 and round(pct, 1) >= 100.0:
+        return "-99.9%"
     return f"-{pct:.1f}%"
 
 
@@ -148,7 +151,21 @@ def _pct(new_val: int | None, old_val: int | None) -> str:
 # Main collection logic
 # ---------------------------------------------------------------------------
 
-def collect_run(run_dir: Path) -> dict:
+def _load_tile_date_obs(tile_to_plate_csv: Path) -> dict:
+    """Return {tile_id: tile_date_obs} from tile_to_plate.csv."""
+    result = {}
+    if not tile_to_plate_csv.exists():
+        return result
+    with tile_to_plate_csv.open(encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            tid = row.get("tile_id", "").strip()
+            obs = row.get("tile_date_obs", "").strip()
+            if tid:
+                result[tid] = obs
+    return result
+
+
+def collect_run(run_dir: Path, tile_date_obs_map: dict | None = None) -> dict:
     """Return a dict with all counts for one run folder."""
     rid = _run_id(run_dir)
     summary = _parse_run_summary(run_dir / "RUN_SUMMARY.txt")
@@ -201,6 +218,7 @@ def collect_run(run_dir: Path) -> dict:
                     "ra":       row.get("ra", ""),
                     "dec":      row.get("dec", ""),
                     "plate_id": plate_map.get(tile_id, ""),
+                    "obs_date": (tile_date_obs_map or {}).get(tile_id, ""),
                     "run_id":   rid,
                 })
 
@@ -390,6 +408,8 @@ def main():
                         help="Parent directory for report output")
     parser.add_argument("--run-glob", default="run-R*",
                         help="Glob to match run folder names (default: run-R*)")
+    parser.add_argument("--tile-to-plate", default="./data/metadata/tile_to_plate.csv",
+                        help="tile_to_plate.csv path (default: ./data/metadata/tile_to_plate.csv)")
     args = parser.parse_args()
 
     runs_dir = Path(args.runs_dir)
@@ -404,10 +424,16 @@ def main():
     print(f"[REPORT] Found {len(run_dirs)} run folder(s): "
           f"{', '.join(d.name for d in run_dirs)}")
 
+    tile_date_obs_map = _load_tile_date_obs(Path(args.tile_to_plate))
+    if tile_date_obs_map:
+        print(f"[REPORT] Loaded obs dates for {len(tile_date_obs_map)} tiles from {args.tile_to_plate}")
+    else:
+        print(f"[REPORT] WARNING: tile_to_plate.csv not found or empty at {args.tile_to_plate} — obs_date will be blank")
+
     runs = []
     for rd in run_dirs:
         print(f"[REPORT]   collecting {rd.name} ...", end=" ", flush=True)
-        r = collect_run(rd)
+        r = collect_run(rd, tile_date_obs_map)
         print(f"{len(r['survivors'])} survivors, {len(r['tiles'])} tiles")
         runs.append(r)
 
@@ -435,7 +461,7 @@ def main():
     # survivors.csv
     p = report_dir / "survivors.csv"
     with p.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=["src_id", "tile_id", "ra", "dec", "plate_id", "run_id"])
+        w = csv.DictWriter(f, fieldnames=["src_id", "tile_id", "ra", "dec", "plate_id", "obs_date", "run_id"])
         w.writeheader()
         w.writerows(survivors)
     print(f"[REPORT] wrote: {p}  ({len(survivors)} rows)")
