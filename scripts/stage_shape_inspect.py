@@ -351,7 +351,13 @@ def _make_figure(
 # Candidate selection
 # ---------------------------------------------------------------------------
 
-def _select_candidates(flags_path: Path, mode: str, max_n: int, seed: int) -> List[dict]:
+def _select_candidates(
+    flags_path: Path,
+    mode: str,
+    max_n: int,
+    seed: int,
+    filter_src_ids: Optional[set] = None,
+) -> List[dict]:
     rows = []
     with flags_path.open(newline="", encoding="utf-8", errors="ignore") as fh:
         rows = list(csv.DictReader(fh))
@@ -380,6 +386,11 @@ def _select_candidates(flags_path: Path, mode: str, max_n: int, seed: int) -> Li
         sel = [r for r in rows if r.get("reject_flag") == "1"]
     else:
         raise ValueError(f"Unknown mode: {mode!r}")
+
+    if filter_src_ids is not None:
+        before = len(sel)
+        sel = [r for r in sel if r.get("src_id") in filter_src_ids]
+        print(f"[INSPECT] --filter-csv: {before} → {len(sel)} candidates after intersection")
 
     if len(sel) > max_n:
         rng = random.Random(seed)
@@ -412,6 +423,12 @@ def main() -> int:
                     help="Maximum number of PNGs to produce. Default: 30")
     ap.add_argument("--seed", type=int, default=42,
                     help="Random seed for sampling when N > --max-candidates. Default: 42")
+    ap.add_argument("--filter-csv", default=None,
+                    help="Later-stage CSV (e.g. stage_S5_VSX.csv); only candidates "
+                         "whose src_id appears in this file are included. "
+                         "Only meaningful with --mode survivors or low_confidence — "
+                         "rejected rows (profile_diff_only, all_rejects) can never "
+                         "appear in a later-stage CSV, so the intersection is always empty.")
     args = ap.parse_args()
 
     flags_path = Path(args.flags_csv)
@@ -450,8 +467,17 @@ def main() -> int:
             "opencv_thresholds": [21, 45],
         }
 
+    filter_src_ids: Optional[set] = None
+    if args.filter_csv:
+        filter_path = Path(args.filter_csv)
+        if not filter_path.exists():
+            raise SystemExit(f"--filter-csv not found: {filter_path}")
+        with filter_path.open(newline="", encoding="utf-8", errors="ignore") as fh:
+            filter_src_ids = {r["src_id"] for r in csv.DictReader(fh) if "src_id" in r}
+        print(f"[INSPECT] --filter-csv: loaded {len(filter_src_ids)} src_ids from {filter_path.name}")
+
     candidates = _select_candidates(
-        flags_path, args.mode, args.max_candidates, args.seed
+        flags_path, args.mode, args.max_candidates, args.seed, filter_src_ids
     )
     print(f"[INSPECT] mode={args.mode}  candidates={len(candidates)}")
 
