@@ -445,7 +445,11 @@ def main():
     runs_dir = Path(args.runs_dir)
     out_parent = Path(args.out_dir)
 
-    run_dirs = sorted(runs_dir.glob(args.run_glob))
+    def _run_sort_key(p: Path) -> tuple:
+        m = re.search(r"run-([A-Za-z]*)(\d+)-", p.name)
+        return (m.group(1), int(m.group(2))) if m else (p.name, 0)
+
+    run_dirs = sorted(runs_dir.glob(args.run_glob), key=_run_sort_key)
     if not run_dirs:
         print(f"[REPORT] ERROR: no run folders found matching {runs_dir}/{args.run_glob}",
               file=sys.stderr)
