@@ -179,6 +179,7 @@ Post-pipeline veto stages operate on the run-scoped survivor set and progressive
 | S0 | `scripts/build_run_stage_csvs.py` | Build initial run folder |
 | S0M ⚗️ | `scripts/stage_morph_post.py` | Morphology filter — PSF consistency ([docs](docs/STAGE_MORPH.md)) |
 | S0S ⚗️ | `scripts/stage_shape_post.py` | Shape filter — ellipticity & elongation ([docs](docs/STAGE_SHAPE.md)) |
+| GSC ⚗️ | `scripts/stage_gsc_post.py` | GSC 2.4.2 cross-match (VizieR I/353/gsc242) — experimental positional reduction stage |
 | S1 | `scripts/run_skybot_stage_bg.sh` | SkyBoT (solar system objects) |
 | S2 | `scripts/stage_supercosmos_post.py` | SuperCOSMOS (keep matches) |
 | S3 | `scripts/stage_ptf_post.py` | PTF catalogue |
