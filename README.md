@@ -201,6 +201,11 @@ Post-pipeline veto stages operate on the run-scoped survivor set and progressive
 
 ---
 
+## Public releases
+
+- [Release 6-Apr-2026](releases/release_2026_04_06/README.md)
+
+---
 ## Acknowledgements
 
 Special thanks to [Beatriz Villarroel](https://orcid.org/0000-0002-4101-237X) and
