@@ -1,0 +1,2582 @@
+{
+  "experimental": true,
+  "run_dir": "work/runs/run-R11-20260406_132941",
+  "input_glob": "stage_S0.csv",
+  "stage": "S0M",
+  "tiles_root": "data/tiles",
+  "parameters": {
+    "gaia_mag_min": 12.0,
+    "gaia_mag_max": 18.0,
+    "gaia_match_arcsec": 3.0,
+    "elongation_max": 1.3,
+    "min_psf_stars": 5,
+    "fwhm_ratio_max": 1.5,
+    "spread_snr_max": 5.0
+  },
+  "input_chunks": [
+    "stage_S0.csv"
+  ],
+  "totals": {
+    "input_rows": 798,
+    "rejected_rows": 396,
+    "kept_rows": 402,
+    "rejection_pct": 49.62
+  },
+  "tile_psf_summary": {
+    "ok": 254,
+    "psf_insufficient": 0,
+    "catalog_missing": 0
+  },
+  "per_tile": [
+    {
+      "tile_id": "tile_RA0.353_DECp47.807",
+      "psf_status": "ok",
+      "psf_star_count": 3887,
+      "psf_fwhm_median": 2.9388099,
+      "psf_spread_median": 0.0016988566,
+      "input_rows": 2,
+      "rejected_rows": 0,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA0.353_DECp48.807",
+      "psf_status": "ok",
+      "psf_star_count": 4000,
+      "psf_fwhm_median": 2.8898548999999996,
+      "psf_spread_median": 0.0029660678500000003,
+      "input_rows": 2,
+      "rejected_rows": 0,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA1.872_DECp46.807",
+      "psf_status": "ok",
+      "psf_star_count": 3478,
+      "psf_fwhm_median": 2.8543695,
+      "psf_spread_median": 0.0028823577999999997,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA1.872_DECp48.807",
+      "psf_status": "ok",
+      "psf_star_count": 4073,
+      "psf_fwhm_median": 2.8033268,
+      "psf_spread_median": 0.0030881471,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA1.872_DECp49.807",
+      "psf_status": "ok",
+      "psf_star_count": 4454,
+      "psf_fwhm_median": 2.83573565,
+      "psf_spread_median": 0.0028260065,
+      "input_rows": 2,
+      "rejected_rows": 1,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA1.872_DECp50.807",
+      "psf_status": "ok",
+      "psf_star_count": 4640,
+      "psf_fwhm_median": 2.7834414499999998,
+      "psf_spread_median": 0.0020869407,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA10.507_DECp46.796",
+      "psf_status": "ok",
+      "psf_star_count": 3215,
+      "psf_fwhm_median": 2.6084874,
+      "psf_spread_median": 0.004879766,
+      "input_rows": 4,
+      "rejected_rows": 1,
+      "kept_rows": 3
+    },
+    {
+      "tile_id": "tile_RA10.507_DECp47.796",
+      "psf_status": "ok",
+      "psf_star_count": 3728,
+      "psf_fwhm_median": 2.6114902,
+      "psf_spread_median": 0.0041857115,
+      "input_rows": 3,
+      "rejected_rows": 2,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA10.507_DECp48.796",
+      "psf_status": "ok",
+      "psf_star_count": 3797,
+      "psf_fwhm_median": 2.593617,
+      "psf_spread_median": 0.0041495534,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA10.507_DECp49.796",
+      "psf_status": "ok",
+      "psf_star_count": 4166,
+      "psf_fwhm_median": 2.5403887000000003,
+      "psf_spread_median": 0.0032785070499999997,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA10.507_DECp50.796",
+      "psf_status": "ok",
+      "psf_star_count": 3939,
+      "psf_fwhm_median": 2.5234988,
+      "psf_spread_median": 0.0021025592,
+      "input_rows": 4,
+      "rejected_rows": 4,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA101.748_DECp47.813",
+      "psf_status": "ok",
+      "psf_star_count": 2232,
+      "psf_fwhm_median": 2.7480314000000003,
+      "psf_spread_median": 0.0036686647,
+      "input_rows": 3,
+      "rejected_rows": 1,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA103.237_DECp46.813",
+      "psf_status": "ok",
+      "psf_star_count": 2241,
+      "psf_fwhm_median": 2.7742107,
+      "psf_spread_median": 0.0052943937,
+      "input_rows": 3,
+      "rejected_rows": 2,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA103.237_DECp47.813",
+      "psf_status": "ok",
+      "psf_star_count": 2230,
+      "psf_fwhm_median": 2.7192769,
+      "psf_spread_median": 0.00405396895,
+      "input_rows": 5,
+      "rejected_rows": 2,
+      "kept_rows": 3
+    },
+    {
+      "tile_id": "tile_RA103.237_DECp48.813",
+      "psf_status": "ok",
+      "psf_star_count": 2185,
+      "psf_fwhm_median": 2.7582996,
+      "psf_spread_median": 0.0045647216,
+      "input_rows": 5,
+      "rejected_rows": 4,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA104.726_DECp45.813",
+      "psf_status": "ok",
+      "psf_star_count": 2140,
+      "psf_fwhm_median": 2.77747405,
+      "psf_spread_median": 0.0058056143,
+      "input_rows": 5,
+      "rejected_rows": 0,
+      "kept_rows": 5
+    },
+    {
+      "tile_id": "tile_RA104.726_DECp46.813",
+      "psf_status": "ok",
+      "psf_star_count": 2339,
+      "psf_fwhm_median": 2.753833,
+      "psf_spread_median": 0.0056922617,
+      "input_rows": 2,
+      "rejected_rows": 0,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA104.726_DECp47.813",
+      "psf_status": "ok",
+      "psf_star_count": 2185,
+      "psf_fwhm_median": 2.748746,
+      "psf_spread_median": 0.0058233053,
+      "input_rows": 3,
+      "rejected_rows": 2,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA104.726_DECp49.813",
+      "psf_status": "ok",
+      "psf_star_count": 1903,
+      "psf_fwhm_median": 2.8025618,
+      "psf_spread_median": 0.0030137694,
+      "input_rows": 2,
+      "rejected_rows": 1,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA106.215_DECp46.813",
+      "psf_status": "ok",
+      "psf_star_count": 2040,
+      "psf_fwhm_median": 2.74554745,
+      "psf_spread_median": 0.00572678955,
+      "input_rows": 2,
+      "rejected_rows": 0,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA106.215_DECp47.813",
+      "psf_status": "ok",
+      "psf_star_count": 1995,
+      "psf_fwhm_median": 2.7413955,
+      "psf_spread_median": 0.005660967,
+      "input_rows": 2,
+      "rejected_rows": 1,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA106.215_DECp48.813",
+      "psf_status": "ok",
+      "psf_star_count": 1874,
+      "psf_fwhm_median": 2.7626751499999997,
+      "psf_spread_median": 0.005795701150000001,
+      "input_rows": 5,
+      "rejected_rows": 5,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA107.704_DECp47.813",
+      "psf_status": "ok",
+      "psf_star_count": 1747,
+      "psf_fwhm_median": 2.7810235,
+      "psf_spread_median": 0.005839442,
+      "input_rows": 5,
+      "rejected_rows": 2,
+      "kept_rows": 3
+    },
+    {
+      "tile_id": "tile_RA110.213_DECp47.700",
+      "psf_status": "ok",
+      "psf_star_count": 1597,
+      "psf_fwhm_median": 2.5245981,
+      "psf_spread_median": 0.003376585,
+      "input_rows": 3,
+      "rejected_rows": 2,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA111.699_DECp46.700",
+      "psf_status": "ok",
+      "psf_star_count": 1456,
+      "psf_fwhm_median": 2.5088259,
+      "psf_spread_median": 0.0045594783,
+      "input_rows": 3,
+      "rejected_rows": 2,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA111.699_DECp47.700",
+      "psf_status": "ok",
+      "psf_star_count": 1493,
+      "psf_fwhm_median": 2.5346298,
+      "psf_spread_median": 0.0061454014,
+      "input_rows": 5,
+      "rejected_rows": 3,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA111.699_DECp48.700",
+      "psf_status": "ok",
+      "psf_star_count": 1474,
+      "psf_fwhm_median": 2.50821665,
+      "psf_spread_median": 0.004943920250000001,
+      "input_rows": 5,
+      "rejected_rows": 2,
+      "kept_rows": 3
+    },
+    {
+      "tile_id": "tile_RA113.185_DECp45.700",
+      "psf_status": "ok",
+      "psf_star_count": 1427,
+      "psf_fwhm_median": 2.6389265,
+      "psf_spread_median": 0.0028326493,
+      "input_rows": 3,
+      "rejected_rows": 1,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA113.185_DECp46.700",
+      "psf_status": "ok",
+      "psf_star_count": 1450,
+      "psf_fwhm_median": 2.53132645,
+      "psf_spread_median": 0.0045095307,
+      "input_rows": 2,
+      "rejected_rows": 0,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA113.185_DECp47.700",
+      "psf_status": "ok",
+      "psf_star_count": 1401,
+      "psf_fwhm_median": 2.499311,
+      "psf_spread_median": 0.00585073,
+      "input_rows": 6,
+      "rejected_rows": 2,
+      "kept_rows": 4
+    },
+    {
+      "tile_id": "tile_RA113.185_DECp48.700",
+      "psf_status": "ok",
+      "psf_star_count": 1393,
+      "psf_fwhm_median": 2.5007162,
+      "psf_spread_median": 0.0063677784,
+      "input_rows": 2,
+      "rejected_rows": 1,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA113.185_DECp49.700",
+      "psf_status": "ok",
+      "psf_star_count": 1358,
+      "psf_fwhm_median": 2.5336355,
+      "psf_spread_median": 0.003929569,
+      "input_rows": 2,
+      "rejected_rows": 2,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA114.670_DECp46.700",
+      "psf_status": "ok",
+      "psf_star_count": 1350,
+      "psf_fwhm_median": 2.4901142,
+      "psf_spread_median": 0.004847842,
+      "input_rows": 3,
+      "rejected_rows": 2,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA114.670_DECp48.700",
+      "psf_status": "ok",
+      "psf_star_count": 1292,
+      "psf_fwhm_median": 2.49968025,
+      "psf_spread_median": 0.00484267,
+      "input_rows": 4,
+      "rejected_rows": 2,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA116.156_DECp47.700",
+      "psf_status": "ok",
+      "psf_star_count": 1217,
+      "psf_fwhm_median": 2.5851228,
+      "psf_spread_median": 0.004467022,
+      "input_rows": 5,
+      "rejected_rows": 2,
+      "kept_rows": 3
+    },
+    {
+      "tile_id": "tile_RA118.660_DECp47.593",
+      "psf_status": "ok",
+      "psf_star_count": 1194,
+      "psf_fwhm_median": 3.0490716,
+      "psf_spread_median": 0.003872216,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA12.025_DECp47.796",
+      "psf_status": "ok",
+      "psf_star_count": 3547,
+      "psf_fwhm_median": 2.607994,
+      "psf_spread_median": 0.0040991083,
+      "input_rows": 5,
+      "rejected_rows": 3,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA12.025_DECp48.796",
+      "psf_status": "ok",
+      "psf_star_count": 3744,
+      "psf_fwhm_median": 2.5635472000000004,
+      "psf_spread_median": 0.003357118,
+      "input_rows": 2,
+      "rejected_rows": 2,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA12.025_DECp49.796",
+      "psf_status": "ok",
+      "psf_star_count": 4049,
+      "psf_fwhm_median": 2.519627,
+      "psf_spread_median": 0.0027650606,
+      "input_rows": 2,
+      "rejected_rows": 1,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA120.142_DECp46.593",
+      "psf_status": "ok",
+      "psf_star_count": 1176,
+      "psf_fwhm_median": 3.24725135,
+      "psf_spread_median": 0.0040113792,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA120.142_DECp47.593",
+      "psf_status": "ok",
+      "psf_star_count": 1136,
+      "psf_fwhm_median": 3.252927,
+      "psf_spread_median": 0.0058737532,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA120.142_DECp48.593",
+      "psf_status": "ok",
+      "psf_star_count": 1128,
+      "psf_fwhm_median": 3.15107155,
+      "psf_spread_median": 0.00396374125,
+      "input_rows": 3,
+      "rejected_rows": 3,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA121.625_DECp45.593",
+      "psf_status": "ok",
+      "psf_star_count": 1016,
+      "psf_fwhm_median": 3.21941495,
+      "psf_spread_median": 0.005008818599999999,
+      "input_rows": 3,
+      "rejected_rows": 0,
+      "kept_rows": 3
+    },
+    {
+      "tile_id": "tile_RA121.625_DECp47.593",
+      "psf_status": "ok",
+      "psf_star_count": 1073,
+      "psf_fwhm_median": 3.2477798,
+      "psf_spread_median": 0.0066260756,
+      "input_rows": 2,
+      "rejected_rows": 1,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA121.625_DECp48.593",
+      "psf_status": "ok",
+      "psf_star_count": 1125,
+      "psf_fwhm_median": 3.110257,
+      "psf_spread_median": 0.0048153494,
+      "input_rows": 2,
+      "rejected_rows": 2,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA121.625_DECp49.593",
+      "psf_status": "ok",
+      "psf_star_count": 1010,
+      "psf_fwhm_median": 3.04354135,
+      "psf_spread_median": 0.0032326293500000002,
+      "input_rows": 5,
+      "rejected_rows": 5,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA123.108_DECp46.593",
+      "psf_status": "ok",
+      "psf_star_count": 1029,
+      "psf_fwhm_median": 3.2401245,
+      "psf_spread_median": 0.0038574475,
+      "input_rows": 3,
+      "rejected_rows": 0,
+      "kept_rows": 3
+    },
+    {
+      "tile_id": "tile_RA123.108_DECp47.593",
+      "psf_status": "ok",
+      "psf_star_count": 984,
+      "psf_fwhm_median": 3.19862905,
+      "psf_spread_median": 0.0055115749999999995,
+      "input_rows": 4,
+      "rejected_rows": 3,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA123.108_DECp48.593",
+      "psf_status": "ok",
+      "psf_star_count": 1003,
+      "psf_fwhm_median": 3.203537,
+      "psf_spread_median": 0.0064109964,
+      "input_rows": 3,
+      "rejected_rows": 1,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA124.591_DECp47.593",
+      "psf_status": "ok",
+      "psf_star_count": 974,
+      "psf_fwhm_median": 3.15551985,
+      "psf_spread_median": 0.0047165309,
+      "input_rows": 2,
+      "rejected_rows": 0,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA127.090_DECp47.494",
+      "psf_status": "ok",
+      "psf_star_count": 853,
+      "psf_fwhm_median": 2.4714725,
+      "psf_spread_median": 0.002633349,
+      "input_rows": 6,
+      "rejected_rows": 3,
+      "kept_rows": 3
+    },
+    {
+      "tile_id": "tile_RA128.570_DECp46.494",
+      "psf_status": "ok",
+      "psf_star_count": 875,
+      "psf_fwhm_median": 2.5032659,
+      "psf_spread_median": 0.0063002445,
+      "input_rows": 4,
+      "rejected_rows": 1,
+      "kept_rows": 3
+    },
+    {
+      "tile_id": "tile_RA128.570_DECp47.494",
+      "psf_status": "ok",
+      "psf_star_count": 852,
+      "psf_fwhm_median": 2.5046096,
+      "psf_spread_median": 0.00470040635,
+      "input_rows": 5,
+      "rejected_rows": 2,
+      "kept_rows": 3
+    },
+    {
+      "tile_id": "tile_RA128.570_DECp48.494",
+      "psf_status": "ok",
+      "psf_star_count": 792,
+      "psf_fwhm_median": 2.45969735,
+      "psf_spread_median": 0.0036070881999999997,
+      "input_rows": 2,
+      "rejected_rows": 1,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA13.543_DECp48.796",
+      "psf_status": "ok",
+      "psf_star_count": 3628,
+      "psf_fwhm_median": 2.57618965,
+      "psf_spread_median": 0.00328820105,
+      "input_rows": 3,
+      "rejected_rows": 3,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA130.050_DECp45.494",
+      "psf_status": "ok",
+      "psf_star_count": 787,
+      "psf_fwhm_median": 2.4788833,
+      "psf_spread_median": 0.004672993,
+      "input_rows": 12,
+      "rejected_rows": 0,
+      "kept_rows": 12
+    },
+    {
+      "tile_id": "tile_RA130.050_DECp46.494",
+      "psf_status": "ok",
+      "psf_star_count": 827,
+      "psf_fwhm_median": 2.5346787,
+      "psf_spread_median": 0.0059887166,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA130.050_DECp47.494",
+      "psf_status": "ok",
+      "psf_star_count": 819,
+      "psf_fwhm_median": 2.4903517,
+      "psf_spread_median": 0.0052981633,
+      "input_rows": 5,
+      "rejected_rows": 1,
+      "kept_rows": 4
+    },
+    {
+      "tile_id": "tile_RA130.050_DECp48.494",
+      "psf_status": "ok",
+      "psf_star_count": 773,
+      "psf_fwhm_median": 2.4086556,
+      "psf_spread_median": 0.0049267337,
+      "input_rows": 10,
+      "rejected_rows": 3,
+      "kept_rows": 7
+    },
+    {
+      "tile_id": "tile_RA130.050_DECp49.494",
+      "psf_status": "ok",
+      "psf_star_count": 824,
+      "psf_fwhm_median": 2.416253,
+      "psf_spread_median": 0.0041818209,
+      "input_rows": 5,
+      "rejected_rows": 4,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA131.530_DECp46.494",
+      "psf_status": "ok",
+      "psf_star_count": 792,
+      "psf_fwhm_median": 2.4799517499999997,
+      "psf_spread_median": 0.0049145193,
+      "input_rows": 8,
+      "rejected_rows": 4,
+      "kept_rows": 4
+    },
+    {
+      "tile_id": "tile_RA131.530_DECp47.494",
+      "psf_status": "ok",
+      "psf_star_count": 735,
+      "psf_fwhm_median": 2.4168777,
+      "psf_spread_median": 0.00406496,
+      "input_rows": 3,
+      "rejected_rows": 2,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA131.530_DECp48.494",
+      "psf_status": "ok",
+      "psf_star_count": 728,
+      "psf_fwhm_median": 2.3530245,
+      "psf_spread_median": 0.0033762175,
+      "input_rows": 3,
+      "rejected_rows": 0,
+      "kept_rows": 3
+    },
+    {
+      "tile_id": "tile_RA133.010_DECp47.494",
+      "psf_status": "ok",
+      "psf_star_count": 712,
+      "psf_fwhm_median": 2.40548435,
+      "psf_spread_median": 0.003940021,
+      "input_rows": 4,
+      "rejected_rows": 3,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA136.982_DECp46.407",
+      "psf_status": "ok",
+      "psf_star_count": 691,
+      "psf_fwhm_median": 2.8785467,
+      "psf_spread_median": 0.0050498713,
+      "input_rows": 10,
+      "rejected_rows": 3,
+      "kept_rows": 7
+    },
+    {
+      "tile_id": "tile_RA136.982_DECp47.407",
+      "psf_status": "ok",
+      "psf_star_count": 729,
+      "psf_fwhm_median": 2.993064,
+      "psf_spread_median": 0.0049614147,
+      "input_rows": 3,
+      "rejected_rows": 2,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA136.982_DECp48.407",
+      "psf_status": "ok",
+      "psf_star_count": 690,
+      "psf_fwhm_median": 3.1054132,
+      "psf_spread_median": 0.0047028339500000006,
+      "input_rows": 5,
+      "rejected_rows": 3,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA138.459_DECp45.407",
+      "psf_status": "ok",
+      "psf_star_count": 669,
+      "psf_fwhm_median": 2.9174902,
+      "psf_spread_median": 0.0048016193,
+      "input_rows": 4,
+      "rejected_rows": 1,
+      "kept_rows": 3
+    },
+    {
+      "tile_id": "tile_RA138.459_DECp46.407",
+      "psf_status": "ok",
+      "psf_star_count": 685,
+      "psf_fwhm_median": 3.0767899,
+      "psf_spread_median": 0.0064684777,
+      "input_rows": 4,
+      "rejected_rows": 0,
+      "kept_rows": 4
+    },
+    {
+      "tile_id": "tile_RA138.459_DECp47.407",
+      "psf_status": "ok",
+      "psf_star_count": 686,
+      "psf_fwhm_median": 3.1459345499999998,
+      "psf_spread_median": 0.0073829924,
+      "input_rows": 5,
+      "rejected_rows": 1,
+      "kept_rows": 4
+    },
+    {
+      "tile_id": "tile_RA138.459_DECp48.407",
+      "psf_status": "ok",
+      "psf_star_count": 663,
+      "psf_fwhm_median": 3.0845025,
+      "psf_spread_median": 0.0054234,
+      "input_rows": 4,
+      "rejected_rows": 1,
+      "kept_rows": 3
+    },
+    {
+      "tile_id": "tile_RA138.459_DECp49.407",
+      "psf_status": "ok",
+      "psf_star_count": 653,
+      "psf_fwhm_median": 3.1828485,
+      "psf_spread_median": 0.0029461314,
+      "input_rows": 5,
+      "rejected_rows": 3,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA139.937_DECp46.407",
+      "psf_status": "ok",
+      "psf_star_count": 669,
+      "psf_fwhm_median": 2.9315975,
+      "psf_spread_median": 0.005131436,
+      "input_rows": 5,
+      "rejected_rows": 3,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA139.937_DECp47.407",
+      "psf_status": "ok",
+      "psf_star_count": 686,
+      "psf_fwhm_median": 3.01761655,
+      "psf_spread_median": 0.0050819735,
+      "input_rows": 6,
+      "rejected_rows": 2,
+      "kept_rows": 4
+    },
+    {
+      "tile_id": "tile_RA139.937_DECp48.407",
+      "psf_status": "ok",
+      "psf_star_count": 675,
+      "psf_fwhm_median": 2.9692187,
+      "psf_spread_median": 0.005675706,
+      "input_rows": 6,
+      "rejected_rows": 4,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA141.415_DECp47.407",
+      "psf_status": "ok",
+      "psf_star_count": 631,
+      "psf_fwhm_median": 3.0843213,
+      "psf_spread_median": 0.005586447,
+      "input_rows": 9,
+      "rejected_rows": 1,
+      "kept_rows": 8
+    },
+    {
+      "tile_id": "tile_RA143.905_DECp47.333",
+      "psf_status": "ok",
+      "psf_star_count": 565,
+      "psf_fwhm_median": 2.5500758,
+      "psf_spread_median": 0.006740692,
+      "input_rows": 9,
+      "rejected_rows": 5,
+      "kept_rows": 4
+    },
+    {
+      "tile_id": "tile_RA145.381_DECp46.333",
+      "psf_status": "ok",
+      "psf_star_count": 578,
+      "psf_fwhm_median": 2.6061862,
+      "psf_spread_median": 0.0081249015,
+      "input_rows": 6,
+      "rejected_rows": 0,
+      "kept_rows": 6
+    },
+    {
+      "tile_id": "tile_RA145.381_DECp47.333",
+      "psf_status": "ok",
+      "psf_star_count": 546,
+      "psf_fwhm_median": 2.56124855,
+      "psf_spread_median": 0.0094630425,
+      "input_rows": 10,
+      "rejected_rows": 5,
+      "kept_rows": 5
+    },
+    {
+      "tile_id": "tile_RA145.381_DECp48.333",
+      "psf_status": "ok",
+      "psf_star_count": 562,
+      "psf_fwhm_median": 2.5297327000000003,
+      "psf_spread_median": 0.0088982435,
+      "input_rows": 4,
+      "rejected_rows": 0,
+      "kept_rows": 4
+    },
+    {
+      "tile_id": "tile_RA146.856_DECp45.333",
+      "psf_status": "ok",
+      "psf_star_count": 546,
+      "psf_fwhm_median": 2.5910351499999997,
+      "psf_spread_median": 0.0027687513000000004,
+      "input_rows": 3,
+      "rejected_rows": 2,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA146.856_DECp46.333",
+      "psf_status": "ok",
+      "psf_star_count": 551,
+      "psf_fwhm_median": 2.63309,
+      "psf_spread_median": 0.0040941527,
+      "input_rows": 2,
+      "rejected_rows": 0,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA146.856_DECp48.333",
+      "psf_status": "ok",
+      "psf_star_count": 572,
+      "psf_fwhm_median": 2.5753899000000002,
+      "psf_spread_median": 0.00141485615,
+      "input_rows": 2,
+      "rejected_rows": 0,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA146.856_DECp49.333",
+      "psf_status": "ok",
+      "psf_star_count": 561,
+      "psf_fwhm_median": 2.700044,
+      "psf_spread_median": 0.0035822066,
+      "input_rows": 2,
+      "rejected_rows": 1,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA148.332_DECp46.333",
+      "psf_status": "ok",
+      "psf_star_count": 577,
+      "psf_fwhm_median": 2.569203,
+      "psf_spread_median": 0.0062359967,
+      "input_rows": 8,
+      "rejected_rows": 6,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA148.332_DECp47.333",
+      "psf_status": "ok",
+      "psf_star_count": 540,
+      "psf_fwhm_median": 2.59635225,
+      "psf_spread_median": 0.0029429225000000003,
+      "input_rows": 5,
+      "rejected_rows": 2,
+      "kept_rows": 3
+    },
+    {
+      "tile_id": "tile_RA148.332_DECp48.333",
+      "psf_status": "ok",
+      "psf_star_count": 525,
+      "psf_fwhm_median": 2.5224245,
+      "psf_spread_median": 0.0074755903,
+      "input_rows": 7,
+      "rejected_rows": 1,
+      "kept_rows": 6
+    },
+    {
+      "tile_id": "tile_RA149.807_DECp47.333",
+      "psf_status": "ok",
+      "psf_star_count": 555,
+      "psf_fwhm_median": 2.5962944,
+      "psf_spread_median": 0.00438778,
+      "input_rows": 5,
+      "rejected_rows": 2,
+      "kept_rows": 3
+    },
+    {
+      "tile_id": "tile_RA152.296_DECp47.274",
+      "psf_status": "ok",
+      "psf_star_count": 502,
+      "psf_fwhm_median": 2.8671379999999997,
+      "psf_spread_median": 0.00272636885,
+      "input_rows": 6,
+      "rejected_rows": 2,
+      "kept_rows": 4
+    },
+    {
+      "tile_id": "tile_RA153.769_DECp46.274",
+      "psf_status": "ok",
+      "psf_star_count": 490,
+      "psf_fwhm_median": 2.8663251499999998,
+      "psf_spread_median": 0.0035274168500000003,
+      "input_rows": 2,
+      "rejected_rows": 2,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA153.769_DECp47.274",
+      "psf_status": "ok",
+      "psf_star_count": 477,
+      "psf_fwhm_median": 2.878212,
+      "psf_spread_median": 0.0056959833,
+      "input_rows": 7,
+      "rejected_rows": 2,
+      "kept_rows": 5
+    },
+    {
+      "tile_id": "tile_RA153.769_DECp48.274",
+      "psf_status": "ok",
+      "psf_star_count": 520,
+      "psf_fwhm_median": 2.8760942,
+      "psf_spread_median": 0.00033944974999999995,
+      "input_rows": 5,
+      "rejected_rows": 4,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA155.243_DECp45.274",
+      "psf_status": "ok",
+      "psf_star_count": 501,
+      "psf_fwhm_median": 2.7641122,
+      "psf_spread_median": 0.0029847978,
+      "input_rows": 7,
+      "rejected_rows": 3,
+      "kept_rows": 4
+    },
+    {
+      "tile_id": "tile_RA155.243_DECp46.274",
+      "psf_status": "ok",
+      "psf_star_count": 469,
+      "psf_fwhm_median": 2.8686497,
+      "psf_spread_median": 0.0021673513,
+      "input_rows": 8,
+      "rejected_rows": 4,
+      "kept_rows": 4
+    },
+    {
+      "tile_id": "tile_RA155.243_DECp47.274",
+      "psf_status": "ok",
+      "psf_star_count": 505,
+      "psf_fwhm_median": 2.798604,
+      "psf_spread_median": 0.004191525,
+      "input_rows": 3,
+      "rejected_rows": 2,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA155.243_DECp48.274",
+      "psf_status": "ok",
+      "psf_star_count": 466,
+      "psf_fwhm_median": 2.75494525,
+      "psf_spread_median": 0.00419004615,
+      "input_rows": 4,
+      "rejected_rows": 2,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA155.243_DECp49.274",
+      "psf_status": "ok",
+      "psf_star_count": 512,
+      "psf_fwhm_median": 2.7811401499999997,
+      "psf_spread_median": 0.00183936725,
+      "input_rows": 4,
+      "rejected_rows": 3,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA156.717_DECp46.274",
+      "psf_status": "ok",
+      "psf_star_count": 540,
+      "psf_fwhm_median": 2.8290409,
+      "psf_spread_median": 0.0059669095,
+      "input_rows": 5,
+      "rejected_rows": 3,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA156.717_DECp47.274",
+      "psf_status": "ok",
+      "psf_star_count": 511,
+      "psf_fwhm_median": 2.7300158,
+      "psf_spread_median": 0.0053698495,
+      "input_rows": 5,
+      "rejected_rows": 2,
+      "kept_rows": 3
+    },
+    {
+      "tile_id": "tile_RA156.717_DECp48.274",
+      "psf_status": "ok",
+      "psf_star_count": 482,
+      "psf_fwhm_median": 2.8623537,
+      "psf_spread_median": 0.00415342,
+      "input_rows": 2,
+      "rejected_rows": 2,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA158.191_DECp47.274",
+      "psf_status": "ok",
+      "psf_star_count": 502,
+      "psf_fwhm_median": 2.8234677,
+      "psf_spread_median": 0.0041635968,
+      "input_rows": 3,
+      "rejected_rows": 2,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA16.104_DECp48.767",
+      "psf_status": "ok",
+      "psf_star_count": 3708,
+      "psf_fwhm_median": 2.7160045,
+      "psf_spread_median": 0.00234322215,
+      "input_rows": 4,
+      "rejected_rows": 2,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA17.622_DECp47.767",
+      "psf_status": "ok",
+      "psf_star_count": 3614,
+      "psf_fwhm_median": 2.7722949999999997,
+      "psf_spread_median": 0.00266318395,
+      "input_rows": 2,
+      "rejected_rows": 1,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA17.622_DECp48.767",
+      "psf_status": "ok",
+      "psf_star_count": 3730,
+      "psf_fwhm_median": 2.7848860999999996,
+      "psf_spread_median": 0.0037791325,
+      "input_rows": 3,
+      "rejected_rows": 2,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA17.622_DECp49.767",
+      "psf_status": "ok",
+      "psf_star_count": 4157,
+      "psf_fwhm_median": 2.7141209,
+      "psf_spread_median": 0.0024351433,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA19.139_DECp46.767",
+      "psf_status": "ok",
+      "psf_star_count": 3310,
+      "psf_fwhm_median": 2.7685762499999997,
+      "psf_spread_median": 0.00263181435,
+      "input_rows": 6,
+      "rejected_rows": 0,
+      "kept_rows": 6
+    },
+    {
+      "tile_id": "tile_RA19.139_DECp47.767",
+      "psf_status": "ok",
+      "psf_star_count": 3658,
+      "psf_fwhm_median": 2.77798815,
+      "psf_spread_median": 0.0031478894,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA19.139_DECp48.767",
+      "psf_status": "ok",
+      "psf_star_count": 3804,
+      "psf_fwhm_median": 2.7631575,
+      "psf_spread_median": 0.003066906,
+      "input_rows": 3,
+      "rejected_rows": 2,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA19.139_DECp49.767",
+      "psf_status": "ok",
+      "psf_star_count": 3920,
+      "psf_fwhm_median": 2.7160960000000003,
+      "psf_spread_median": 0.0024535639500000003,
+      "input_rows": 3,
+      "rejected_rows": 1,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA20.656_DECp47.767",
+      "psf_status": "ok",
+      "psf_star_count": 3510,
+      "psf_fwhm_median": 2.84089525,
+      "psf_spread_median": 0.003560902,
+      "input_rows": 3,
+      "rejected_rows": 2,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA20.656_DECp48.767",
+      "psf_status": "ok",
+      "psf_star_count": 3828,
+      "psf_fwhm_median": 2.788615,
+      "psf_spread_median": 0.0029939766,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA20.656_DECp49.767",
+      "psf_status": "ok",
+      "psf_star_count": 4069,
+      "psf_fwhm_median": 2.7215567,
+      "psf_spread_median": 0.0022772965,
+      "input_rows": 3,
+      "rejected_rows": 3,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA22.173_DECp48.767",
+      "psf_status": "ok",
+      "psf_star_count": 3880,
+      "psf_fwhm_median": 2.755614,
+      "psf_spread_median": 0.0026924493999999997,
+      "input_rows": 3,
+      "rejected_rows": 2,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA26.248_DECp47.722",
+      "psf_status": "ok",
+      "psf_star_count": 3603,
+      "psf_fwhm_median": 2.9867945,
+      "psf_spread_median": 0.0018821418,
+      "input_rows": 3,
+      "rejected_rows": 2,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA26.248_DECp48.722",
+      "psf_status": "ok",
+      "psf_star_count": 3731,
+      "psf_fwhm_median": 3.043884,
+      "psf_spread_median": 0.0023596687,
+      "input_rows": 3,
+      "rejected_rows": 2,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA26.248_DECp49.722",
+      "psf_status": "ok",
+      "psf_star_count": 4209,
+      "psf_fwhm_median": 3.0232575,
+      "psf_spread_median": 0.002285824,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA27.764_DECp46.722",
+      "psf_status": "ok",
+      "psf_star_count": 3496,
+      "psf_fwhm_median": 2.9537881500000003,
+      "psf_spread_median": 0.0027649893,
+      "input_rows": 2,
+      "rejected_rows": 0,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA27.764_DECp47.722",
+      "psf_status": "ok",
+      "psf_star_count": 3681,
+      "psf_fwhm_median": 3.0678864,
+      "psf_spread_median": 0.002626096,
+      "input_rows": 3,
+      "rejected_rows": 2,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA27.764_DECp49.722",
+      "psf_status": "ok",
+      "psf_star_count": 4212,
+      "psf_fwhm_median": 3.0490273,
+      "psf_spread_median": 0.0022676758500000003,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA27.764_DECp50.722",
+      "psf_status": "ok",
+      "psf_star_count": 4681,
+      "psf_fwhm_median": 2.9116676,
+      "psf_spread_median": 0.002139021,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA29.280_DECp47.722",
+      "psf_status": "ok",
+      "psf_star_count": 3744,
+      "psf_fwhm_median": 3.0689352000000003,
+      "psf_spread_median": 0.00235791425,
+      "input_rows": 2,
+      "rejected_rows": 1,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA29.280_DECp48.722",
+      "psf_status": "ok",
+      "psf_star_count": 3808,
+      "psf_fwhm_median": 3.09217875,
+      "psf_spread_median": 0.0027866352999999996,
+      "input_rows": 2,
+      "rejected_rows": 1,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA29.280_DECp49.722",
+      "psf_status": "ok",
+      "psf_star_count": 4228,
+      "psf_fwhm_median": 3.0708507000000003,
+      "psf_spread_median": 0.0027032024999999998,
+      "input_rows": 2,
+      "rejected_rows": 0,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA3.390_DECp47.807",
+      "psf_status": "ok",
+      "psf_star_count": 3791,
+      "psf_fwhm_median": 2.8397303,
+      "psf_spread_median": 0.003848683,
+      "input_rows": 3,
+      "rejected_rows": 2,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA3.390_DECp48.807",
+      "psf_status": "ok",
+      "psf_star_count": 4063,
+      "psf_fwhm_median": 2.7940867,
+      "psf_spread_median": 0.0033540241,
+      "input_rows": 5,
+      "rejected_rows": 3,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA3.390_DECp49.807",
+      "psf_status": "ok",
+      "psf_star_count": 4335,
+      "psf_fwhm_median": 2.8424382,
+      "psf_spread_median": 0.0021978575,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA30.795_DECp48.722",
+      "psf_status": "ok",
+      "psf_star_count": 3970,
+      "psf_fwhm_median": 2.9294919,
+      "psf_spread_median": 0.0027801014000000002,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA303.213_DECp53.457",
+      "psf_status": "ok",
+      "psf_star_count": 6026,
+      "psf_fwhm_median": 2.3527140500000003,
+      "psf_spread_median": 0.0023194502,
+      "input_rows": 3,
+      "rejected_rows": 3,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA303.213_DECp54.457",
+      "psf_status": "ok",
+      "psf_star_count": 5579,
+      "psf_fwhm_median": 2.3465312,
+      "psf_spread_median": 0.0020066334,
+      "input_rows": 3,
+      "rejected_rows": 1,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA303.213_DECp55.457",
+      "psf_status": "ok",
+      "psf_star_count": 5041,
+      "psf_fwhm_median": 2.362754,
+      "psf_spread_median": 0.0014267886,
+      "input_rows": 13,
+      "rejected_rows": 7,
+      "kept_rows": 6
+    },
+    {
+      "tile_id": "tile_RA304.933_DECp52.457",
+      "psf_status": "ok",
+      "psf_star_count": 7785,
+      "psf_fwhm_median": 2.3446023,
+      "psf_spread_median": 0.0016370832,
+      "input_rows": 9,
+      "rejected_rows": 6,
+      "kept_rows": 3
+    },
+    {
+      "tile_id": "tile_RA304.933_DECp53.457",
+      "psf_status": "ok",
+      "psf_star_count": 7510,
+      "psf_fwhm_median": 2.32561005,
+      "psf_spread_median": 0.00180279945,
+      "input_rows": 3,
+      "rejected_rows": 3,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA304.933_DECp54.457",
+      "psf_status": "ok",
+      "psf_star_count": 6407,
+      "psf_fwhm_median": 2.3362176,
+      "psf_spread_median": 0.0012230081,
+      "input_rows": 2,
+      "rejected_rows": 2,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA304.933_DECp55.457",
+      "psf_status": "ok",
+      "psf_star_count": 6055,
+      "psf_fwhm_median": 2.358647,
+      "psf_spread_median": 0.0021559363,
+      "input_rows": 4,
+      "rejected_rows": 2,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA304.933_DECp56.457",
+      "psf_status": "ok",
+      "psf_star_count": 5319,
+      "psf_fwhm_median": 2.3637738,
+      "psf_spread_median": 0.001412345,
+      "input_rows": 2,
+      "rejected_rows": 1,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA306.653_DECp55.457",
+      "psf_status": "ok",
+      "psf_star_count": 6320,
+      "psf_fwhm_median": 2.3069725,
+      "psf_spread_median": 0.0015762308,
+      "input_rows": 3,
+      "rejected_rows": 1,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA308.374_DECp54.457",
+      "psf_status": "ok",
+      "psf_star_count": 7545,
+      "psf_fwhm_median": 2.2973378,
+      "psf_spread_median": 0.0014683016,
+      "input_rows": 2,
+      "rejected_rows": 0,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA311.100_DECp54.561",
+      "psf_status": "ok",
+      "psf_star_count": 6438,
+      "psf_fwhm_median": 2.2465222999999996,
+      "psf_spread_median": 0.0005832650700000001,
+      "input_rows": 3,
+      "rejected_rows": 1,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA312.825_DECp53.561",
+      "psf_status": "ok",
+      "psf_star_count": 6377,
+      "psf_fwhm_median": 2.1569574,
+      "psf_spread_median": 0.00064534723,
+      "input_rows": 2,
+      "rejected_rows": 1,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA312.825_DECp54.561",
+      "psf_status": "ok",
+      "psf_star_count": 6608,
+      "psf_fwhm_median": 2.1815244,
+      "psf_spread_median": 0.000577403215,
+      "input_rows": 3,
+      "rejected_rows": 1,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA312.825_DECp55.561",
+      "psf_status": "ok",
+      "psf_star_count": 4902,
+      "psf_fwhm_median": 2.1382016,
+      "psf_spread_median": 0.00019471926500000002,
+      "input_rows": 3,
+      "rejected_rows": 2,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA314.550_DECp52.561",
+      "psf_status": "ok",
+      "psf_star_count": 2792,
+      "psf_fwhm_median": 2.1521705,
+      "psf_spread_median": 0.00045758910000000003,
+      "input_rows": 8,
+      "rejected_rows": 1,
+      "kept_rows": 7
+    },
+    {
+      "tile_id": "tile_RA314.550_DECp53.561",
+      "psf_status": "ok",
+      "psf_star_count": 4423,
+      "psf_fwhm_median": 2.152232,
+      "psf_spread_median": 0.000403322,
+      "input_rows": 2,
+      "rejected_rows": 2,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA314.550_DECp54.561",
+      "psf_status": "ok",
+      "psf_star_count": 6073,
+      "psf_fwhm_median": 2.1861954,
+      "psf_spread_median": 0.0010317577,
+      "input_rows": 2,
+      "rejected_rows": 1,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA314.550_DECp55.561",
+      "psf_status": "ok",
+      "psf_star_count": 4750,
+      "psf_fwhm_median": 2.16266275,
+      "psf_spread_median": 0.00076367368,
+      "input_rows": 5,
+      "rejected_rows": 2,
+      "kept_rows": 3
+    },
+    {
+      "tile_id": "tile_RA314.550_DECp56.561",
+      "psf_status": "ok",
+      "psf_star_count": 5787,
+      "psf_fwhm_median": 2.1779432,
+      "psf_spread_median": 0.00037736745,
+      "input_rows": 4,
+      "rejected_rows": 0,
+      "kept_rows": 4
+    },
+    {
+      "tile_id": "tile_RA316.274_DECp53.561",
+      "psf_status": "ok",
+      "psf_star_count": 3406,
+      "psf_fwhm_median": 2.1542547,
+      "psf_spread_median": 0.000898436645,
+      "input_rows": 2,
+      "rejected_rows": 1,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA316.274_DECp54.561",
+      "psf_status": "ok",
+      "psf_star_count": 4560,
+      "psf_fwhm_median": 2.1722663,
+      "psf_spread_median": 0.000234382825,
+      "input_rows": 6,
+      "rejected_rows": 6,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA316.274_DECp55.561",
+      "psf_status": "ok",
+      "psf_star_count": 5921,
+      "psf_fwhm_median": 2.1943054,
+      "psf_spread_median": 8.670046e-05,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA317.999_DECp54.561",
+      "psf_status": "ok",
+      "psf_star_count": 4448,
+      "psf_fwhm_median": 2.18032715,
+      "psf_spread_median": -0.000132009745,
+      "input_rows": 3,
+      "rejected_rows": 2,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA33.352_DECp48.660",
+      "psf_status": "ok",
+      "psf_star_count": 3341,
+      "psf_fwhm_median": 2.6492333,
+      "psf_spread_median": -0.00013896999,
+      "input_rows": 2,
+      "rejected_rows": 1,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA34.866_DECp47.660",
+      "psf_status": "ok",
+      "psf_star_count": 3328,
+      "psf_fwhm_median": 2.7334434,
+      "psf_spread_median": 0.00112556795,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA34.866_DECp48.660",
+      "psf_status": "ok",
+      "psf_star_count": 3393,
+      "psf_fwhm_median": 2.667798,
+      "psf_spread_median": 0.0004520785,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA34.866_DECp49.660",
+      "psf_status": "ok",
+      "psf_star_count": 3850,
+      "psf_fwhm_median": 2.59173175,
+      "psf_spread_median": 0.0006816253,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA340.056_DECp54.771",
+      "psf_status": "ok",
+      "psf_star_count": 6153,
+      "psf_fwhm_median": 2.6393557,
+      "psf_spread_median": -0.00044288716,
+      "input_rows": 2,
+      "rejected_rows": 2,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA341.789_DECp53.771",
+      "psf_status": "ok",
+      "psf_star_count": 7223,
+      "psf_fwhm_median": 2.5933826,
+      "psf_spread_median": 0.0003700958,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA341.789_DECp54.771",
+      "psf_status": "ok",
+      "psf_star_count": 7840,
+      "psf_fwhm_median": 2.53543425,
+      "psf_spread_median": 0.000267142025,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA341.789_DECp55.771",
+      "psf_status": "ok",
+      "psf_star_count": 7108,
+      "psf_fwhm_median": 2.5743656,
+      "psf_spread_median": 0.0012054470000000001,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA343.523_DECp52.771",
+      "psf_status": "ok",
+      "psf_star_count": 6981,
+      "psf_fwhm_median": 2.648876,
+      "psf_spread_median": 0.0008028276,
+      "input_rows": 2,
+      "rejected_rows": 1,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA343.523_DECp55.771",
+      "psf_status": "ok",
+      "psf_star_count": 7254,
+      "psf_fwhm_median": 2.58070325,
+      "psf_spread_median": 0.00057353328,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA345.257_DECp53.771",
+      "psf_status": "ok",
+      "psf_star_count": 7471,
+      "psf_fwhm_median": 2.6555305,
+      "psf_spread_median": 0.0016777585,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA345.257_DECp54.771",
+      "psf_status": "ok",
+      "psf_star_count": 6707,
+      "psf_fwhm_median": 2.6951816,
+      "psf_spread_median": 0.00017068711,
+      "input_rows": 3,
+      "rejected_rows": 1,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA346.990_DECp54.771",
+      "psf_status": "ok",
+      "psf_star_count": 5206,
+      "psf_fwhm_median": 2.7936979500000003,
+      "psf_spread_median": -0.0007959711649999999,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA351.472_DECp53.800",
+      "psf_status": "ok",
+      "psf_star_count": 6159,
+      "psf_fwhm_median": 2.404257,
+      "psf_spread_median": 0.0009850353,
+      "input_rows": 3,
+      "rejected_rows": 3,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA353.207_DECp53.800",
+      "psf_status": "ok",
+      "psf_star_count": 5926,
+      "psf_fwhm_median": 2.4007361,
+      "psf_spread_median": 0.0020084542,
+      "input_rows": 2,
+      "rejected_rows": 2,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA353.207_DECp55.800",
+      "psf_status": "ok",
+      "psf_star_count": 5466,
+      "psf_fwhm_median": 2.50952675,
+      "psf_spread_median": 0.0012932724,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA353.207_DECp56.800",
+      "psf_status": "ok",
+      "psf_star_count": 5573,
+      "psf_fwhm_median": 2.604003,
+      "psf_spread_median": -0.0017763099,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA354.942_DECp53.800",
+      "psf_status": "ok",
+      "psf_star_count": 5914,
+      "psf_fwhm_median": 2.3682842500000003,
+      "psf_spread_median": 0.0020788003999999997,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA356.676_DECp54.800",
+      "psf_status": "ok",
+      "psf_star_count": 5219,
+      "psf_fwhm_median": 2.393004,
+      "psf_spread_median": -9.67343e-05,
+      "input_rows": 3,
+      "rejected_rows": 0,
+      "kept_rows": 3
+    },
+    {
+      "tile_id": "tile_RA358.835_DECp48.807",
+      "psf_status": "ok",
+      "psf_star_count": 4461,
+      "psf_fwhm_median": 2.6757889,
+      "psf_spread_median": 0.0024029007,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA36.380_DECp46.660",
+      "psf_status": "ok",
+      "psf_star_count": 3402,
+      "psf_fwhm_median": 2.7913033,
+      "psf_spread_median": 0.0012644088000000001,
+      "input_rows": 3,
+      "rejected_rows": 3,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA36.380_DECp47.660",
+      "psf_status": "ok",
+      "psf_star_count": 3593,
+      "psf_fwhm_median": 2.729436,
+      "psf_spread_median": 0.0013847313,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA36.380_DECp48.660",
+      "psf_status": "ok",
+      "psf_star_count": 3605,
+      "psf_fwhm_median": 2.6659248,
+      "psf_spread_median": 0.0010880709,
+      "input_rows": 2,
+      "rejected_rows": 2,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA36.380_DECp50.660",
+      "psf_status": "ok",
+      "psf_star_count": 3954,
+      "psf_fwhm_median": 2.5917335,
+      "psf_spread_median": -8.3457535e-05,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA37.893_DECp47.660",
+      "psf_status": "ok",
+      "psf_star_count": 3575,
+      "psf_fwhm_median": 2.7728086,
+      "psf_spread_median": 0.001312969,
+      "input_rows": 3,
+      "rejected_rows": 3,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA37.893_DECp49.660",
+      "psf_status": "ok",
+      "psf_star_count": 3674,
+      "psf_fwhm_median": 2.58913075,
+      "psf_spread_median": 0.00054440505,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA39.407_DECp48.660",
+      "psf_status": "ok",
+      "psf_star_count": 3773,
+      "psf_fwhm_median": 2.7820554,
+      "psf_spread_median": -0.0002840538,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA4.909_DECp48.807",
+      "psf_status": "ok",
+      "psf_star_count": 3955,
+      "psf_fwhm_median": 2.7134492,
+      "psf_spread_median": 0.0033423286,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA41.960_DECp48.583",
+      "psf_status": "ok",
+      "psf_star_count": 4011,
+      "psf_fwhm_median": 2.596253,
+      "psf_spread_median": 8.190549e-06,
+      "input_rows": 4,
+      "rejected_rows": 2,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA43.471_DECp47.583",
+      "psf_status": "ok",
+      "psf_star_count": 4341,
+      "psf_fwhm_median": 2.9064322,
+      "psf_spread_median": 0.0014157976,
+      "input_rows": 3,
+      "rejected_rows": 1,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA43.471_DECp49.583",
+      "psf_status": "ok",
+      "psf_star_count": 4044,
+      "psf_fwhm_median": 2.6104545,
+      "psf_spread_median": -0.00017142082,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA44.983_DECp46.583",
+      "psf_status": "ok",
+      "psf_star_count": 4443,
+      "psf_fwhm_median": 2.8127644,
+      "psf_spread_median": 0.0016055336,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA44.983_DECp48.583",
+      "psf_status": "ok",
+      "psf_star_count": 4684,
+      "psf_fwhm_median": 2.7276063,
+      "psf_spread_median": 0.0018741885500000001,
+      "input_rows": 2,
+      "rejected_rows": 2,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA44.983_DECp49.583",
+      "psf_status": "ok",
+      "psf_star_count": 4194,
+      "psf_fwhm_median": 2.65365005,
+      "psf_spread_median": 0.0010635200499999999,
+      "input_rows": 2,
+      "rejected_rows": 2,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA44.983_DECp50.583",
+      "psf_status": "ok",
+      "psf_star_count": 3902,
+      "psf_fwhm_median": 2.68848025,
+      "psf_spread_median": 0.00042036317,
+      "input_rows": 3,
+      "rejected_rows": 3,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA46.495_DECp47.583",
+      "psf_status": "ok",
+      "psf_star_count": 4767,
+      "psf_fwhm_median": 2.7938058,
+      "psf_spread_median": 0.0026553925,
+      "input_rows": 2,
+      "rejected_rows": 0,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA46.495_DECp48.583",
+      "psf_status": "ok",
+      "psf_star_count": 4426,
+      "psf_fwhm_median": 2.7259257999999997,
+      "psf_spread_median": 0.0023707809999999998,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA46.495_DECp49.583",
+      "psf_status": "ok",
+      "psf_star_count": 4054,
+      "psf_fwhm_median": 2.7470352,
+      "psf_spread_median": 0.0010987546000000002,
+      "input_rows": 2,
+      "rejected_rows": 2,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA48.006_DECp48.583",
+      "psf_status": "ok",
+      "psf_star_count": 4242,
+      "psf_fwhm_median": 2.6312118499999997,
+      "psf_spread_median": 0.0024962105,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA50.554_DECp48.494",
+      "psf_status": "ok",
+      "psf_star_count": 4156,
+      "psf_fwhm_median": 2.5820505000000002,
+      "psf_spread_median": 0.0035427718000000004,
+      "input_rows": 6,
+      "rejected_rows": 2,
+      "kept_rows": 4
+    },
+    {
+      "tile_id": "tile_RA52.063_DECp47.494",
+      "psf_status": "ok",
+      "psf_star_count": 4510,
+      "psf_fwhm_median": 2.58995015,
+      "psf_spread_median": 0.00316881075,
+      "input_rows": 2,
+      "rejected_rows": 2,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA52.063_DECp48.494",
+      "psf_status": "ok",
+      "psf_star_count": 4676,
+      "psf_fwhm_median": 2.561064,
+      "psf_spread_median": 0.0031164935,
+      "input_rows": 4,
+      "rejected_rows": 3,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA52.063_DECp49.494",
+      "psf_status": "ok",
+      "psf_star_count": 5344,
+      "psf_fwhm_median": 2.5862031,
+      "psf_spread_median": 0.0035323384,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA53.572_DECp46.494",
+      "psf_status": "ok",
+      "psf_star_count": 4425,
+      "psf_fwhm_median": 2.6145358,
+      "psf_spread_median": 0.00361407,
+      "input_rows": 4,
+      "rejected_rows": 2,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA53.572_DECp47.494",
+      "psf_status": "ok",
+      "psf_star_count": 4675,
+      "psf_fwhm_median": 2.618578,
+      "psf_spread_median": 0.0037966636,
+      "input_rows": 2,
+      "rejected_rows": 1,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA53.572_DECp49.494",
+      "psf_status": "ok",
+      "psf_star_count": 4872,
+      "psf_fwhm_median": 2.5906458,
+      "psf_spread_median": 0.0044466868,
+      "input_rows": 2,
+      "rejected_rows": 1,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA53.572_DECp50.494",
+      "psf_status": "ok",
+      "psf_star_count": 4443,
+      "psf_fwhm_median": 2.5991352,
+      "psf_spread_median": 0.0037866463,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA55.081_DECp48.494",
+      "psf_status": "ok",
+      "psf_star_count": 4944,
+      "psf_fwhm_median": 2.6146125500000004,
+      "psf_spread_median": 0.0039605218,
+      "input_rows": 2,
+      "rejected_rows": 0,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA55.081_DECp49.494",
+      "psf_status": "ok",
+      "psf_star_count": 5128,
+      "psf_fwhm_median": 2.58104985,
+      "psf_spread_median": 0.00357195075,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA56.590_DECp48.494",
+      "psf_status": "ok",
+      "psf_star_count": 4545,
+      "psf_fwhm_median": 2.602419,
+      "psf_spread_median": 0.0042603468,
+      "input_rows": 4,
+      "rejected_rows": 2,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA59.133_DECp48.394",
+      "psf_status": "ok",
+      "psf_star_count": 4241,
+      "psf_fwhm_median": 2.73118,
+      "psf_spread_median": 0.002031864,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA60.639_DECp47.394",
+      "psf_status": "ok",
+      "psf_star_count": 4813,
+      "psf_fwhm_median": 2.6902833,
+      "psf_spread_median": 0.0024930988,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA60.639_DECp48.394",
+      "psf_status": "ok",
+      "psf_star_count": 4015,
+      "psf_fwhm_median": 2.6826563,
+      "psf_spread_median": 0.0023148712,
+      "input_rows": 4,
+      "rejected_rows": 1,
+      "kept_rows": 3
+    },
+    {
+      "tile_id": "tile_RA60.639_DECp49.394",
+      "psf_status": "ok",
+      "psf_star_count": 4430,
+      "psf_fwhm_median": 2.63068245,
+      "psf_spread_median": 0.00242909585,
+      "input_rows": 2,
+      "rejected_rows": 1,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA62.145_DECp46.394",
+      "psf_status": "ok",
+      "psf_star_count": 4742,
+      "psf_fwhm_median": 2.6194061499999997,
+      "psf_spread_median": 0.0027600263999999998,
+      "input_rows": 2,
+      "rejected_rows": 0,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA62.145_DECp47.394",
+      "psf_status": "ok",
+      "psf_star_count": 4700,
+      "psf_fwhm_median": 2.6379067,
+      "psf_spread_median": 0.0021331732500000002,
+      "input_rows": 3,
+      "rejected_rows": 1,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA62.145_DECp48.394",
+      "psf_status": "ok",
+      "psf_star_count": 4087,
+      "psf_fwhm_median": 2.6672206,
+      "psf_spread_median": 0.002363523,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA62.145_DECp49.394",
+      "psf_status": "ok",
+      "psf_star_count": 4270,
+      "psf_fwhm_median": 2.6341631,
+      "psf_spread_median": 0.0015509849500000002,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA62.145_DECp50.394",
+      "psf_status": "ok",
+      "psf_star_count": 3808,
+      "psf_fwhm_median": 2.7062703499999996,
+      "psf_spread_median": 0.0015926649,
+      "input_rows": 4,
+      "rejected_rows": 2,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA63.651_DECp47.394",
+      "psf_status": "ok",
+      "psf_star_count": 4406,
+      "psf_fwhm_median": 2.63310575,
+      "psf_spread_median": 0.00270692485,
+      "input_rows": 2,
+      "rejected_rows": 2,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA65.157_DECp48.394",
+      "psf_status": "ok",
+      "psf_star_count": 3933,
+      "psf_fwhm_median": 2.6977048,
+      "psf_spread_median": 0.0017399406,
+      "input_rows": 2,
+      "rejected_rows": 0,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA67.694_DECp48.285",
+      "psf_status": "ok",
+      "psf_star_count": 3412,
+      "psf_fwhm_median": 2.44068255,
+      "psf_spread_median": -0.000226590025,
+      "input_rows": 3,
+      "rejected_rows": 3,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA69.197_DECp47.285",
+      "psf_status": "ok",
+      "psf_star_count": 3961,
+      "psf_fwhm_median": 2.5268986,
+      "psf_spread_median": 0.0010356446,
+      "input_rows": 5,
+      "rejected_rows": 3,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA69.197_DECp48.285",
+      "psf_status": "ok",
+      "psf_star_count": 4012,
+      "psf_fwhm_median": 2.5352978999999998,
+      "psf_spread_median": 0.000157331995,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA69.197_DECp49.285",
+      "psf_status": "ok",
+      "psf_star_count": 3410,
+      "psf_fwhm_median": 2.4502504,
+      "psf_spread_median": -0.00031373858,
+      "input_rows": 2,
+      "rejected_rows": 2,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA7.471_DECp48.796",
+      "psf_status": "ok",
+      "psf_star_count": 3682,
+      "psf_fwhm_median": 2.5263983000000003,
+      "psf_spread_median": 0.0022258201,
+      "input_rows": 5,
+      "rejected_rows": 4,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA70.700_DECp46.285",
+      "psf_status": "ok",
+      "psf_star_count": 3965,
+      "psf_fwhm_median": 2.5095644,
+      "psf_spread_median": 0.0020911135,
+      "input_rows": 2,
+      "rejected_rows": 2,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA70.700_DECp47.285",
+      "psf_status": "ok",
+      "psf_star_count": 4778,
+      "psf_fwhm_median": 2.57368315,
+      "psf_spread_median": 0.00242732485,
+      "input_rows": 3,
+      "rejected_rows": 2,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA70.700_DECp48.285",
+      "psf_status": "ok",
+      "psf_star_count": 4625,
+      "psf_fwhm_median": 2.5454707,
+      "psf_spread_median": 0.0013618448,
+      "input_rows": 4,
+      "rejected_rows": 2,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA72.203_DECp48.285",
+      "psf_status": "ok",
+      "psf_star_count": 5756,
+      "psf_fwhm_median": 2.5235129499999998,
+      "psf_spread_median": 0.00153260005,
+      "input_rows": 2,
+      "rejected_rows": 2,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA72.203_DECp49.285",
+      "psf_status": "ok",
+      "psf_star_count": 4345,
+      "psf_fwhm_median": 2.4694316,
+      "psf_spread_median": -0.00020406753,
+      "input_rows": 3,
+      "rejected_rows": 3,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA73.706_DECp48.285",
+      "psf_status": "ok",
+      "psf_star_count": 5415,
+      "psf_fwhm_median": 2.4960558,
+      "psf_spread_median": 0.00065894506,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA77.737_DECp47.170",
+      "psf_status": "ok",
+      "psf_star_count": 4832,
+      "psf_fwhm_median": 2.67793905,
+      "psf_spread_median": 0.000319583715,
+      "input_rows": 2,
+      "rejected_rows": 0,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA77.737_DECp48.170",
+      "psf_status": "ok",
+      "psf_star_count": 4817,
+      "psf_fwhm_median": 2.5967588,
+      "psf_spread_median": 0.0005427255,
+      "input_rows": 2,
+      "rejected_rows": 1,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA77.737_DECp49.170",
+      "psf_status": "ok",
+      "psf_star_count": 4448,
+      "psf_fwhm_median": 2.5378224,
+      "psf_spread_median": 0.000299521215,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA79.236_DECp47.170",
+      "psf_status": "ok",
+      "psf_star_count": 4904,
+      "psf_fwhm_median": 2.6796212500000003,
+      "psf_spread_median": 0.0019245893,
+      "input_rows": 3,
+      "rejected_rows": 1,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA79.236_DECp50.170",
+      "psf_status": "ok",
+      "psf_star_count": 3864,
+      "psf_fwhm_median": 2.5842255,
+      "psf_spread_median": 0.00014352479499999998,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA8.989_DECp47.796",
+      "psf_status": "ok",
+      "psf_star_count": 3588,
+      "psf_fwhm_median": 2.59616195,
+      "psf_spread_median": 0.0037315580000000003,
+      "input_rows": 3,
+      "rejected_rows": 1,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA8.989_DECp49.796",
+      "psf_status": "ok",
+      "psf_star_count": 4000,
+      "psf_fwhm_median": 2.50751685,
+      "psf_spread_median": 0.0031918437,
+      "input_rows": 6,
+      "rejected_rows": 5,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA80.735_DECp49.170",
+      "psf_status": "ok",
+      "psf_star_count": 4178,
+      "psf_fwhm_median": 2.61798945,
+      "psf_spread_median": 0.0010682319,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA82.235_DECp48.170",
+      "psf_status": "ok",
+      "psf_star_count": 4553,
+      "psf_fwhm_median": 2.662987,
+      "psf_spread_median": 0.0007886663,
+      "input_rows": 4,
+      "rejected_rows": 3,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA84.760_DECp48.051",
+      "psf_status": "ok",
+      "psf_star_count": 3276,
+      "psf_fwhm_median": 2.7018942,
+      "psf_spread_median": -0.0017859619,
+      "input_rows": 2,
+      "rejected_rows": 0,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA86.256_DECp47.051",
+      "psf_status": "ok",
+      "psf_star_count": 3372,
+      "psf_fwhm_median": 2.8070143,
+      "psf_spread_median": 6.520368e-05,
+      "input_rows": 2,
+      "rejected_rows": 1,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA86.256_DECp48.051",
+      "psf_status": "ok",
+      "psf_star_count": 3268,
+      "psf_fwhm_median": 2.7797576499999996,
+      "psf_spread_median": -0.00028005601,
+      "input_rows": 2,
+      "rejected_rows": 1,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA86.256_DECp49.051",
+      "psf_status": "ok",
+      "psf_star_count": 3195,
+      "psf_fwhm_median": 2.7474453,
+      "psf_spread_median": -0.00042382773,
+      "input_rows": 3,
+      "rejected_rows": 2,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA87.752_DECp46.051",
+      "psf_status": "ok",
+      "psf_star_count": 3254,
+      "psf_fwhm_median": 2.80840365,
+      "psf_spread_median": 0.000607404,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA87.752_DECp48.051",
+      "psf_status": "ok",
+      "psf_star_count": 3423,
+      "psf_fwhm_median": 2.7768633,
+      "psf_spread_median": -0.00019422652,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA87.752_DECp50.051",
+      "psf_status": "ok",
+      "psf_star_count": 2846,
+      "psf_fwhm_median": 2.78390995,
+      "psf_spread_median": -0.0014421345,
+      "input_rows": 4,
+      "rejected_rows": 2,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA89.248_DECp48.051",
+      "psf_status": "ok",
+      "psf_star_count": 3379,
+      "psf_fwhm_median": 2.8093445,
+      "psf_spread_median": -0.0002620509,
+      "input_rows": 4,
+      "rejected_rows": 3,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA89.248_DECp49.051",
+      "psf_status": "ok",
+      "psf_star_count": 3030,
+      "psf_fwhm_median": 2.7600588,
+      "psf_spread_median": -0.000629301575,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA90.744_DECp48.051",
+      "psf_status": "ok",
+      "psf_star_count": 3108,
+      "psf_fwhm_median": 2.82688905,
+      "psf_spread_median": 0.00018057307,
+      "input_rows": 1,
+      "rejected_rows": 1,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA93.264_DECp47.931",
+      "psf_status": "ok",
+      "psf_star_count": 3493,
+      "psf_fwhm_median": 2.694028,
+      "psf_spread_median": 0.0025486918,
+      "input_rows": 2,
+      "rejected_rows": 2,
+      "kept_rows": 0
+    },
+    {
+      "tile_id": "tile_RA94.757_DECp46.931",
+      "psf_status": "ok",
+      "psf_star_count": 3499,
+      "psf_fwhm_median": 2.73749,
+      "psf_spread_median": 0.0035776237,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA94.757_DECp47.931",
+      "psf_status": "ok",
+      "psf_star_count": 3163,
+      "psf_fwhm_median": 2.7325993,
+      "psf_spread_median": 0.0037472113,
+      "input_rows": 4,
+      "rejected_rows": 3,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA94.757_DECp48.931",
+      "psf_status": "ok",
+      "psf_star_count": 3226,
+      "psf_fwhm_median": 2.70892205,
+      "psf_spread_median": 0.0038502709999999997,
+      "input_rows": 4,
+      "rejected_rows": 1,
+      "kept_rows": 3
+    },
+    {
+      "tile_id": "tile_RA96.249_DECp45.931",
+      "psf_status": "ok",
+      "psf_star_count": 3309,
+      "psf_fwhm_median": 2.6626859,
+      "psf_spread_median": 0.0037050091,
+      "input_rows": 5,
+      "rejected_rows": 4,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA96.249_DECp46.931",
+      "psf_status": "ok",
+      "psf_star_count": 3095,
+      "psf_fwhm_median": 2.7607756,
+      "psf_spread_median": 0.005064361,
+      "input_rows": 5,
+      "rejected_rows": 1,
+      "kept_rows": 4
+    },
+    {
+      "tile_id": "tile_RA96.249_DECp47.931",
+      "psf_status": "ok",
+      "psf_star_count": 3083,
+      "psf_fwhm_median": 2.7293,
+      "psf_spread_median": 0.0043530487,
+      "input_rows": 7,
+      "rejected_rows": 4,
+      "kept_rows": 3
+    },
+    {
+      "tile_id": "tile_RA96.249_DECp48.931",
+      "psf_status": "ok",
+      "psf_star_count": 2930,
+      "psf_fwhm_median": 2.7281339,
+      "psf_spread_median": 0.0035779428,
+      "input_rows": 6,
+      "rejected_rows": 4,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA96.249_DECp49.931",
+      "psf_status": "ok",
+      "psf_star_count": 2879,
+      "psf_fwhm_median": 2.7350864,
+      "psf_spread_median": 0.0031091438,
+      "input_rows": 5,
+      "rejected_rows": 2,
+      "kept_rows": 3
+    },
+    {
+      "tile_id": "tile_RA97.742_DECp46.931",
+      "psf_status": "ok",
+      "psf_star_count": 3019,
+      "psf_fwhm_median": 2.7334678,
+      "psf_spread_median": 0.0036434296,
+      "input_rows": 3,
+      "rejected_rows": 0,
+      "kept_rows": 3
+    },
+    {
+      "tile_id": "tile_RA97.742_DECp47.931",
+      "psf_status": "ok",
+      "psf_star_count": 2776,
+      "psf_fwhm_median": 2.7191381,
+      "psf_spread_median": 0.0033753329,
+      "input_rows": 3,
+      "rejected_rows": 1,
+      "kept_rows": 2
+    },
+    {
+      "tile_id": "tile_RA97.742_DECp48.931",
+      "psf_status": "ok",
+      "psf_star_count": 2746,
+      "psf_fwhm_median": 2.6969776,
+      "psf_spread_median": 0.0033412181,
+      "input_rows": 1,
+      "rejected_rows": 0,
+      "kept_rows": 1
+    },
+    {
+      "tile_id": "tile_RA99.234_DECp47.931",
+      "psf_status": "ok",
+      "psf_star_count": 2666,
+      "psf_fwhm_median": 2.78769575,
+      "psf_spread_median": 0.004178307,
+      "input_rows": 2,
+      "rejected_rows": 1,
+      "kept_rows": 1
+    }
+  ],
+  "outputs": {
+    "kept_csv": "work/runs/run-R11-20260406_132941/stages/stage_S0M_MORPH.csv",
+    "flags_csv": "work/runs/run-R11-20260406_132941/stages/stage_S0M_MORPH_flags.csv",
+    "ledger_json": "work/runs/run-R11-20260406_132941/stages/stage_S0M_MORPH_ledger.json"
+  },
+  "columns_detected": {
+    "src_id_col": "src_id",
+    "ra_col": "ra",
+    "dec_col": "dec"
+  }
+}

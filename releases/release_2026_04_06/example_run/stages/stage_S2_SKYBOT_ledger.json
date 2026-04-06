@@ -1,0 +1,30 @@
+{
+  "run_dir": "work/runs/run-R11-20260406_132941",
+  "input_glob": "stages/stage_S1_GSC.csv",
+  "stage": "S2",
+  "tag": "S2__stage_S1_GSC",
+  "totals": {
+    "input_rows": 50,
+    "matched_strict": 0,
+    "matched_wide": 0,
+    "kept_rows": 50
+  },
+  "params": {
+    "grid_step_arcmin": 80.0,
+    "query_radius_arcmin": 60.0,
+    "match_arcsec": 5.0,
+    "fallback_wide_arcsec": 60.0,
+    "fallback_per_row": false,
+    "fallback_per_row_cap": 100
+  },
+  "artifacts": {
+    "parts_parquet": "work/runs/run-R11-20260406_132941/skybot/parts/flags_skybot__S2__stage_S1_GSC.parquet",
+    "audit_parquet": "work/runs/run-R11-20260406_132941/skybot/audit/skybot_audit__S2__stage_S1_GSC.parquet",
+    "ledger_json": "work/runs/run-R11-20260406_132941/skybot/ledger/skybot_ledger__S2__stage_S1_GSC.json"
+  },
+  "outputs": {
+    "stage_csv": "work/runs/run-R11-20260406_132941/stages/stage_S2_SKYBOT.csv",
+    "flags_csv": "work/runs/run-R11-20260406_132941/stages/stage_S2_SKYBOT_flags.csv",
+    "stage_ledger_json": "work/runs/run-R11-20260406_132941/stages/stage_S2_SKYBOT_ledger.json"
+  }
+}
