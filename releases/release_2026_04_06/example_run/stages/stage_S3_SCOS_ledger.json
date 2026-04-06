@@ -1,0 +1,34 @@
+{
+  "run_dir": "work/runs/run-R11-20260406_132941",
+  "input_glob": "stages/stage_S2_SKYBOT.csv",
+  "stage": "S3",
+  "tapurl": "https://dc.g-vo.org/__system__/tap/run",
+  "table": "supercosmos.sources",
+  "radius_arcsec": 5.0,
+  "chunk_size": 5000,
+  "mode": "keep_matches",
+  "totals": {
+    "input_rows": 50,
+    "matched_rows": 44,
+    "kept_rows": 44
+  },
+  "per_part": [
+    {
+      "part": "part_0001",
+      "input_rows": 50,
+      "matched_rows": 44,
+      "kept_rows": 44
+    }
+  ],
+  "outputs": {
+    "kept_csv": "work/runs/run-R11-20260406_132941/stages/stage_S3_SCOS.csv",
+    "flags_csv": "work/runs/run-R11-20260406_132941/stages/stage_S3_SCOS_flags.csv",
+    "ledger_json": "work/runs/run-R11-20260406_132941/stages/stage_S3_SCOS_ledger.json"
+  },
+  "columns_detected": {
+    "src_id_col": "src_id",
+    "ra_col": "ra",
+    "dec_col": "dec"
+  },
+  "temp_outputs": null
+}

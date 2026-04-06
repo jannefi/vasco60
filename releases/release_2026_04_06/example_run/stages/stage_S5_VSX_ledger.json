@@ -1,0 +1,33 @@
+{
+  "run_dir": "work/runs/run-R11-20260406_132941",
+  "input_glob": "stages/stage_S4_PTF.csv",
+  "stage": "S5",
+  "radius_arcsec": 5.0,
+  "vsx_fits": "data/local-cats/_external_catalogs/vsx/vsx_master_slim.fits",
+  "backend": "LOCAL VSX (slim FITS)",
+  "chunk_size": 5000,
+  "totals": {
+    "input_rows": 44,
+    "matched_rows": 0,
+    "kept_rows": 44
+  },
+  "per_part": [
+    {
+      "part": "part_0001",
+      "input_rows": 44,
+      "matched_rows": 0,
+      "kept_rows": 44
+    }
+  ],
+  "outputs": {
+    "kept_csv": "work/runs/run-R11-20260406_132941/stages/stage_S5_VSX.csv",
+    "flags_csv": "work/runs/run-R11-20260406_132941/stages/stage_S5_VSX_flags.csv",
+    "ledger_json": "work/runs/run-R11-20260406_132941/stages/stage_S5_VSX_ledger.json"
+  },
+  "columns_detected": {
+    "src_id_col": "src_id",
+    "ra_col": "ra",
+    "dec_col": "dec"
+  },
+  "temp_outputs": null
+}
