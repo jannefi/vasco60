@@ -33,11 +33,11 @@ TOT   18.44M  12,196 (-99.9%)  |  6,387 (-47.6%)  1,138 (-82.2%)  834 (-26.7%)  
 
 **Stage key:**  
 - S0 = MNRAS 2022 quality gates (FLAGS=0, SNR\_WIN>30, ELONG<1.3, 2<FWHM<7, SPREAD\_MODEL>−0.002) + ≤30′ circle cut + deduplication  
-- S0M = Morphology filter (FWHM ratio vs PSF, SPREAD\_MODEL SNR)  
-- S4S = Shape profile filter  
-- S1 = GSC2 cross-match veto  
+- S0M = Morphology filter (FWHM ratio vs PSF, SPREAD\_MODEL SNR)  (experimental)
+- S4S = Shape profile filter  (experimental)
+- S1 = GSC2 cross-match veto  (experimental)
 - S2 = SkyBoT solar system object veto  
-- S3 = SuperCOSMOS — keep only sources with SCOS counterpart (no SCOS = scan artifact)  
+- S3 = SuperCOSMOS — keep only sources with SCOS counterpart
 - S4 = PTF cross-match veto  
 - S5 = VSX variable star veto  
 
