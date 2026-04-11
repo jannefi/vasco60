@@ -583,8 +583,13 @@ def _apply_mnras_filters_and_spikes(tile_dir: Path, sex_csv: Path, buckets: dict
     tab.write(str(out_csv), format='ascii.csv', overwrite=True)
 
     # 3) Bright-star spike removal via PS1 (within ~3′, r<=16)
-    # 90-arcsec radius is the paper's intent (confirmed typo in MNRAS 2022: "90-arcmin" should read "90-arcsec");
-    # 3 arcmin gives a small margin while staying physically motivated for Schmidt-plate spikes.
+    # The spike physics operates on arcsecond separations (paper rule uses d_arcsec);
+    # the "90 arcsec" mentioned in MNRAS 2022 is the intended scale (the "90 arcmin"
+    # wording in the paper is a confirmed typo).
+    # The 3 arcmin value here is a per-candidate prefilter to limit which bright stars
+    # are even considered; it does NOT replace or redefine the arcsecond-scale spike rule.
+    # A small margin is used while staying physically motivated for Schmidt-plate spikes.
+
     center = _tile_center_from_index_or_name(tile_dir)
     bright = []
     if center:
