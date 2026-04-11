@@ -105,6 +105,7 @@ def load_plate_map(csv_path: Path) -> Dict[str, str]:
 # tile_status.json helpers
 # ----------------------------
 def _read_tile_steps(tile_dir: Path) -> dict:
+    """Return the 'steps' dict from tile_status.json, or {} on any error."""
     try:
         p = tile_dir / "tile_status.json"
         if p.exists():
@@ -115,21 +116,37 @@ def _read_tile_steps(tile_dir: Path) -> dict:
 
 
 def _is_post1_done(tile_dir: Path) -> bool:
+    """Delta gate: only 'ok' is considered done (failed tiles are NOT skipped)."""
     return _read_tile_steps(tile_dir).get("post1", {}).get("status") == "ok"
 
 
-def _mark_post1_done(tile_dir: Path) -> None:
-    """Merge post1.status=ok into tile_status.json (atomic write)."""
+def _set_post1_status(tile_dir: Path, status: str, reason: str = "") -> None:
+    """Merge post1 status into tile_status.json (atomic write).
+
+    status: 'ok' or 'failed'
+    reason: optional human-readable reason (persisted for auditability)
+
+    Note: delta mode only skips when status == 'ok'.
+    """
+    status = str(status).strip().lower()
+    if status not in {"ok", "failed"}:
+        status = "failed"
+
     p = tile_dir / "tile_status.json"
     try:
         data = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
     except Exception:
         data = {}
-    data.setdefault("steps", {})["post1"] = {"status": "ok"}
+
+    post1 = {"status": status}
+    if reason:
+        post1["reason"] = str(reason)
+
+    data.setdefault("steps", {})["post1"] = post1
+
     tmp = p.with_suffix(".json.tmp")
     tmp.write_text(json.dumps(data, indent=2), encoding="utf-8")
     tmp.replace(p)
-
 
 # ----------------------------
 # RA/Dec column picking
@@ -399,7 +416,7 @@ def main():
         note = ""
 
         if not cat_path.exists() or cat_path.stat().st_size == 0:
-            note = "missing/empty survivors csv"
+            note = "missing survivors csv" if not cat_path.exists() else "empty survivors csv"
         else:
             cols = detect_header_cols(cat_path)
             radec = pick_radec_cols(cols)
@@ -432,7 +449,18 @@ def main():
                         })
                         n_out += 1
 
-        _mark_post1_done(td)
+        # Advance delta state only on success (or explicitly valid-empty).
+        # Failure cases must NOT be marked ok, otherwise later delta runs can silently skip tiles.
+        if note:
+            _set_post1_status(td, "failed", note)
+        else:
+            # Header was valid; decide if this is success or valid-empty.
+            if n_in == 0:
+                _set_post1_status(td, "ok", "valid_empty")
+            elif n_out > 0:
+                _set_post1_status(td, "ok")
+            else:
+                _set_post1_status(td, "failed", "no_valid_rows_emitted")
 
         manifest_rows.append({
             "tile_id": tile_id,
