@@ -125,7 +125,11 @@ def _run_tskymatch2(stilts: str, in_csv: Path, vsx_fits: Path, out_csv: Path, ra
             "dec2=DEdeg",
             f"error={radius_arcsec}",
             "join=1and2",
-            "find=best",
+            # find=best1 matches the production Gaia/PS1/USNO veto path
+            # (vasco/cli_pipeline.py). With find=best, two candidates within
+            # 5" of one VSX star only get one match — the farther candidate
+            # slips through as an unmatched false survivor.
+            "find=best1",
             f"out={str(out_csv)}",
             "ofmt=csv",
         ],

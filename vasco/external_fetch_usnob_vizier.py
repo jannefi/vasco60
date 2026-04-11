@@ -25,7 +25,7 @@ def fetch_usnob_neighbourhood(
     dec_deg: float,
     radius_arcmin: float,
     *,
-    row_limit: int = 20000,
+    row_limit: int = 200000,
     columns: Optional[list[str]] = None,
 ) -> Path:
     """
@@ -40,10 +40,11 @@ def fetch_usnob_neighbourhood(
     cat_dir.mkdir(parents=True, exist_ok=True)
     out_csv = cat_dir / "usnob_neighbourhood.csv"
 
-    # Configure Vizier
-    Vizier.ROW_LIMIT = int(row_limit) if row_limit and row_limit > 0 else -1
+    # row_limit must be passed to the Vizier() ctor — setting Vizier.ROW_LIMIT
+    # as a class attribute is shadowed by the instance default (50).
     cols = columns or _USNOB_COLUMNS
-    viz = Vizier(columns=cols)
+    rl = int(row_limit) if row_limit and row_limit > 0 else -1
+    viz = Vizier(columns=cols, row_limit=rl)
 
     # SkyCoord and radius
     pos = SkyCoord(ra_deg * u.deg, dec_deg * u.deg, frame="icrs")
