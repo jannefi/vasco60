@@ -356,6 +356,7 @@ def main():
                     help="Chunk size for upload/stage files.")
     ap.add_argument("--catalog-name", default="catalogs/sextractor_pass2.filtered.csv",
                     help="Relative path under tile dir to read survivors from.")
+    ap.add_argument("--accept-empty-file-as-valid-empty", action="store_true", help="Treat a 0-byte survivors CSV as an explicitly valid-empty tile (mark post1 ok). Default is conservative: 0-byte file is treated as failure.")
     ap.add_argument("--full", action="store_true",
                     help="Reprocess all tiles regardless of post1 status in tile_status.json. "
                          "Default (delta mode): skip tiles already marked post1.status=ok.")
@@ -411,12 +412,13 @@ def main():
             continue
 
         cat_path = td / args.catalog_name
+        empty_file_valid = False
         n_in = 0
         n_out = 0
         note = ""
 
         if not cat_path.exists() or cat_path.stat().st_size == 0:
-            note = "missing survivors csv" if not cat_path.exists() else "empty survivors csv"
+            note = "missing survivors csv"  # set later if needed
         else:
             cols = detect_header_cols(cat_path)
             radec = pick_radec_cols(cols)
@@ -454,8 +456,9 @@ def main():
         if note:
             _set_post1_status(td, "failed", note)
         else:
-            # Header was valid; decide if this is success or valid-empty.
-            if n_in == 0:
+            if empty_file_valid:
+                _set_post1_status(td, "ok", "valid_empty_emptyfile")
+            elif n_in == 0:
                 _set_post1_status(td, "ok", "valid_empty")
             elif n_out > 0:
                 _set_post1_status(td, "ok")
