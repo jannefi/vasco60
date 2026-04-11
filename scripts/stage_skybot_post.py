@@ -441,15 +441,39 @@ def main() -> int:
     stage = args.stage
     tag = args.tag.strip()
     if not tag:
-        # derive a stable tag
+        # Derive a content+param fingerprint so changing --match-arcsec, the
+        # query radius, or the upstream input CSV invalidates the parts cache.
+        # Without this, stale query results are silently reused while a fresh
+        # ledger is written, which makes reruns look recomputed when they aren't.
+        import hashlib
         stem = inputs[0].stem if len(inputs) == 1 else f"multi_{len(inputs)}"
-        tag = f"{stage}__{stem}"
+        h = hashlib.sha256()
+        for p in inputs:
+            try:
+                h.update(p.name.encode())
+                h.update(str(p.stat().st_size).encode())
+                h.update(str(int(p.stat().st_mtime)).encode())
+            except Exception:
+                pass
+        param_tuple = (
+            f"gs={float(args.grid_step_arcmin):.4f}",
+            f"qr={float(args.query_radius_arcmin):.4f}",
+            f"ma={float(args.match_arcsec):.4f}",
+            f"fw={float(args.fallback_wide_arcsec):.4f}",
+            f"fpr={str(args.fallback_per_row).strip().lower()}",
+            f"fprc={int(args.fallback_per_row_cap)}",
+        )
+        h.update("|".join(param_tuple).encode())
+        fp = h.hexdigest()[:10]
+        tag = f"{stage}__{stem}__{fp}"
 
     parts_path = dirs["parts"] / f"flags_skybot__{tag}.parquet"
     audit_path = dirs["audit"] / f"skybot_audit__{tag}.parquet"
     ledger_path = dirs["ledger"] / f"skybot_ledger__{tag}.json"
 
-    # Idempotent: if parts exists, do not requery; just rebuild stage outputs from parts
+    # Idempotent: if parts exists, do not requery; just rebuild stage outputs from parts.
+    # The fingerprint in `tag` (derived from input content + params above) ensures a
+    # cache hit only when both the input and the query parameters are unchanged.
     need_query = not (parts_path.exists() and parts_path.stat().st_size > 0)
 
     rs_arcsec = float(args.query_radius_arcmin) * 60.0

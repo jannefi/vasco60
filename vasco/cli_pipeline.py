@@ -582,14 +582,12 @@ def _apply_mnras_filters_and_spikes(tile_dir: Path, sex_csv: Path, buckets: dict
     # Write intermediate
     tab.write(str(out_csv), format='ascii.csv', overwrite=True)
 
-    # 3) Bright-star spike removal via PS1 (within ~3′, r<=16)
-    # The spike physics operates on arcsecond separations (paper rule uses d_arcsec);
-    # the "90 arcsec" mentioned in MNRAS 2022 is the intended scale (the "90 arcmin"
-    # wording in the paper is a confirmed typo).
-    # The 3 arcmin value here is a per-candidate prefilter to limit which bright stars
-    # are even considered; it does NOT replace or redefine the arcsecond-scale spike rule.
-    # A small margin is used while staying physically motivated for Schmidt-plate spikes.
-
+    # 3) Bright-star spike removal via PS1.
+    # Paper intent (and 02_DECISIONS.md): 90-arcsec rejection radius around bright stars.
+    # MNRAS 2022 says "90-arcmin" but it's a confirmed typo.
+    # Fetch radius must cover the full 60' *square* tile plus the 90" spike margin.
+    # The far corner of a 60x60' square is 30*sqrt(2) ~= 42.43' from center; add the
+    # 1.5' (90") margin and round up to 45.0' for a small safety buffer.
     center = _tile_center_from_index_or_name(tile_dir)
     bright = []
     if center:
@@ -601,7 +599,7 @@ def _apply_mnras_filters_and_spikes(tile_dir: Path, sex_csv: Path, buckets: dict
             else:
                 bright = fetch_bright_ps1(
                     center[0], center[1],
-                    radius_arcmin=3.0, rmag_max=16.0, mindetections=2
+                    radius_arcmin=45.0, rmag_max=16.0, mindetections=2
                 )
                 # Save cache for fast reruns
                 _write_bright_cache(cache_path, bright)
@@ -614,10 +612,13 @@ def _apply_mnras_filters_and_spikes(tile_dir: Path, sex_csv: Path, buckets: dict
 
         kept, rejected = apply_spike_cuts(
             rows, bright,
-            SpikeConfig(rules=[
-                SpikeRuleConst(const_max_mag=12.4),
-                SpikeRuleLine(a=-0.09, b=15.3),  # slope per arsec
-            ])
+            SpikeConfig(
+                search_radius_arcmin=1.5,  # 90 arcsec per paper (locked in 02_DECISIONS.md)
+                rules=[
+                    SpikeRuleConst(const_max_mag=12.4),
+                    SpikeRuleLine(a=-0.09, b=15.3),  # slope per arcsec
+                ],
+            )
         )
         buckets['spikes_rejected'] += len(rejected)
 
