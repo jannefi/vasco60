@@ -1120,6 +1120,92 @@ def _ensure_sextractor_csv(tile_dir: Path, pass2_ldac: str | Path) -> Path:
     return sex_csv
 
 
+# ---------------------------------------------------------------------------
+# Bug #6 fix: epoch-propagate catalog positions to plate epoch before matching.
+# Without this, high-PM stars drift beyond the 5" cone gate over the ~50-60 yr
+# plate-to-catalog epoch gap and leak through Gaia/USNO-B vetoes entirely.
+# ---------------------------------------------------------------------------
+
+def _plate_epoch_year_from_fits(fits_path: Path) -> float | None:
+    """Return decimal year of DATE-OBS for the given FITS, or None on failure."""
+    try:
+        from astropy.io import fits as _fits
+        from astropy.time import Time as _Time
+        hdr = _fits.getheader(str(fits_path))
+        date_obs = hdr.get('DATE-OBS') or hdr.get('DATE-AVG')
+        if not date_obs:
+            return None
+        return float(_Time(str(date_obs)).decimalyear)
+    except Exception:
+        return None
+
+
+def _propagate_catalog_epoch(
+    in_csv: Path,
+    out_csv: Path,
+    catalog_epoch_year: float,
+    plate_epoch_year: float,
+    ra_col: str,
+    dec_col: str,
+    pmra_col: str,
+    pmde_col: str,
+) -> bool:
+    """Epoch-propagate a catalog CSV's RA/Dec to `plate_epoch_year` using PMs.
+
+    Reads `in_csv`, writes `out_csv` with ra/dec columns updated in place for
+    rows that have finite proper motions. Rows with missing or invalid PMs are
+    written unchanged (conservative fall-through to raw catalog epoch).
+    Returns True on success; leaves out_csv untouched and returns False on error.
+
+    `pmra_col` is expected to be already multiplied by cos(dec) — this is the
+    VizieR/Gaia convention where pmRA in mas/yr is the great-circle rate in the
+    RA direction, not dRA/dt.
+    """
+    try:
+        import pandas as pd
+        import numpy as np
+        df = pd.read_csv(in_csv)
+        if not len(df):
+            df.to_csv(out_csv, index=False)
+            return True
+
+        dt_yr = plate_epoch_year - catalog_epoch_year  # negative for POSS vs Gaia/USNO-B
+
+        def _sf(x):
+            try:
+                return float(x)
+            except (TypeError, ValueError):
+                return float('nan')
+
+        ra_deg = df[ra_col].apply(_sf).values
+        dec_deg = df[dec_col].apply(_sf).values
+        pmra = df[pmra_col].apply(_sf).values
+        pmde = df[pmde_col].apply(_sf).values
+
+        has_pm = (
+            np.isfinite(pmra) & np.isfinite(pmde)
+            & np.isfinite(ra_deg) & np.isfinite(dec_deg)
+        )
+
+        # mas/yr * yr / (1000 mas/arcsec * 3600 arcsec/deg) = deg
+        ddec_deg = np.where(has_pm, pmde * dt_yr / 3.6e6, 0.0)
+        # pmRA is cos(dec)-corrected, so divide by cos(dec) to get pure RA change
+        cos_dec = np.cos(np.radians(np.where(has_pm, dec_deg, 0.0)))
+        dra_deg = np.where(has_pm, (pmra * dt_yr / 3.6e6) / cos_dec, 0.0)
+
+        df[ra_col] = ra_deg + dra_deg
+        df[dec_col] = dec_deg + ddec_deg
+        # Drop rows that ended up with NaN positions (unparseable input) so
+        # downstream consumers like WCSFIX don't hit matmul warnings on NaNs.
+        valid = np.isfinite(df[ra_col].astype(float).values) & np.isfinite(df[dec_col].astype(float).values)
+        df = df.loc[valid].reset_index(drop=True)
+        df.to_csv(out_csv, index=False)
+        return True
+    except Exception as e:
+        print(f'[EPOCH-PROP][WARN] failed {in_csv.name} -> {out_csv.name}: {e}')
+        return False
+
+
 def _post_xmatch_tile(tile_dir, pass2_ldac, *, radius_arcsec: float = 5.0) -> None:
     """ Step4 (LOCAL backend) — veto-first ordering (Step4a/Step4b).
 
@@ -1180,10 +1266,17 @@ def _post_xmatch_tile(tile_dir, pass2_ldac, *, radius_arcsec: float = 5.0) -> No
             except Exception as e:
                 print('[STEP4][WARN]', tile_dir.name, 'circle cut failed; using square catalog:', e)
 
-    # 2) Neighbourhood caches (fetch stage happens before this in cmd_step4_xmatch)
-    gaia_csv = catdir / 'gaia_neighbourhood.csv'
-    ps1_csv = catdir / 'ps1_neighbourhood.csv'
-    usnob_csv = catdir / 'usnob_neighbourhood.csv'
+    # 2) Neighbourhood caches (fetch stage happens before this in cmd_step4_xmatch).
+    # Prefer epoch-propagated variants (Bug #6 fix) with fall-through to the raw
+    # catalogs — both WCSFIX bootstrap and the cone-match veto chain benefit from
+    # matching against plate-epoch positions instead of raw J2016/J2000.
+    def _prefer_plate(name: str) -> Path:
+        p = catdir / f'{name}_at_plate.csv'
+        r = catdir / f'{name}.csv'
+        return p if (p.exists() and p.stat().st_size > 0) else r
+    gaia_csv = _prefer_plate('gaia_neighbourhood')
+    ps1_csv = catdir / 'ps1_neighbourhood.csv'   # PS1 has no PMs in this fetch
+    usnob_csv = _prefer_plate('usnob_neighbourhood')
 
     buckets = init_buckets()
 
@@ -1576,6 +1669,39 @@ def cmd_step4_xmatch(args: argparse.Namespace) -> int:
                     print('[STEP4]', run_dir.name, 'USNO-B -> catalogs/usnob_neighbourhood.csv')
         except Exception as e:
             print('[STEP4][WARN]', run_dir.name, 'USNO-B fetch failed:', e)
+
+    # ------------------------------------------------------------------
+    # Bug #6 fix: epoch-propagate Gaia (J2016.0) and USNO-B (J2000.0)
+    # catalog positions to the plate epoch using catalogued PMs, so the
+    # 5" cone match correctly vetoes high-PM stars at their plate-epoch
+    # positions instead of letting them leak through.
+    # ------------------------------------------------------------------
+    try:
+        raw_fits = next(iter(sorted((run_dir / 'raw').glob('*.fits'))), None)
+        plate_epoch = _plate_epoch_year_from_fits(raw_fits) if raw_fits else None
+        if plate_epoch is not None:
+            print(f'[STEP4][INFO] {run_dir.name} plate epoch = {plate_epoch:.3f}')
+            catdir = run_dir / 'catalogs'
+            if gaia_cache.exists() and gaia_cache.stat().st_size > 0:
+                ok = _propagate_catalog_epoch(
+                    gaia_cache, catdir / 'gaia_neighbourhood_at_plate.csv',
+                    catalog_epoch_year=2016.0, plate_epoch_year=plate_epoch,
+                    ra_col='ra', dec_col='dec', pmra_col='pmRA', pmde_col='pmDE',
+                )
+                if ok:
+                    print(f'[STEP4][INFO] {run_dir.name} Gaia epoch-propagated (dt={plate_epoch-2016.0:+.1f} yr)')
+            if usnob_cache.exists() and usnob_cache.stat().st_size > 0:
+                ok = _propagate_catalog_epoch(
+                    usnob_cache, catdir / 'usnob_neighbourhood_at_plate.csv',
+                    catalog_epoch_year=2000.0, plate_epoch_year=plate_epoch,
+                    ra_col='RAJ2000', dec_col='DEJ2000', pmra_col='pmRA', pmde_col='pmDE',
+                )
+                if ok:
+                    print(f'[STEP4][INFO] {run_dir.name} USNO-B epoch-propagated (dt={plate_epoch-2000.0:+.1f} yr)')
+        else:
+            print(f'[STEP4][WARN] {run_dir.name} plate epoch unavailable — skipping epoch propagation')
+    except Exception as e:
+        print(f'[STEP4][WARN] {run_dir.name} epoch propagation failed: {e}')
 
     # Proceed to xmatch using whatever caches exist
     _post_xmatch_tile(run_dir, p2, radius_arcsec=float(args.xmatch_radius_arcsec))
