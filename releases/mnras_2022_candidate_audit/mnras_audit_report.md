@@ -132,6 +132,8 @@ At 31% coverage, the pipeline has demonstrated consistent behaviour across 16 ru
 ## 4. Key Findings
 
 1. **MNRAS quality gates are the dominant eliminator (53%)**: Over half of all MNRAS 2022 candidates that appear in our tiles fail the paper's own detection quality criteria when re-measured. This calls into question the reliability of that subset.
+    
+    **Note**: This subset is frequently cited but is not the statistical parent population used in the 2025 papers, which operate on much larger POSS‑I transient sweeps. Therefore, the audit does not directly falsify the 2025 statistical claims, but it does raise concerns about the reliability of one commonly referenced vetted subset.
 
 2. **Circle-cut geometry explains most NO_MATCH (90%)**: The 30′ circle applied inside a 60×60′ tile is responsible for 104/116 non-detections. Not a pipeline failure.
 
