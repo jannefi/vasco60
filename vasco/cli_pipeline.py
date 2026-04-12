@@ -1129,7 +1129,12 @@ def _ensure_sextractor_csv(tile_dir: Path, pass2_ldac: str | Path) -> Path:
 # ---------------------------------------------------------------------------
 
 def _plate_epoch_year_from_fits(fits_path: Path) -> float | None:
-    """Return decimal year of DATE-OBS for the given FITS, or None on failure."""
+    """Return decimal year of DATE-OBS for the given FITS, or None on failure.
+
+    DSS plates sometimes have overflowed time components (e.g. T11:77:00 where
+    minutes=77).  Same normalization as stage_skybot_post.parse_dateobs.
+    """
+    import re as _re
     try:
         from astropy.io import fits as _fits
         from astropy.time import Time as _Time
@@ -1137,7 +1142,25 @@ def _plate_epoch_year_from_fits(fits_path: Path) -> float | None:
         date_obs = hdr.get('DATE-OBS') or hdr.get('DATE-AVG')
         if not date_obs:
             return None
-        return float(_Time(str(date_obs)).decimalyear)
+        t = str(date_obs).strip()
+        if ' ' in t and 'T' not in t:
+            t = t.replace(' ', 'T')
+        # Fast path: standard ISO
+        try:
+            return float(_Time(t).decimalyear)
+        except Exception:
+            pass
+        # Slow path: normalize overflowed hh/mm/ss (common in DSS FITS headers)
+        m = _re.match(r'^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2}):(\d{2})', t)
+        if not m:
+            return None
+        ymd = m.group(1)
+        hh, mm, ss = int(m.group(2)), int(m.group(3)), int(m.group(4))
+        mm_add, ss = divmod(ss, 60)
+        mm += mm_add
+        hh_add, mm = divmod(mm, 60)
+        hh = (hh + hh_add) % 24
+        return float(_Time(f'{ymd}T{hh:02d}:{mm:02d}:{ss:02d}').decimalyear)
     except Exception:
         return None
 
