@@ -2,6 +2,7 @@
 from __future__ import annotations
 import argparse, json, time, subprocess, os, shutil, math
 from pathlib import Path
+from dotenv import load_dotenv; load_dotenv()  # reads .env if present (won't override explicit exports)
 from typing import List, Tuple
 import warnings
 from vasco.utils.tile_id import parse_tile_id_center, format_tile_id
