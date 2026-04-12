@@ -33,15 +33,20 @@ def fetch_usnob_neighbourhood(
     around (ra_deg, dec_deg) with the given radius (arcmin), and write CSV
     under `tile_dir/catalogs/usnob_neighbourhood.csv`.
 
+    If VASCO_USNOB_CACHE is set, queries the local Parquet cache instead.
+
     Returns the path to the written CSV.
     """
+    from vasco.local_cache_query import query_usnob
+    cached = query_usnob(tile_dir, ra_deg, dec_deg, radius_arcmin)
+    if cached is not None:
+        return cached
     tile_dir = Path(tile_dir)
     cat_dir = tile_dir / "catalogs"
     cat_dir.mkdir(parents=True, exist_ok=True)
     out_csv = cat_dir / "usnob_neighbourhood.csv"
 
-    # row_limit must be passed to the Vizier() ctor — setting Vizier.ROW_LIMIT
-    # as a class attribute is shadowed by the instance default (50).
+    # row_limit must be passed to the Vizier() ctor — setting Vizier.ROW_LIMIT as a class attr is shadowed by the instance default (50).
     cols = columns or _USNOB_COLUMNS
     rl = int(row_limit) if row_limit and row_limit > 0 else -1
     viz = Vizier(columns=cols, row_limit=rl)
