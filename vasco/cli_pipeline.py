@@ -582,18 +582,17 @@ def _apply_mnras_filters_and_spikes(tile_dir: Path, sex_csv: Path, buckets: dict
     # Write intermediate
     tab.write(str(out_csv), format='ascii.csv', overwrite=True)
 
-    # 3) Bright-star spike removal via PS1 (within ~3′, r<=16)
-    # The spike physics operates on arcsecond separations (paper rule uses d_arcsec);
-    # the "90 arcsec" mentioned in MNRAS 2022 is the intended scale (the "90 arcmin"
-    # wording in the paper is a confirmed typo).
-    # The 3 arcmin value here is a per-candidate prefilter to limit which bright stars
-    # are even considered; it does NOT replace or redefine the arcsecond-scale spike rule.
-    # A small margin is used while staying physically motivated for Schmidt-plate spikes.
+    # 3) Bright-star spike removal via PS1 (r<=16, fetch covers full tile + spike margin)
+    # Spike physics (per 02_DECISIONS.md): reject candidates within 90″ of a bright star.
+    # The fetch is anchored at tile center and must reach every candidate that could be
+    # spike-rejected. For a 60×60′ square tile the far corner is 30·√2 ≈ 42.43′ from
+    # center; adding the 90″ (1.5′) spike radius gives ≈43.9′ → rounded up to 45′.
+    # search_radius_arcmin=1.5 enforces the 90″ paper rule as the per-candidate gate.
 
     center = _tile_center_from_index_or_name(tile_dir)
     bright = []
     if center:
-        cache_path = (tile_dir / 'catalogs' / 'ps1_bright_stars_r16_rad3.csv')
+        cache_path = (tile_dir / 'catalogs' / 'ps1_bright_stars_r16_rad45.csv')
         try:
             # Use cache if present
             if cache_path.exists() and cache_path.stat().st_size > 0:
@@ -601,7 +600,7 @@ def _apply_mnras_filters_and_spikes(tile_dir: Path, sex_csv: Path, buckets: dict
             else:
                 bright = fetch_bright_ps1(
                     center[0], center[1],
-                    radius_arcmin=3.0, rmag_max=16.0, mindetections=2
+                    radius_arcmin=45.0, rmag_max=16.0, mindetections=2
                 )
                 # Save cache for fast reruns
                 _write_bright_cache(cache_path, bright)
@@ -614,10 +613,13 @@ def _apply_mnras_filters_and_spikes(tile_dir: Path, sex_csv: Path, buckets: dict
 
         kept, rejected = apply_spike_cuts(
             rows, bright,
-            SpikeConfig(rules=[
-                SpikeRuleConst(const_max_mag=12.4),
-                SpikeRuleLine(a=-0.09, b=15.3),  # slope per arsec
-            ])
+            SpikeConfig(
+                search_radius_arcmin=1.5,  # 90″ per paper (02_DECISIONS.md)
+                rules=[
+                    SpikeRuleConst(const_max_mag=12.4),
+                    SpikeRuleLine(a=-0.09, b=15.3),  # slope per arcsec
+                ],
+            )
         )
         buckets['spikes_rejected'] += len(rejected)
 
