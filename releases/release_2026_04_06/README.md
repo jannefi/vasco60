@@ -41,3 +41,21 @@ This works as-is with the provided example run CSVs, assuming you have the corre
 - src_id is the stable join key: tile_id:object_id
 - Stages marked "experimental" are opt-in candidate-reduction steps
 
+## Post-release pipeline corrections (2026-04)
+
+Three step4 correctness bugs were fixed after this release was cut:
+
+1. **Spike-veto radius** (Bug #5, Mick West): PS1 bright-star fetch radius was 3′ instead
+   of 45′. Candidates near bright stars at tile edges could leak through the spike veto.
+2. **USNO-B epoch propagation**: Column name mismatch (`RAJ2000` vs actual `ra`) caused
+   propagation to silently fail for all tiles; high-PM USNO-B neighbours were matched at
+   J2000.0 instead of the plate epoch (~1950s).
+3. **DSS DATE-OBS overflow**: Tiles with malformed timestamps (e.g. `T11:77:00`) had no
+   plate epoch and skipped all epoch propagation.
+
+All three fixes are monotone-reducing: they can only remove survivors, never add them.
+**`survivors.csv` in this release may therefore contain a small number of false positives**
+that would be rejected by a corrected rerun. This release cannot be regenerated (it combined
+R1 full + R2–R11 delta runs in a one-time campaign). The figures in this README and
+`funnel.json` reflect the pre-fix pipeline. See commits `0b5279a`, `5b48711`, `353dc44`.
+
