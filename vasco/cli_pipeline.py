@@ -1696,7 +1696,7 @@ def cmd_step4_xmatch(args: argparse.Namespace) -> int:
                 ok = _propagate_catalog_epoch(
                     usnob_cache, catdir / 'usnob_neighbourhood_at_plate.csv',
                     catalog_epoch_year=2000.0, plate_epoch_year=plate_epoch,
-                    ra_col='RAJ2000', dec_col='DEJ2000', pmra_col='pmRA', pmde_col='pmDE',
+                    ra_col='ra', dec_col='dec', pmra_col='pmRA', pmde_col='pmDE',
                 )
                 if ok:
                     print(f'[STEP4][INFO] {run_dir.name} USNO-B epoch-propagated (dt={plate_epoch-2000.0:+.1f} yr)')
