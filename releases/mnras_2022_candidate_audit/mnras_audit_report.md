@@ -142,3 +142,38 @@ At 31% coverage, the pipeline has demonstrated consistent behaviour across 16 ru
 4. **5 MNRAS 2022 candidates survive into vasco60 R** (from 459 in-dataset, 31% sky coverage). These warrant individual scrutiny.
 
 5. **SkyBoT and VSX contribute zero eliminations** against MNRAS candidates in the current dataset — consistent with POSSI-era (1950s) plates predating most known solar system ephemerides and variable star catalogue completeness at these epochs.
+
+---
+
+## 5. Impact of 2026-04 Pipeline Rerun
+
+Three correctness bugs were identified and fixed after this report was first generated.
+The step4 xmatch phase was rerun for all tiles; the post-pipeline stage chain will be
+rerun once step4 completes.
+
+### Bugs fixed
+
+| Commit | Description | Direction of impact |
+|---|---|---|
+| `0b5279a` | Spike-veto PS1 fetch radius 3′→45′ (Bug #5, identified by Mick West) | Monotone reduction: more bright-star spike candidates rejected in step4 |
+| `5b48711` | USNO-B epoch propagation column name fix (`RAJ2000`→`ra`) — was silently failing for all tiles | Monotone reduction: high-PM USNO-B stars now correctly vetoed at plate epoch |
+| `353dc44` | DSS DATE-OBS overflow handling (`T11:77:00` style) — some tiles had no plate epoch | Monotone reduction: tiles with overflowed timestamps now propagate Gaia+USNO-B epochs |
+
+### Effect on audit categories
+
+All three fixes operate exclusively within the veto chain (step4 xmatch) and can only
+remove survivors, never add them. Consequently:
+
+- **GATE_FAIL (249), NO_MATCH structural causes (circle cut, 104), and
+  morphology-based STAGE_ELIM (S0M + S4S, 85)** are completely unaffected —
+  none of these categories depend on the veto chain.
+- **STAGE_ELIM PRE_S0** may increase slightly if any MNRAS candidates that
+  previously leaked through the spike or PM veto are now correctly rejected.
+- **SURVIVOR (5)** may decrease if any of the 5 common candidates happen to lie
+  within the spike halo of a bright star or close to a high-PM USNO-B neighbour.
+  A re-audit against the updated survivor set is planned; the count is expected
+  to remain at 5 or reduce by at most 1–2.
+
+The key audit conclusions — SPREAD_MODEL as dominant eliminator, circle-cut geometry,
+morphology-stage effectiveness, and zero SkyBoT/VSX hits — are not affected by
+this rerun.
