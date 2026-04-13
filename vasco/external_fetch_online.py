@@ -21,7 +21,13 @@ def fetch_usnob_neighbourhood(tile_dir: Path | str,
     """
     Fetch USNO-B1.0 neighborhood (I/284) via VizieR TSV -> CSV.
     Writes catalogs/usnob_neighbourhood.csv
+
+    If VASCO_USNOB_CACHE is set, queries the local Parquet cache instead.
     """
+    from vasco.local_cache_query import query_usnob
+    cached = query_usnob(tile_dir, ra_deg, dec_deg, radius_arcmin)
+    if cached is not None:
+        return cached
     tile_dir = Path(tile_dir)
     out = tile_dir / 'catalogs' / 'usnob_neighbourhood.csv'
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -78,7 +84,14 @@ def fetch_gaia_neighbourhood(tile_dir: Path | str,
                              radius_arcmin: float,
                              *, max_rows: int = 200000,
                              timeout: float = 60.0) -> Path:
-    """Fetch Gaia DR3 neighborhood via VizieR TSV -> CSV; map RA/Dec and filter unit rows."""
+    """Fetch Gaia DR3 neighborhood via VizieR TSV -> CSV; map RA/Dec and filter unit rows.
+
+    If VASCO_GAIA_CACHE is set, queries the local Parquet cache instead.
+    """
+    from vasco.local_cache_query import query_gaia
+    cached = query_gaia(tile_dir, ra_deg, dec_deg, radius_arcmin)
+    if cached is not None:
+        return cached
     tile_dir = Path(tile_dir)
     out = tile_dir / 'catalogs' / 'gaia_neighbourhood.csv'
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -130,12 +143,19 @@ def fetch_ps1_neighbourhood(tile_dir: Path | str,
                              timeout: float = 60.0) -> Path:
     """Fetch PS1 DR2 neighborhood via CDS/VizieR API with explicit columns and progress logs.
 
+    If VASCO_PS1_CACHE is set, queries the local Parquet cache instead.
+
     Honors environment variables:
+        VASCO_PS1_CACHE (local Parquet cache — bypasses VizieR entirely)
         VASCO_PS1_RADIUS_DEG
         VASCO_PS1_TIMEOUT
         VASCO_PS1_ATTEMPTS
         VASCO_PS1_COLUMNS
     """
+    from vasco.local_cache_query import query_ps1
+    cached = query_ps1(tile_dir, ra_deg, dec_deg, radius_arcmin)
+    if cached is not None:
+        return cached
     tile_dir = Path(tile_dir)
     out = tile_dir / 'catalogs' / 'ps1_neighbourhood.csv'
     out.parent.mkdir(parents=True, exist_ok=True)
