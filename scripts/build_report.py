@@ -35,7 +35,7 @@ STAGES = [
     ("__S0__",         "S0  post-MNRAS+dedup",    "pipeline",    "S0"),
     # Post-process stages in order
     ("stage_S0M_MORPH_ledger.json",  "S0M MORPH",   "postprocess", "S0M"),
-    ("stage_S4S_SHAPE_ledger.json",  "S4S SHAPE",   "postprocess", "S4S"),
+    ("stage_S0S_SHAPE_ledger.json",  "S4S SHAPE",   "postprocess", "S0S"),
     ("stage_S1_GSC_ledger.json",     "S1  GSC",     "postprocess", "S1"),
     ("stage_S2_SKYBOT_ledger.json",  "S2  SKYBOT",  "postprocess", "S2"),
     ("stage_S3_SCOS_ledger.json",    "S3  SCOS",    "postprocess", "S3"),
