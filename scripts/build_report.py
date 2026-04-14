@@ -50,6 +50,35 @@ FINAL_STAGE_CSV = "stage_S5_VSX.csv"
 # Parsing helpers
 # ---------------------------------------------------------------------------
 
+def _compute_pass2_raw(manifest_path: Path, tiles_root: Path) -> int | None:
+    """Compute total pass2 unfiltered detections by summing veto_start_rows from
+    each active tile's MNRAS_SUMMARY.json — same logic as run_detection_totals.py.
+    Returns None if manifest is missing; returns 0 if no MNRAS_SUMMARY.json found.
+    """
+    if not manifest_path.exists():
+        return None
+    with manifest_path.open(encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+
+    def _int(val):
+        return int(val) if val and val.strip() else 0
+
+    active = [r for r in rows if _int(r.get("skipped_delta", "0")) == 0]
+    total = 0
+    found = 0
+    for row in active:
+        summary_path = tiles_root / row["tile_id"] / "MNRAS_SUMMARY.json"
+        if not summary_path.exists():
+            continue
+        try:
+            summary = json.loads(summary_path.read_text(encoding="utf-8"))
+            total += summary.get("veto_start_rows", 0)
+            found += 1
+        except Exception:
+            continue
+    return total if found > 0 else None
+
+
 def _parse_run_summary(path: Path) -> dict:
     """Extract structured fields from RUN_SUMMARY.txt.
     Only reads lines up to and including the 'upload_skybot:' line.
@@ -165,10 +194,13 @@ def _load_tile_date_obs(tile_to_plate_csv: Path) -> dict:
     return result
 
 
-def collect_run(run_dir: Path, tile_date_obs_map: dict | None = None) -> dict:
+def collect_run(run_dir: Path, tile_date_obs_map: dict | None = None,
+                tiles_root: Path | None = None) -> dict:
     """Return a dict with all counts for one run folder."""
     rid = _run_id(run_dir)
     summary = _parse_run_summary(run_dir / "RUN_SUMMARY.txt")
+    if tiles_root is None:
+        tiles_root = Path("data/tiles")
 
     # Load all ledgers
     ledgers = {}
@@ -183,7 +215,7 @@ def collect_run(run_dir: Path, tile_date_obs_map: dict | None = None) -> dict:
     counts = []
     for ledger_glob, label, section, *_ in STAGES:
         if ledger_glob == "__pass2_raw__":
-            counts.append(summary["pass2_raw"])
+            counts.append(_compute_pass2_raw(run_dir / "tile_manifest.csv", tiles_root))
         elif ledger_glob == "__S0__":
             counts.append(summary["S0_rows"])
         else:
@@ -440,6 +472,8 @@ def main():
                         help="Glob to match run folder names (default: run-R*)")
     parser.add_argument("--tile-to-plate", default="./data/metadata/tile_to_plate.csv",
                         help="tile_to_plate.csv path (default: ./data/metadata/tile_to_plate.csv)")
+    parser.add_argument("--tiles-root", default="./data/tiles",
+                        help="Root of tile folders containing MNRAS_SUMMARY.json (default: ./data/tiles)")
     args = parser.parse_args()
 
     runs_dir = Path(args.runs_dir)
@@ -467,7 +501,7 @@ def main():
     runs = []
     for rd in run_dirs:
         print(f"[REPORT]   collecting {rd.name} ...", end=" ", flush=True)
-        r = collect_run(rd, tile_date_obs_map)
+        r = collect_run(rd, tile_date_obs_map, tiles_root=Path(args.tiles_root))
         print(f"{len(r['survivors'])} survivors, {len(r['tiles'])} tiles")
         runs.append(r)
 
