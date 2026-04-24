@@ -9,6 +9,7 @@ This repository does not aim to reproduce the exact dataset of MNRAS 515(1):1380
 - Watters et al. (2026) arXiv:2601.21946
 - Villarroel et al. (2026) response arXiv:2602.15171
 - Busko (2026) arXiv:2603.20407 Searching for Fast Astronomical Transients in Archival Photographic Plates
+- Bruehl et al. (2026) arXiv:2604.18799 
 
 ---
 
@@ -211,12 +212,13 @@ Post-pipeline veto stages operate on the run-scoped survivor set and progressive
 ## Acknowledgements
 
 Special thanks to [Beatriz Villarroel](https://orcid.org/0000-0002-4101-237X) and
-[Alina Streblyanska](https://orcid.org/0000-0001-8876-9102), whose generous guidance
-and ongoing support have been invaluable throughout this work.
+[Alina Streblyanska](https://orcid.org/0000-0001-8876-9102), for guidance and support.
 
-Thanks also to Ivo Busko for his [plateanalysis](https://github.com/cuernodegazpacho/plateanalysis)
+Special thanks to Ivo Busko for his [plateanalysis](https://github.com/cuernodegazpacho/plateanalysis)
 software and the related [arXiv:2603.20407](https://arxiv.org/abs/2603.20407) publication,
 and for his help with that approach.
+
+Many thanks to Mick West (https://www.metabunk.org/members/mick-west.1/) for finding, fixing and reporting several bugs, and improving the pipeline. Fork: https://github.com/MickWest/vasco60 
 
 ---
 
