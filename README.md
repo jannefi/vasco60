@@ -204,7 +204,7 @@ Post-pipeline veto stages operate on the run-scoped survivor set and progressive
 
 ## Public releases
 
-- [Release 6-Apr-2026](releases/release_2026_04_06/README.md)
+- 26-Apr-2026 started preparations for a public release with full dataset
 - [MNRAS 2022 Audit report 10-Apr-2026](releases/mnras_2022_candidate_audit/mnras_audit_report.md)
 - [Plate forensics library](docs/PLATE_FORENSICS_LIBRARY.md)
 
