@@ -1,11 +1,11 @@
-# HiRes plates note
+# HiRes tiles note
 
 
 STScI DSS scan resolution varies by declination
 
 STScI silently returns finer (15µm, ~1.0 arcsec/pix) scans for some Dec-minus POSS-I E plates vs standard 25µm (~1.7 arcsec/pix) for northern plates
 
-For Dec-minus plates STScI's DSS archive sometimes returns POSS-I E plates scanned at 15 µm (≈1.0 arcsec/pix) instead of the standard 25 µm (≈1.7 arcsec/pix) used for northern plates. Files are ~25 MB instead of ~9 MB.
+For Dec-minus plates STScI's DSS archive sometimes returns POSS-I E tiles scanned at 15 µm (≈1.0 arcsec/pix) instead of the standard 25 µm (≈1.7 arcsec/pix) used for northern plates. Files are ~25 MB instead of ~9 MB.
 
 Confirmed on 2026-04-26: e.g. tile_RA280.325_DECm28.830 — SURVEY=POSSI-E, TELESCOP=Palomar Schmidt
 
