@@ -1,0 +1,125 @@
+{
+  "generated": "2026-04-27T12:26:53.735965+00:00",
+  "funnel": [
+    {
+      "stage": "pass2 raw detections",
+      "section": "pipeline",
+      "runs": {
+        "R1": 44832957,
+        "R2": 22641921,
+        "R3": 22630155,
+        "R4": 24964850,
+        "R5": 29883638,
+        "R6": 27760529
+      }
+    },
+    {
+      "stage": "S0  post-MNRAS+dedup",
+      "section": "pipeline",
+      "runs": {
+        "R1": 15303,
+        "R2": 679,
+        "R3": 515,
+        "R4": 833,
+        "R5": 698,
+        "R6": 2677
+      }
+    },
+    {
+      "stage": "S0M MORPH",
+      "section": "postprocess",
+      "runs": {
+        "R1": 9534,
+        "R2": 386,
+        "R3": 286,
+        "R4": 450,
+        "R5": 505,
+        "R6": 2526
+      }
+    },
+    {
+      "stage": "S4S SHAPE",
+      "section": "postprocess",
+      "runs": {
+        "R1": 639,
+        "R2": 32,
+        "R3": 32,
+        "R4": 29,
+        "R5": 35,
+        "R6": 1072
+      }
+    },
+    {
+      "stage": "S1  GSC",
+      "section": "postprocess",
+      "runs": {
+        "R1": 585,
+        "R2": 28,
+        "R3": 29,
+        "R4": 24,
+        "R5": 31,
+        "R6": 851
+      }
+    },
+    {
+      "stage": "S2  SKYBOT",
+      "section": "postprocess",
+      "runs": {
+        "R1": 585,
+        "R2": 28,
+        "R3": 29,
+        "R4": 24,
+        "R5": 31,
+        "R6": 851
+      }
+    },
+    {
+      "stage": "S3  SCOS",
+      "section": "postprocess",
+      "runs": {
+        "R1": 510,
+        "R2": 25,
+        "R3": 23,
+        "R4": 3,
+        "R5": 0,
+        "R6": 37
+      }
+    },
+    {
+      "stage": "S4  PTF",
+      "section": "postprocess",
+      "runs": {
+        "R1": 495,
+        "R2": 25,
+        "R3": 23,
+        "R4": 3,
+        "R5": 0,
+        "R6": 37
+      }
+    },
+    {
+      "stage": "S5  VSX",
+      "section": "postprocess",
+      "runs": {
+        "R1": 495,
+        "R2": 25,
+        "R3": 23,
+        "R4": 3,
+        "R5": 0,
+        "R6": 37
+      }
+    },
+    {
+      "stage": "S6  SCOPE_DEC",
+      "section": "postprocess",
+      "runs": {
+        "R1": 440,
+        "R2": 0,
+        "R3": 0,
+        "R4": 0,
+        "R5": 0,
+        "R6": 0
+      }
+    }
+  ]
+}

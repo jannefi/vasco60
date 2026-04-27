@@ -1,0 +1,23 @@
+{
+  "run_dir": "work/runs/run-R1-20260424_150522",
+  "input_glob": "stages/stage_S5_VSX.csv",
+  "stage": "S6",
+  "created": "2026-04-27T12:26:47Z",
+  "parameters": {
+    "dec_min": 0.0
+  },
+  "totals": {
+    "input_rows": 495,
+    "kept_rows": 440,
+    "rejected_rows": 55,
+    "parse_errors_kept": 0
+  },
+  "rejected_by_reason": {
+    "dec_below_scope": 55
+  },
+  "outputs": {
+    "kept_csv": "work/runs/run-R1-20260424_150522/stages/stage_S6_SCOPE_DEC.csv",
+    "flags_csv": "work/runs/run-R1-20260424_150522/stages/stage_S6_SCOPE_DEC_flags.csv",
+    "ledger_json": "work/runs/run-R1-20260424_150522/stages/stage_S6_SCOPE_DEC_ledger.json"
+  }
+}
