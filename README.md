@@ -184,7 +184,8 @@ Post-pipeline veto stages operate on the run-scoped survivor set and progressive
 | S1 | `scripts/run_skybot_stage_bg.sh` | SkyBoT (solar system objects) |
 | S2 | `scripts/stage_supercosmos_post.py` | SuperCOSMOS (keep matches) |
 | S3 | `scripts/stage_ptf_post.py` | PTF catalogue |
-| S4 | `scripts/stage_vsx_post.py` | VSX variable stars |
+| S4/S5 | `scripts/stage_vsx_post.py` | VSX variable stars (label depends on which upstream stages ran) |
+| S6 | `scripts/stage_scope_dec_post.py` | Declination scope gate (default Dec ≥ 0°; `--dec-min -3.0` for MNRAS-comparison view) |
 
 ⚗️ = experimental stage; opt-in only. Each stage outputs a carry-forward CSV, a flags CSV, and a ledger JSON.
 

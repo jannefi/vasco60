@@ -40,10 +40,20 @@ STAGES = [
     ("stage_S2_SKYBOT_ledger.json",  "S2  SKYBOT",  "postprocess", "S2"),
     ("stage_S3_SCOS_ledger.json",    "S3  SCOS",    "postprocess", "S3"),
     ("stage_S4_PTF_ledger.json",     "S4  PTF",     "postprocess", "S4"),
-    ("stage_S5_VSX_ledger.json",     "S5  VSX",     "postprocess", "S5"),
+    ("stage_S5_VSX_ledger.json",          "S5  VSX",        "postprocess", "S5"),
+    ("stage_S6_SCOPE_DEC_ledger.json",    "S6  SCOPE_DEC",  "postprocess", "S6"),
 ]
 
-FINAL_STAGE_CSV = "stage_S5_VSX.csv"
+# Checked in order; first found wins.  Runs without S6 fall back to S5.
+FINAL_STAGE_CANDIDATES = ["stage_S6_SCOPE_DEC.csv", "stage_S5_VSX.csv"]
+
+
+def _get_final_stage_csv(stages_dir: Path) -> Path | None:
+    for name in FINAL_STAGE_CANDIDATES:
+        p = stages_dir / name
+        if p.exists():
+            return p
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -236,8 +246,8 @@ def collect_run(run_dir: Path, tile_date_obs_map: dict | None = None,
 
     # Load final survivors
     survivors = []
-    final_csv = stages_dir / FINAL_STAGE_CSV
-    if final_csv.exists():
+    final_csv = _get_final_stage_csv(stages_dir)
+    if final_csv is not None:
         # Build plate_id lookup from manifest
         plate_map = {t: d["plate_id"] for t, d in tiles.items()}
         with final_csv.open(encoding="utf-8") as f:
@@ -366,7 +376,7 @@ def build_funnel_text(runs: list[dict]) -> str:
         "VASCO60 — Detection Funnel",
         f"Generated: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}",
         f"Runs: {', '.join(r['run_id'] for r in runs)}",
-        f"Columns: RAW S0 = pipeline  |  S0M..S5 = post-pipeline stages",
+        f"Columns: RAW S0 = pipeline  |  S0M..S6 = post-pipeline stages",
         "",
         header,
         sep,

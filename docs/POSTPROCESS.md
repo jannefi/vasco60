@@ -120,6 +120,35 @@ python scripts/stage_vsx_post.py \
 - stage_S4_VSX_flags.csv
 - stage_S4_VSX_ledger.json
 
+### 6) Declination scope gate — S6 (science-grade subset)
+
+**Script:** `scripts/stage_scope_dec_post.py`  
+**Purpose:** Restrict the surviving set to the declared science scope by declination. The default threshold (Dec ≥ 0°) aligns with the MNRAS 107k comparison list, which covers the northern sky. Sources below the threshold are flagged as `dec_below_scope` and removed; sources whose Dec cannot be parsed are kept conservatively.
+
+Run (default northern scope):
+```sh
+python scripts/stage_scope_dec_post.py \
+  --run-dir "$RUN" \
+  --dec-min 0.0
+```
+
+Run (MNRAS-comparison view, allows slightly negative Dec):
+```sh
+python scripts/stage_scope_dec_post.py \
+  --run-dir "$RUN" \
+  --dec-min -3.0
+```
+
+**Expected outputs (under $RUN/stages/):**
+
+- `stage_S6_SCOPE_DEC.csv` — carry-forward survivors
+- `stage_S6_SCOPE_DEC_flags.csv` — per-row flags (`dec_value`, `reject_reason`, `is_rejected`)
+- `stage_S6_SCOPE_DEC_ledger.json` — parameters (`dec_min`), totals, rejection breakdown
+
+> **Note:** This stage replaces the earlier CLASS_STAR morphology gate (S6_MORPH_CLASS), which was superseded by the SPREAD_MODEL classifier already applied upstream at the tile level.
+
+---
+
 ### Consolidated reporting (all runs)
 
 After delta runs exist, maintain an all-up report that spans all run folders (initial big run + later deltas).The consolidated report should also materialize a single current-survivors view across the union of runs so downstream fetchers always consume one canonical shrinking set.
