@@ -205,7 +205,8 @@ Post-pipeline veto stages operate on the run-scoped survivor set and progressive
 
 ## Public releases
 
-- [Final release v1 - report 27-Apr-2026](releases/final_release_v1/report) 
+- [Final release v1 - report 27-Apr-2026](releases/final_release_v1/REPORT.md) 
+For how to interpret the release, see [FINAL_RELEASE_V1](FINAL_RELEASE_V1.md)
 - [Plate forensics library](docs/PLATE_FORENSICS_LIBRARY.md)
 
 ---
