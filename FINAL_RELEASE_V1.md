@@ -88,4 +88,6 @@ Recent literature continues to analyse a ~107k candidate dataset. The preprint b
 
 VASCO60 final_release_v1 provides an open, fully auditable dataset and pipeline outputs (including stage-by-stage audit artefacts) that others can inspect and reproduce end-to-end.
 
+Technical report: [1](https://github.com/jannefi/vasco60/blob/main/releases/final_release_v1/docs/vasco_candidate_crossmatch.pdf)
+
 
