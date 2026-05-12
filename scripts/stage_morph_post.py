@@ -201,7 +201,16 @@ def _load_tile_psf(
 ) -> TilePSF:
     tile_dir = tiles_root / tile_id
     sex_csv = tile_dir / "catalogs" / "sextractor_pass2.csv"
-    gaia_csv = tile_dir / "catalogs" / "gaia_neighbourhood.csv"
+    # Prefer plate-epoch Gaia (Bug #6 fix in vasco/cli_pipeline.py:1306) so PSF
+    # reference matching at 3" doesn't silently exclude HPM stars whose J2016
+    # positions have drifted from their POSS-epoch detection. Fall through to
+    # the raw catalog when the propagated variant is absent or empty.
+    gaia_at_plate = tile_dir / "catalogs" / "gaia_neighbourhood_at_plate.csv"
+    gaia_raw = tile_dir / "catalogs" / "gaia_neighbourhood.csv"
+    if gaia_at_plate.exists() and gaia_at_plate.stat().st_size > 0:
+        gaia_csv = gaia_at_plate
+    else:
+        gaia_csv = gaia_raw
 
     _nan = float("nan")
 

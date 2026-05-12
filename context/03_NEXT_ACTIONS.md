@@ -159,6 +159,21 @@ We do NOT target parity with the published MNRAS “R remainder” list.
     - Use 60×60 square download → ≤30′ circle cut policy when required.
     - Purpose: validate geometry + gating + veto ordering + ledgers (not external remainder parity).
 
+[x] Bug: S0M morphology stage bypassed Bug #6 epoch propagation (2026-05-12)
+    - `scripts/stage_morph_post.py:204` read `catalogs/gaia_neighbourhood.csv`
+      (raw J2016) instead of preferring `gaia_neighbourhood_at_plate.csv`,
+      which Step 4 produces and `vasco/cli_pipeline.py:1306` correctly prefers.
+    - 3″ PSF-reference match against un-propagated Gaia silently excluded HPM
+      stars whose POSS-epoch positions had drifted from J2016. Second-order
+      effect (slightly biased PSF reference sample composition), not a funnel
+      defect, but inconsistent with the Bug #6 architecture established in
+      commit c9f7f05 (fix/pm-leakage, 2026-04-11).
+    - Fix: prefer `_at_plate.csv` with conservative fall-through to raw catalog,
+      mirroring `_prefer_plate` semantics in cli_pipeline.py.
+    - Verified on prod: behaviour identical when `_at_plate.csv` absent/empty
+      (existing tiles unchanged); 4099-star PSF reference reproduced exactly
+      when fed a copy of the raw catalog via the new path.
+
 [x] Bug: HPM filter was a no-op (2026-05-12)
     - `vasco/mnras/hpm.py` looked up `pmra`/`pmdec` (lowercase), but the Gaia
       neighbourhood CSV (both VizieR fetcher and local cache) writes `pmRA`/`pmDE`.
