@@ -159,6 +159,39 @@ We do NOT target parity with the published MNRAS “R remainder” list.
     - Use 60×60 square download → ≤30′ circle cut policy when required.
     - Purpose: validate geometry + gating + veto ordering + ledgers (not external remainder parity).
 
+[x] No action — _enforce_possi_e_or_skip alleged to silently delete legitimate POSS-I plates (2026-05-12)
+    - Reporter item 32: `vasco/cli_pipeline.py:88-101` deletes FITS whose SURVEY
+      header is not exactly "POSSI-E"; claim was that STScI metadata variance
+      destroys legitimate POSS-I E plates and produces silent coverage gaps.
+    - Investigation: claim is incorrect on multiple counts.
+      * Not silent: pipeline gate logs `[STEP1][FILTER] Non-POSS plate;
+        SURVEY=... — file will be discarded` and raises RuntimeError; the
+        upstream downloader gate (vasco/downloader.py:209-221) also writes a
+        REJECT_NON_POSS error artifact via _write_error_artifacts before
+        deletion, so downstream coverage audits see explicit reject records,
+        not phantom gaps.
+      * Asymmetric-but-intentional: the downloader uses a tolerant substring
+        match ('POSS' in survey_name) to absorb metadata variance; the
+        pipeline gate is the strict belt-and-suspenders second pass.
+    - Operator confirmation: STScI dss1-red endpoint (with the undocumented
+      parameters this downloader uses) consistently returns canonical
+      `SURVEY = 'POSSI-E'`. Full POSS-I red set downloaded with this pipeline
+      verified clean. Strict gate has never fired on legitimate data.
+    - No action.
+
+[x] Cleanup — removed broken-but-unused vasco/mnras/xmatch.py (2026-05-12)
+    - Reporter item 31: `vasco/mnras/xmatch.py:44` picked "nearest" Gaia source
+      via Manhattan distance `|Δra| + |Δdec|` with no cos(dec) correction —
+      not even a valid angular metric, fails worst at high dec and near the
+      0°/360° wrap.
+    - Confirmed not on the production path: zero importers across the repo;
+      all real xmatch flows through `vasco.mnras.xmatch_stilts`. Package
+      `__init__.py` exports `__all__ = []`, so nothing was committed public
+      API — but the module path looked like one, which was the reporter's
+      concern.
+    - Action taken: deleted the file. Verified `vasco.mnras` package and
+      `vasco.mnras.xmatch_stilts` still import cleanly.
+
 [x] Cleanup — removed dead within5arcsec validators (2026-05-12)
     - Reporter flagged `vasco/cli_pipeline.py:168` heuristic
       `d_arcsec = d if d > 0.1 else d * 3600.0` as silently rejecting
@@ -173,9 +206,18 @@ We do NOT target parity with the published MNRAS “R remainder” list.
       deletes stale `_within5arcsec.csv` files; its own comment confirms
       "nothing downstream reads within5arcsec files." No NO_MATCH counter is
       fed by this code path.
+    - The sibling validator in vasco/pipeline.py had a *symmetric but opposite*
+      bug (reporter item 29): "try angDist<=5 first; only fall back to degrees
+      if zero rows" — meaning if angDist were in degrees, the arcsec test would
+      match everything within 5° and the degree fallback would never trigger.
+      Two divergent validators failing in opposite directions; both dead.
+    - Reporter item 30 (dead-write at vasco/pipeline.py:120-121, where
+      `out` was assigned in an if/else then unconditionally overwritten on
+      the following line) was also inside the same removed function. All
+      three findings (items 28/29/30) flushed by this single cleanup.
     - Action taken: deleted both dead functions (~140 lines across two files).
-      The buggy heuristic is gone by virtue of removing the dead code that
-      contained it, not because the claimed impact was real. Step 5 no-op
+      The buggy heuristics are gone by virtue of removing the dead code that
+      contained them, not because the claimed impact was real. Step 5 no-op
       smoke-tested on prod.
 
 [x] No action — WCSFIX bootstrap 5″ radius alleged to miss HPM stars (2026-05-12)
