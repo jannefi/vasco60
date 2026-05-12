@@ -159,6 +159,60 @@ We do NOT target parity with the published MNRAS “R remainder” list.
     - Use 60×60 square download → ≤30′ circle cut policy when required.
     - Purpose: validate geometry + gating + veto ordering + ledgers (not external remainder parity).
 
+[x] Deviations-from-Solano triage — reporter items 8–10 (2026-05-12)
+    - Project scope is explicit in README:5: "This repository does not aim to
+      reproduce the exact dataset of MNRAS 515(1):1380 (2022). The goal is to
+      reproduce the *intent* of that workflow." That statement is the
+      load-bearing context for items 9 and 10. Item 8 is a factual error on
+      the reporter's part.
+
+    [x] 8 — "2σ MAD clip isn't in the paper" (reporter wrong)
+        Solano et al. (2022) Section 2 step (v) explicitly states: "we
+        computed the median and the absolute deviation of the median of the
+        FWHM and the elongation of the sources in order to remove sources
+        deviating more than 2σ from the median values." That is exactly what
+        vasco/mnras/filters_mnras.py:41-47 implements (k=2.0, MAD-based,
+        FWHM_IMAGE and ELONGATION). The "(optional)" tag in the docstring is
+        a config-toggle hook (cfg['sigma_clip'], default True) for ablation
+        studies, not a "not in paper" admission. The "paper style robust
+        clipping" comment is correct. Reporter also conflates this with
+        stage_shape_post.py:684 (elongation_limit=1.10) which is the
+        experimental Busko-style S4 shape stage, not the Solano-aligned
+        MNRAS filter set.
+
+    [x] 9 — PS1 rMeanPSFMag substituted for USNO-B1.0 R in spike rule
+        Real and intentional deviation. vasco/mnras/spikes.py keeps Solano's
+        numerical coefficients (R ≤ -0.09 × d + 15.3, R ≤ 12.4) but reads
+        rMeanPSFMag from PS1 DR2 instead of USNO-B1.0 Rmag1/Rmag2.
+        apply_usno_b1_mask at spikes.py:278 remains an explicit placeholder.
+        Operator rationale: PS1 photometry is more reliable than USNO-B1.0's
+        photographic-plate R. One of the Solano et al. authors was consulted
+        and indicated the substitution "might be ok" but would need a
+        bright-star-mask comparison test, which the operator did not pursue.
+        This is an engineering trade-off, covered by README's "intent, not
+        dataset" scope statement.
+        Optional follow-up (low priority): run a side-by-side spike-rejection
+        comparison between PS1- and USNO-B1.0-driven masks on a sample of
+        tiles to retire the open methodological question. Not a blocker.
+
+    [x] 10 — S6 dec-min=0.0 default
+        Reporter is factually correct that POSS-I extends to dec ≈ -33° and
+        the cut zeros out R2/R3/R4/R6 at S6. The framing "artifact of this
+        cut, not a property of the runs" is misleading, however: the cut is
+        deliberately aligned with the authors' own published comparison
+        catalog, not with raw plate coverage. Authoritative source is
+        Villarroel et al. (2026), arXiv:2602.15171v2, page 3:
+            "For statistical inference, the catalog was revisited during
+             early 2025. For the 298,165 objects it was again required no
+             counterpart within 5" in Gaia and/or Pan-STARRS, removed all
+             duplicates and all objects from the southern hemisphere."
+        So the ~107,000-object catalog used in Villarroel+2025 / Bruehl &
+        Villarroel 2025 (and which vasco60 compares against) is by
+        author-stated construction a Dec ≥ 0° dataset. The S6 cut at 0.0 is
+        the correct scope; not a deviation from the workflow's intent.
+        stage_scope_dec_post.py:9-11 already documents this; flag is
+        operator-tunable for ablation (--dec-min -3.0). No action.
+
 [x] No action — SExtractor config items 11–13 (2026-05-12)
     - All three items challenge SExtractor configuration choices for the
       pass1/pass2 catalogs (configs/sex_pass1.sex, configs/sex_pass2.sex).
