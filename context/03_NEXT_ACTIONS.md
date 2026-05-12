@@ -159,6 +159,59 @@ We do NOT target parity with the published MNRAS “R remainder” list.
     - Use 60×60 square download → ≤30′ circle cut policy when required.
     - Purpose: validate geometry + gating + veto ordering + ledgers (not external remainder parity).
 
+[x] Cleanup — removed dead within5arcsec validators (2026-05-12)
+    - Reporter flagged `vasco/cli_pipeline.py:168` heuristic
+      `d_arcsec = d if d > 0.1 else d * 3600.0` as silently rejecting
+      sub-arcsecond catalog matches (mistaken as degrees, multiplied by 3600,
+      then failing the 5″ cutoff). Their conclusion: "biases NO_MATCH counts
+      upward."
+    - The heuristic is genuinely faulty in principle. BUT the bug-impact claim
+      is incorrect — the function `_validate_within5_arcsec_unit_tolerant`
+      (and its sibling `_validate_within_5_arcsec` in vasco/pipeline.py) had
+      zero call sites in the repo. The Step 5 handler that historically used
+      them (`cmd_step5_filter_within5`) is already a no-op cleanup that just
+      deletes stale `_within5arcsec.csv` files; its own comment confirms
+      "nothing downstream reads within5arcsec files." No NO_MATCH counter is
+      fed by this code path.
+    - Action taken: deleted both dead functions (~140 lines across two files).
+      The buggy heuristic is gone by virtue of removing the dead code that
+      contained it, not because the claimed impact was real. Step 5 no-op
+      smoke-tested on prod.
+
+[x] No action — WCSFIX bootstrap 5″ radius alleged to miss HPM stars (2026-05-12)
+    - Reporter flagged `vasco/wcsfix_early.py:19` (bootstrap_radius_arcsec=5.0)
+      as silently excluding HPM stars from the tie-point set, biasing the
+      polynomial WCS correction.
+    - Investigation: claim doesn't hold. `_post_xmatch_tile` picks gaia_csv via
+      `_prefer_plate` at cli_pipeline.py:1306 BEFORE invoking WCSFIX
+      (cli_pipeline.py:1336-1339). The bootstrap matches POSS-epoch SExtractor
+      positions against plate-epoch propagated Gaia, so HPM stars land within
+      sub-arcsec of their POSS detection and are captured by the 5″ bootstrap.
+    - Secondary concern (polynomial fit "applied uniformly") is misconceived:
+      a polynomial WCS correction is *meant* to be uniform; it models plate-
+      scale distortion, not per-source motion. A few HPM rejections among
+      thousands of tie points have no effect on the polynomial coefficients.
+    - Edge case: combined failure of Bug #6 propagation + 5″ bootstrap + 15″
+      fallback bootstrap (cli_pipeline.py:1330). Pathological; wcsfix_status.json
+      makes it auditable when it occurs.
+    - No action.
+
+[ ] Polish: `_filter_hpm_gaia` hardcodes target_epoch=1950.0
+    - `vasco/cli_pipeline.py:672` passes target_epoch=1950.0 to backprop_gaia_row,
+      while `_propagate_catalog_epoch` (cli_pipeline.py:1710) correctly reads
+      per-plate DATE-OBS from the FITS header via `_plate_epoch_year_from_fits`.
+    - POSS-I plates span 1949–1958; the observed test tile is 1955.81 → 5.81 yr
+      offset. For a 500 mas/yr genuine HPM star this is a ~2.9″ position error
+      in the back-projection (large enough to flip the 5″ flag near threshold);
+      sub-arcsec for typical PMs.
+    - Audit-only impact (hpm_objects counter in MNRAS_SUMMARY.json and contents
+      of sex_gaia_hpm_flagged.csv). Candidate funnel unaffected — the
+      load-bearing HPM defense is `_propagate_catalog_epoch` which already uses
+      the per-plate epoch.
+    - Low priority; fix opportunistically next time `_post_xmatch_tile` is
+      edited. Thread plate_epoch into `_filter_hpm_gaia` and on to
+      `backprop_gaia_row(row, target_epoch=plate_epoch)`.
+
 [x] Bug: S0M morphology stage bypassed Bug #6 epoch propagation (2026-05-12)
     - `scripts/stage_morph_post.py:204` read `catalogs/gaia_neighbourhood.csv`
       (raw J2016) instead of preferring `gaia_neighbourhood_at_plate.csv`,
