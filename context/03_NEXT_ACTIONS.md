@@ -159,6 +159,54 @@ We do NOT target parity with the published MNRAS “R remainder” list.
     - Use 60×60 square download → ≤30′ circle cut policy when required.
     - Purpose: validate geometry + gating + veto ordering + ledgers (not external remainder parity).
 
+[ ] Shape/morph stage triage — reporter items 22–27 (2026-05-12)
+    - Both `scripts/stage_shape_post.py` and `scripts/stage_morph_post.py` are
+      documented EXPERIMENTAL / "Not an official veto stage" and several
+      choices are explicit "reference implementation parity" with Busko (2026)
+      / cuernodegazpacho/plateanalysis. Disposition reflects that framing.
+
+    [ ] 22 (polish) — no min-stars guard on profile_diff
+        `stage_shape_post.py:574` records `stars_used` in the flags output but
+        doesn't act on it. With N=1 the "averaged-star" profile is a 1-vs-1
+        comparison. Add `--min-profile-diff-stars N` that forces
+        shape_confidence='low' (or sets profile_diff=NaN) when N < min.
+        Low priority; stars_used is already audit-visible.
+
+    [x] 23 (no action) — per-cutout MIN/MAX normalization "uncalibrated"
+        Per-cutout normalization at stage_shape_post.py:352 is the Busko
+        reference's deliberate choice: shape, not photometry. Circularity
+        0.80 floor is a unitless shape metric (4πA/P², max 1.0) — no
+        photometric reference to calibrate against. Reporter category error.
+
+    [ ] 24 (polish) — last-valid-contour wins is OpenCV-order-dependent
+        stage_shape_post.py:370 comment acknowledges "reference implementation
+        parity: last valid overwrites". Cross-version stability risk only.
+        Could sort contours deterministically (e.g. by area desc) without
+        meaningful semantic change. Low priority; matters only on OpenCV
+        major-version bumps.
+
+    [x] 25 (no action) — `invert-max=65535` allegedly hardcoded
+        It's a CLI flag default (`--invert-max`, stage_shape_post.py:672), not
+        a hardcoded constant. 65535 is correct for canonical 16-bit unsigned
+        STScI DSS/POSS-I scans. Auto-detection from FITS BITPIX/BSCALE could
+        be added but isn't required for the POSS-I canonical product.
+
+    [ ] 26 (polish) — Cutout2D mode="trim" biases edge candidates
+        stage_shape_post.py:545. Practical impact limited because the ≤30′
+        circle cut from tile tessellation usually removes edge candidates
+        upstream. Could switch to mode="partial" (NaN-pad + handle in the
+        profile aggregator) or mode="strict" + skip-with-reason. Low priority.
+
+    [x] 27 (no action on code; consider doc refresh) — calibration sample size
+        `docs/STAGE_MORPH.md` calibrates fwhm_ratio/spread_snr thresholds on
+        684 candidates from 181 tiles; reporter notes the 25k-pair audit
+        population is ~37× larger. Methodologically fair critique for a
+        published gate, but stage_morph_post.py is documented EXPERIMENTAL
+        and thresholds are operator-tunable CLI flags. The 181-tile scale-up
+        validation is already in the log above. Could add a clarifying note
+        in STAGE_MORPH.md that the calibration numbers are starting points,
+        not certified for hard rejection.
+
 [x] No action — _enforce_possi_e_or_skip alleged to silently delete legitimate POSS-I plates (2026-05-12)
     - Reporter item 32: `vasco/cli_pipeline.py:88-101` deletes FITS whose SURVEY
       header is not exactly "POSSI-E"; claim was that STScI metadata variance
