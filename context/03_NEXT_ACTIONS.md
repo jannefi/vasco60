@@ -159,6 +159,62 @@ We do NOT target parity with the published MNRAS “R remainder” list.
     - Use 60×60 square download → ≤30′ circle cut policy when required.
     - Purpose: validate geometry + gating + veto ordering + ledgers (not external remainder parity).
 
+[ ] Morphology methodology triage — reporter items 18–21 (2026-05-12)
+    - All four items concern stage_morph_post.py methodology. The stage is
+      documented EXPERIMENTAL / "Not an official veto stage"; the calibration
+      doc (docs/STAGE_MORPH.md) and rejections have been visually validated
+      on a sample. Dispositions reflect that framing.
+
+    [x] 18 (no action) — "circular reference definition"
+        Reporter claims PSF reference is selected by ELONGATION<1.3, then
+        candidates are evaluated against that round subset, making the test
+        circular. Misframed: the ELONG cut at stage_morph_post.py:249 selects
+        the *reference population* (standard PSF-selection practice, exclude
+        blends/galaxies); candidates are gated at lines 370/373 on FWHM_IMAGE
+        and SPREAD_MODEL — *not* on ELONGATION. A round-but-extended real
+        source isn't rejected for being elongated; it's rejected (correctly)
+        for being extended. Standard PSF-photometry methodology.
+
+    [ ] 19 (doc clarification) — S0M and S0S use different reference pops
+        Factually correct: S0M uses Gaia-matched mag-window references;
+        S0S uses ±10% FLUX_MAX neighbourhood references. They measure
+        different things (S0M = global PSF size/concentration; S0S = local
+        radial profile shape) and are complementary independent tests, not
+        cross-checks. Worth a one-paragraph note in either doc explaining
+        that S0M and S0S verdicts shouldn't be naively combined as
+        replicates. Low priority.
+
+    [ ] 20 (methodology polish) — spread_snr denominator
+        stage_morph_post.py:365 uses per-source SPREADERR_MODEL as the
+        denominator of spread_snr. Reporter is correct that this is the
+        single-source 1σ measurement uncertainty, not the population scatter
+        of the PSF reference. Calling the resulting ratio "snr" and gating
+        at >5 suggests a 5σ population test, which it isn't — it's
+        ">5× the candidate's own measurement uncertainty above the reference
+        median." Aggressive gate. Practical mitigation: visual inspection of
+        rejects (already logged) suggests it behaves as a plate-artifact
+        filter, not a precise statistical test. Recorded options:
+          (a) rename metric to avoid "snr" connotation (e.g. `spread_dev`)
+          (b) change denominator to sqrt(SPREADERR² + pop_std²) or pop MAD
+          (c) document the choice explicitly in STAGE_MORPH.md
+        Will need a quantitative comparison run before changing the gate
+        behaviour. Worth doing when the experimental gate is promoted.
+
+    [ ] 21 (doc note + check) — Gaia G vs POSS-I E saturation
+        Reporter's concern about color-term and saturation has partial
+        mitigation already: stage_morph_post.py:245 excludes any source with
+        SExtractor FLAGS != "0", which removes SEx-flagged saturated stars
+        from the PSF reference. The Gaia 12<G<18 window selects in Gaia
+        bandpass; POSS-I E mapping shifts by ~0.5–1.5 mag depending on
+        spectral type. Marginally saturated cores that SExtractor doesn't
+        flag could still leak in. Polish:
+          (a) note in STAGE_MORPH.md that the window is Gaia-band and that
+              saturation is handled via SExtractor FLAGS filter
+          (b) optionally add an explicit MAG_AUTO bright-limit guard for
+              residual marginal saturation
+        Low priority unless the FLAGS filter is found to miss saturated
+        cores in audit.
+
 [ ] Shape/morph stage triage — reporter items 22–27 (2026-05-12)
     - Both `scripts/stage_shape_post.py` and `scripts/stage_morph_post.py` are
       documented EXPERIMENTAL / "Not an official veto stage" and several
