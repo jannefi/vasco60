@@ -159,6 +159,50 @@ We do NOT target parity with the published MNRAS “R remainder” list.
     - Use 60×60 square download → ≤30′ circle cut policy when required.
     - Purpose: validate geometry + gating + veto ordering + ledgers (not external remainder parity).
 
+[x] No action — SExtractor config items 11–13 (2026-05-12)
+    - All three items challenge SExtractor configuration choices for the
+      pass1/pass2 catalogs (configs/sex_pass1.sex, configs/sex_pass2.sex).
+      Operator has empirically tested these and the reporter is incorrect or
+      practically moot. Recording the rationale so future readers don't
+      re-open the same triage.
+
+    [x] 11 — DETECT_TYPE CCD vs PHOTO
+        Reporter argues POSS-I is photographic emulsion and the configs
+        should use DETECT_TYPE PHOTO. Empirically wrong for STScI scans:
+        DETECT_TYPE PHOTO assumes direct photographic intensity with
+        logarithmic scaling — by the time SExtractor sees these files,
+        they are already 16-bit digital scans. PHOTO mode does not work
+        on this input (operator verified); CCD is the correct choice.
+
+    [x] 12 — hardcoded CCD detector values
+        GAIN=1.0, SATUR_LEVEL=50000, SEEING_FWHM=1.2, MAG_ZEROPOINT=21.1
+        are CCD-style defaults. Operator has tested various values; no
+        practical impact on end results. SATUR_LEVEL≈50000 in 16-bit
+        space tracks the practical bright-star saturation point; GAIN
+        affects formal flux uncertainty but not detection FLAGS/positions;
+        SEEING_FWHM seeds the convolution kernel; MAG_ZEROPOINT only
+        shifts MAG_AUTO without affecting gates.
+
+    [x] 13 — FILTER N (pass1) vs FILTER Y (pass2) mismatch
+        Reporter framing ("PSF built from unfiltered detections then applied
+        to filtered measurements") misunderstands SExtractor FILTER
+        semantics. FILTER controls convolution of the *detection* image for
+        source identification only — it does not propagate into the
+        measurement image. PSF model (PSFEx-built from pass1 candidates) and
+        SPREAD_MODEL measurement (pass2) both operate on the same raw pixel
+        data; the filter only changes which sources get detected at each
+        pass. The pass1-N / pass2-Y pattern is standard SExtractor+PSFEx
+        practice: sharp detection of PSF candidates first, smoother
+        detection statistics for the measurement pass. Operator-confirmed
+        no practical impact across tested filter configurations.
+
+    Decision: without the reference MNRAS 2022 configurations from
+    E. Solano et al. (which the operator has attempted to obtain), further
+    tuning is
+    speculative. Operator-led config sensitivity testing has bounded the
+    practical impact, and the gates the audit relies on are robust to these
+    choices. No further config-tuning work without an upstream reference.
+
 [ ] Morphology methodology triage — reporter items 18–21 (2026-05-12)
     - All four items concern stage_morph_post.py methodology. The stage is
       documented EXPERIMENTAL / "Not an official veto stage"; the calibration
