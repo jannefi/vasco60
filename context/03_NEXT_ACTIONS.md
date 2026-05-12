@@ -159,6 +159,25 @@ We do NOT target parity with the published MNRAS “R remainder” list.
     - Use 60×60 square download → ≤30′ circle cut policy when required.
     - Purpose: validate geometry + gating + veto ordering + ledgers (not external remainder parity).
 
+[x] Bug: HPM filter was a no-op (2026-05-12)
+    - `vasco/mnras/hpm.py` looked up `pmra`/`pmdec` (lowercase), but the Gaia
+      neighbourhood CSV (both VizieR fetcher and local cache) writes `pmRA`/`pmDE`.
+      Case-sensitive dict.get() returned the 0.0 default every time, so
+      apply_space_motion was always invoked with zero proper motion.
+    - Effect: `_filter_hpm_gaia` was structurally a "static Gaia↔POSS sep > 5″"
+      filter (i.e. loose xmatch radius), not an HPM filter. Real high-PM stars
+      whose static sep happened to be <5″ slipped through; rows with tiny PMs
+      whose static sep happened to be >5″ were mis-flagged as HPM.
+    - Verified on prod (tile_RA85.667_DECp29.061): all 3 rows in
+      sex_gaia_hpm_flagged.csv had recorded hpm_sep_arcsec equal to their
+      static catalog separation (rows with pmRA≈1–2 mas/yr flagged at 7–9″,
+      impossible under real back-propagation).
+    - Fix: lookup tries pmRA/pmDE first, falls back to pmra/pmdec, and tolerates
+      empty-string (CSV NaN encoding).
+    - [ ] Regenerate sex_gaia_hpm_flagged.csv and re-compute hpm_objects counts
+          on any tiles where the existing flagged file is used for downstream
+          accounting (current contents are stale under the new semantics).
+
 [x] Bug: Gaia veto uses tskymatch2 find=best (two-way one-to-one) instead of find=best1
     - With find=best, if two SExtractor sources are within 5" of the same Gaia star, only
       the closer one gets vetoed. The farther one (confirmed: source 3747, sep=4.843",
