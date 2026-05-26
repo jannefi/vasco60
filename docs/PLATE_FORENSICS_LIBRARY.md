@@ -70,7 +70,10 @@ https://iopscience.iop.org/article/10.1086/133186
    *Use for* understanding how POSS‑I magnitudes and “image diameters” were calibrated using photoelectric BVR sequences and APS threshold‑densitometry. Documents plate‑to‑plate zero‑point shifts in the magnitude–diameter relation.
 DOI: https://ui.adsabs.harvard.edu/link_gateway/1991AJ....102..395H/doi:10.1086/115883
 
-
+### Defects in photographic plates
+- **Greiner et al., Astronomy & Astrophysics, 234, 251–261 (1990)** Discrimination between star-like defects on photographic plates and possible gamma-ray burst optical counterparts.
+    *Use for* Understanding plate defects.
+DOI: https://ui.adsabs.harvard.edu/abs/1990A%26A...234..251G/abstract
 
 ### Modern morphology debates (examples of current work)
 - **Hambly & Blair (2024)** — morphology-based classification using SuperCOSMOS; discusses possible copying-procedure artefacts.  
