@@ -2,6 +2,35 @@
 
 Second-generation pipeline for searching digitised POSS-I photographic plates for objects that have vanished from the sky. Based on [vasco](https://github.com/jannefi/vasco/).
 
+> ### Status: no longer actively maintained (August 2026)
+>
+> This repository stays online as a reference and for the forks that descend
+> from it, but development has moved to
+> **[poss1-plate-slice](https://github.com/jannefi/poss1-plate-slice)**.
+>
+> **Why.** VASCO60 obtains each tile as a cutout from the STScI/MAST service,
+> and the service — not the caller — decides which plate a given position is
+> served from. That choice depends on the queried position, so a tile centre
+> and a source a few arcminutes away can be answered from different plates. No
+> tessellation, however fine, gets past this: it is a property of the data
+> source rather than of the grid. The successor slices tiles locally from
+> IRSA's plate-addressed full-plate scans, so plate identity is the caller's to
+> decide, and it carries a per-plate astrometric correction that the cutout
+> path never needed. Method and results are documented there.
+>
+> **If you run this code as it stands**, two defects are worth knowing about,
+> both addressed in [#7](https://github.com/jannefi/vasco60/pull/7) and
+> [#8](https://github.com/jannefi/vasco60/pull/8): a failed catalogue
+> extraction could be recorded as a successful *empty* tile, losing whole tiles
+> silently under parallel execution; and deduplication compared detections only
+> within an assumed plate label, missing cross-plate duplicates and inflating
+> candidate counts by roughly 10%.
+>
+> The local Gaia / Pan-STARRS1 / USNO-B cache builders under
+> `scripts/local_cache/`, contributed by
+> [Mick West](https://github.com/MickWest), remain current — the successor uses
+> them unchanged.
+
 This repository does not aim to reproduce the exact dataset of MNRAS 515(1):1380 (2022). The goal is to reproduce the *intent* of that workflow — a reproducible, plate-aware POSS-I processing pipeline — with improved provenance, robustness, and controls. `main` is a moving research branch and may include breaking changes.
 
 **Public context:**
