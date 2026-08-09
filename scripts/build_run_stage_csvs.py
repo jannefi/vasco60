@@ -29,10 +29,13 @@ Delta policy:
  post1.status is written per tile on completion (including empty tiles).
 
 Dedup policy (science-grade; WCSFIX-ready):
- Duplicates defined per plate_id (REGION) by true angular separation:
+ Duplicates defined globally (no plate_id partition) by true angular separation:
    sep_arcsec(ra,dec) <= dedup_tol_arcsec
  Robust spatial hashing in unit-sphere XYZ coordinates.
  Deterministic representative selection per cluster: tie-break by src_id.
+ (Previously partitioned by plate_id before comparing; that silently missed
+ true duplicates whose two detections carried different plan-assigned
+ plate_id labels near plate junctions/overlaps -- fixed 2026-08-02.)
 """
 
 import argparse
@@ -265,10 +268,18 @@ class UnionFind:
 
 def dedup_rows_by_plate_radius_xyz(rows: List[dict], tol_arcsec: float) -> Tuple[List[dict], int]:
     """
-    Science-grade dedup per plate_id by angular separation <= tol_arcsec.
+    Science-grade global dedup by true angular separation <= tol_arcsec.
     Robust neighbor search uses XYZ unit-sphere binning (3D spatial hash).
     Representative selection: deterministic tie-break by src_id (lexicographic).
     Output ordering follows original input order of chosen representatives.
+
+    Previously partitioned by plate_id before comparing, which silently missed
+    true duplicates whose two detections carried different plan-assigned
+    plate_id labels (common near naive-tessellation plate junctions/overlaps,
+    e.g. two nearby real plates' fixed-size grids landing near-identical tiles).
+    Dedup is now global -- spatial hash binning already limits comparisons to
+    geometrically nearby points regardless of total row count, so removing the
+    partition adds negligible cost (~1s at 255,921 rows) while fixing the miss.
     """
     if not rows:
         return rows, 0
@@ -280,60 +291,48 @@ def dedup_rows_by_plate_radius_xyz(rows: List[dict], tol_arcsec: float) -> Tuple
     if cell <= 0:
         return rows, 0
 
-    by_plate: Dict[str, List[int]] = {}
+    xyz = [radec_to_unit_xyz(float(r["ra"]), float(r["dec"])) for r in rows]
+
+    def key(x: float, y: float, z: float) -> Tuple[int, int, int]:
+        return int(x / cell), int(y / cell), int(z / cell)
+
+    bins: Dict[Tuple[int, int, int], List[int]] = {}
+    uf = UnionFind(len(rows))
+
     for i, r in enumerate(rows):
-        plate = str(r.get("plate_id") or "")
-        by_plate.setdefault(plate, []).append(i)
+        x, y, z = xyz[i]
+        ix, iy, iz = key(x, y, z)
+
+        for dx in (-1, 0, 1):
+            for dy in (-1, 0, 1):
+                for dz in (-1, 0, 1):
+                    cand = bins.get((ix + dx, iy + dy, iz + dz))
+                    if not cand:
+                        continue
+                    for j in cand:
+                        rj = rows[j]
+                        if angsep_arcsec(float(r["ra"]), float(r["dec"]),
+                                         float(rj["ra"]), float(rj["dec"])) <= tol_arcsec:
+                            uf.union(i, j)
+
+        bins.setdefault((ix, iy, iz), []).append(i)
+
+    comps: Dict[int, List[int]] = {}
+    for i in range(len(rows)):
+        root = uf.find(i)
+        comps.setdefault(root, []).append(i)
 
     chosen_indices: Set[int] = set()
-
-    for plate, idxs in by_plate.items():
-        if len(idxs) <= 1:
-            chosen_indices.update(idxs)
+    for members in comps.values():
+        if len(members) == 1:
+            chosen_indices.add(members[0])
             continue
 
-        local_rows = [rows[i] for i in idxs]
-        xyz = [radec_to_unit_xyz(float(r["ra"]), float(r["dec"])) for r in local_rows]
+        def rep_key(i: int) -> str:
+            return str(rows[i].get("src_id") or "")
 
-        def key(x: float, y: float, z: float) -> Tuple[int, int, int]:
-            return int(x / cell), int(y / cell), int(z / cell)
-
-        bins: Dict[Tuple[int, int, int], List[int]] = {}
-        uf = UnionFind(len(local_rows))
-
-        for li, r in enumerate(local_rows):
-            x, y, z = xyz[li]
-            ix, iy, iz = key(x, y, z)
-
-            for dx in (-1, 0, 1):
-                for dy in (-1, 0, 1):
-                    for dz in (-1, 0, 1):
-                        cand = bins.get((ix + dx, iy + dy, iz + dz))
-                        if not cand:
-                            continue
-                        for lj in cand:
-                            rj = local_rows[lj]
-                            if angsep_arcsec(float(r["ra"]), float(r["dec"]),
-                                             float(rj["ra"]), float(rj["dec"])) <= tol_arcsec:
-                                uf.union(li, lj)
-
-            bins.setdefault((ix, iy, iz), []).append(li)
-
-        comps: Dict[int, List[int]] = {}
-        for li in range(len(local_rows)):
-            root = uf.find(li)
-            comps.setdefault(root, []).append(li)
-
-        for members in comps.values():
-            if len(members) == 1:
-                chosen_indices.add(idxs[members[0]])
-                continue
-
-            def rep_key(li: int) -> str:
-                return str(local_rows[li].get("src_id") or "")
-
-            rep_li = min(members, key=rep_key)
-            chosen_indices.add(idxs[rep_li])
+        rep_i = min(members, key=rep_key)
+        chosen_indices.add(rep_i)
 
     out = [rows[i] for i in range(len(rows)) if i in chosen_indices]
     return out, len(rows) - len(out)
@@ -561,7 +560,7 @@ def main():
             f"S0_rows_unique_src_id: {len(base_rows)}",
             f"S0_src_id_duplicates_dropped: {dup_srcid_dropped}",
             f"dedup_enabled: {bool(args.dedup_enable)}",
-            f"dedup_method: plate_id + angular_sep <= {args.dedup_tol_arcsec:.3f}\" (XYZ spatial hash; deterministic rep: src_id)",
+            f"dedup_method: global angular_sep <= {args.dedup_tol_arcsec:.3f}\" (no plate_id partition; XYZ spatial hash; deterministic rep: src_id)",
             f"dedup_rows: {len(dedup_rows)} (dropped={dedup_dropped})",
             f"final_rows_for_stage_and_uploads: {len(final_rows)} (dedup set)",
             f"plate_map_csv: {args.plate_map_csv}",
