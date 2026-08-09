@@ -963,30 +963,49 @@ def _ensure_sextractor_csv(tile_dir: Path, pass2_ldac: str | Path) -> Path:
     if _valid(sex_csv):
         return sex_csv
 
-    # Re-extract with multi-HDU probing
+    # Re-extract with multi-HDU probing. The whole sweep is retried: LDAC->CSV
+    # extraction via stilts has shown intermittent failures under concurrent
+    # (parallel-tile) load even when the LDAC itself is valid and non-empty,
+    # and a fresh retry of the identical extraction reliably succeeds.
     hdu_tries = ['#LDAC_OBJECTS', '#2', '#1', '#0', '#3', '#4', '#5', '#6', '#7', '#8', '']
-    for ext in hdu_tries:
-        in_arg = f"in={str(pass2_ldac)}{ext}" if ext else f"in={str(pass2_ldac)}"
-        try:
-            subprocess.run(
-                ['stilts', 'tcopy', in_arg, f'out={str(probe)}', 'ofmt=csv'],
-                check=True, capture_output=True
-            )
-        except Exception:
-            continue
-        if _valid(probe):
+    max_attempts = 3
+    for attempt in range(1, max_attempts + 1):
+        for ext in hdu_tries:
+            in_arg = f"in={str(pass2_ldac)}{ext}" if ext else f"in={str(pass2_ldac)}"
             try:
-                probe.replace(sex_csv)
+                subprocess.run(
+                    ['stilts', 'tcopy', in_arg, f'out={str(probe)}', 'ofmt=csv'],
+                    check=True, capture_output=True
+                )
             except Exception:
-                shutil.copyfile(probe, sex_csv)
-            return sex_csv
+                continue
+            if _valid(probe):
+                try:
+                    probe.replace(sex_csv)
+                except Exception:
+                    shutil.copyfile(probe, sex_csv)
+                return sex_csv
+        if attempt < max_attempts:
+            time.sleep(1.5)
 
-    # Last resort: ensure a placeholder exists
+    # Every attempt across every HDU selector failed to produce a valid,
+    # non-empty catalog. Do NOT silently write an empty placeholder here: that
+    # made a transient extraction failure indistinguishable from a genuinely
+    # successful but genuinely-empty tile, since both ended up as
+    # tile_status.json step == "ok" with a 0-row catalog. Raise instead, so the
+    # tile is left un-ok and is retried on the next resume rather than entering
+    # the run as a silent hole.
     try:
-        sex_csv.write_text('', encoding='utf-8')
+        ldac_exists = pass2_ldac.exists()
+        ldac_size = pass2_ldac.stat().st_size if ldac_exists else 'n/a'
     except Exception:
-        pass
-    return sex_csv
+        ldac_exists, ldac_size = 'unknown', 'unknown'
+    raise RuntimeError(
+        f"_ensure_sextractor_csv: failed to extract a valid catalog from "
+        f"{pass2_ldac} after {max_attempts} attempt(s) x {len(hdu_tries)} "
+        f"HDU selectors ({hdu_tries}). LDAC exists={ldac_exists} "
+        f"size={ldac_size}."
+    )
 
 
 # ---------------------------------------------------------------------------
